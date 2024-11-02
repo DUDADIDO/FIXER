@@ -5,6 +5,7 @@ import MainLayout from './layout/MainLayout';
 import LoginLayout from './layout/LoginLayout';
 import RegisterPage from "./pages/RegisterPage";
 import RegisterForm from "./components/registerpage/RegisterBox";
+import StoreInfoPage from "./pages/StoreInfoPage";
 
 const router = createBrowserRouter([
     {
@@ -12,7 +13,7 @@ const router = createBrowserRouter([
       element: <MainLayout />,
       children: [
         { path: "/", element: <MainPage /> },
-        
+        { path: "/storeinfo", element: <StoreInfoPage />}
       ],
     },
     {
