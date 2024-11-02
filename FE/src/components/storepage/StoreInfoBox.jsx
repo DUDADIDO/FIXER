@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import storeData from "./dummy.json";
+import brandOptions from "./brandOptions.json";
+import deviceOptions from "./deviceOptions.json";
 import CommunityItem from "@/components/communitypage/CommunityItem.jsx";
 import CommunityNoticeData from "@/components/communitypage/CommunityNoticeDummy.json";
 import CommunityReviewData from "@/components/communitypage/CommunityReviewDummy.json";
@@ -42,7 +44,8 @@ const StoreStats = styled.div`
 `;
 
 const StoreInfo = styled.div`
-  height: 200px; /* 지도의 높이와 동일하게 맞춤 */
+  width: 700px;
+  height: 200px;
   padding: 10px;
   border: 2px solid #ccc;
   box-sizing: border-box;
@@ -125,6 +128,68 @@ const WriteButton = styled(Link)`
   }
 `;
 
+const EditButton = styled.button`
+  padding: 8px 16px;
+  background-color: #ff9800;
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 4px;
+  margin-top: 10px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #e68900;
+  }
+`;
+
+const ModalOverlay = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const ModalContent = styled.div`
+  width: 700px;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+`;
+
+const ModalCloseButton = styled.button`
+  background: #ff5c5c;
+  color: white;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  float: right;
+  border-radius: 4px;
+`;
+
+const SaveButton = styled.button`
+  padding: 8px 16px;
+  background-color: #03c75a;
+  color: white;
+  border: none;
+  font-weight: bold;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 20px;
+
+  &:hover {
+    background-color: #028a3d;
+  }
+`;
+
 function CommunitySectionWithPagination({ title, data }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
@@ -181,10 +246,38 @@ function CommunitySectionWithPagination({ title, data }) {
 
 function StoreInfoBox() {
   const [storeInfos, setStoreInfos] = useState([]);
+  const [isOwner, setIsOwner] = useState(false); // 사용자가 사장인지 여부
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editedStore, setEditedStore] = useState({});
 
   useEffect(() => {
     setStoreInfos([storeData]);
+    // TODO: 사용자가 사장인지 여부를 확인하는 로직 추가
+    setIsOwner(true); // 예시로 사장으로 설정
   }, []);
+
+  const handleEditClick = (storeInfo) => {
+    setEditedStore(storeInfo);
+    setIsModalOpen(true);
+  };
+
+  const handleModalClose = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setEditedStore({ ...editedStore, [name]: value });
+  };
+
+  const handleSaveChanges = () => {
+    // 저장 로직 추가 필요
+    const updatedStores = storeInfos.map((store) =>
+      store.id === editedStore.id ? editedStore : store
+    );
+    setStoreInfos(updatedStores);
+    setIsModalOpen(false);
+  };
 
   return (
     <>
@@ -198,6 +291,7 @@ function StoreInfoBox() {
               <div>평점: {storeInfo.score}</div>
               <div>리뷰 수: {storeInfo.review_cnt}</div>
             </StoreStats>
+            {isOwner && <EditButton onClick={() => handleEditClick(storeInfo)}>수정</EditButton>} {/* 사장만 수정 버튼 표시 */}
           </StoreImageWrapper>
           <StoreInfo>
             <div>{storeInfo.description}</div>
@@ -207,13 +301,81 @@ function StoreInfoBox() {
         </StoreContainer>
       ))}
 
+      {isModalOpen && (
+        <ModalOverlay>
+          <ModalContent>
+            <ModalCloseButton onClick={handleModalClose}>X</ModalCloseButton>
+            <h3>업체 정보 수정</h3>
+            <div>
+              <label>업체명: </label>
+              <input
+                type="text"
+                name="name"
+                value={editedStore.name}
+                onChange={handleInputChange}
+                style={{ width: '100%', border: '2px solid #ccc' }}
+              />
+            </div>
+            <div>
+              <label>설명: </label>
+              <textarea
+                name="description"
+                value={editedStore.description}
+                onChange={handleInputChange}
+                style={{ width: '100%', height: '150px', border: '2px solid #ccc' }}
+              />
+            </div>
+            <div>
+              <label>업체 선택: </label>
+              <select name="brand" value={editedStore.brand} onChange={handleInputChange} style={{ width: '100%', border: '2px solid #ccc' }}>
+                <option value="">업체 선택</option>
+                {brandOptions.map((brand) => (
+                  <option key={brand} value={brand}>{brand}</option>
+                ))}
+              </select>
+              <label>기기 선택: </label>
+              <select multiple name="supported_features" value={editedStore.supported_features} onChange={handleInputChange} style={{ width: '100%', border: '2px solid #ccc', height: '100px' }}>
+                {deviceOptions[editedStore.brand]?.map((device) => (
+                  <option key={device} value={device}>{device}</option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label>주소: </label>
+              <input
+                type="text"
+                name="address"
+                value={editedStore.address}
+                onChange={handleInputChange}
+              />
+            </div>
+            <div>
+              <label>사진 URL: </label>
+              <input
+                type="text"
+                name="logo"
+                value={editedStore.logo}
+                onChange={handleInputChange}
+              />
+            </div>
+            <SaveButton onClick={handleSaveChanges}>저장</SaveButton>
+          </ModalContent>
+        </ModalOverlay>
+      )}
+
       {/* Community Sections with Pagination */}
       <CommunitySectionWithPagination
         title="업체 공지사항"
         data={CommunityNoticeData}
       />
-      <CommunitySectionWithPagination title="리뷰" data={CommunityReviewData} />
-      <CommunitySectionWithPagination title="Q&A" data={CommunityQnAData} />
+      <CommunitySectionWithPagination
+        title="리뷰"
+        data={CommunityReviewData}
+      />
+      <CommunitySectionWithPagination
+        title="Q&A"
+        data={CommunityQnAData}
+      />
     </>
   );
 }
