@@ -1,32 +1,16 @@
-import { useState } from 'react'
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Test from "./components/Test";
+import LoginPage from './components/LoginPage';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-    <div className="flex flex-col justify-center items-center h-screen space-y-3">
-      <div className="flex flex-row items-center space-x-2">
-        <label>하이</label>
-        <input type="text" className="border border-gray-950 border-solid"></input>
-      </div>
-      <div className="flex flex-row items-center space-x-2">
-        <label>하이</label>
-        <input type="text" className="border border-gray-950 border-solid"></input>
-      </div>
-      <div className="flex flex-row items-center space-x-2">
-        <label>하이</label>
-        <input type="text" className="border border-gray-950 border-solid"></input>
-      </div>
-      <div className="flex flex-row items-center space-x-2">
-        <label>하이</label>
-        <input type="text" className="border border-gray-950 border-solid"></input>
-      </div>
-
-    </div>
-    
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Test />} />
+        <Route path="/login" element={<LoginPage />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;
