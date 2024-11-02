@@ -1,22 +1,34 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './components/LoginPage';
-import ProtectedRoute from './components/ProtectedRoute';
-import HomePage from './components/HomePage';
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import LoginPage from './pages/LoginPage';
+import MainPage from './pages/MainPage';
+import MainLayout from './layout/MainLayout';
+import LoginLayout from './layout/LoginLayout';
+import RegisterPage from "./pages/RegisterPage";
+import RegisterForm from "./components/registerpage/RegisterBox";
 
-function App() {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/" element={
-                    <ProtectedRoute>
-                        <HomePage />
-                    </ProtectedRoute>
-                } />
-            </Routes>
-        </Router>
-    );
-}
-
-export default App;
+const router = createBrowserRouter([
+    {
+      path: "/",
+      element: <MainLayout />,
+      children: [
+        { path: "/", element: <MainPage /> },
+        
+      ],
+    },
+    {
+      path: "/login",
+      element: <LoginLayout />,
+      children: [{ path: "", element: <LoginPage /> }],
+    },
+    {
+        path: "/register",
+        element: <RegisterPage />,
+        children: [{ path: "", element: <LoginPage /> }],
+      },
+  ]);
+  
+  function App() {
+    return <RouterProvider router={router} />;
+  }
+  
+  export default App;
