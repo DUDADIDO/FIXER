@@ -9,14 +9,12 @@ function LoginPage() {
     useEffect(() => {
         const query = new URLSearchParams(location.search);
         const token = query.get('token');
-        
         if (token) {
-            // 토큰을 localStorage에 저장
-            localStorage.setItem('authToken', token);
-            // 토큰 저장 후 메인 페이지로 이동
-            setTimeout(() => {
-                navigate('/');
-            }, 100); // 비동기적으로 토큰이 저장된 후 안전하게 리디렉션
+            // 토큰을 쿠키에 저장
+            document.cookie = `jwtToken=${token}; path=/; max-age=3600`; // HttpOnly는 서버에서만 설정 가능
+
+            // 메인 페이지로 이동
+            navigate('/');
         }
     }, [location, navigate]);
 
