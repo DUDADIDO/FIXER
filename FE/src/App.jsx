@@ -4,7 +4,6 @@ import MainPage from "./pages/MainPage";
 import MainLayout from "./layout/MainLayout";
 import LoginLayout from "./layout/LoginLayout";
 import RegisterPage from "./pages/RegisterPage";
-import RegisterForm from "./components/registerpage/RegisterBox";
 import StoreInfoPage from "./pages/StoreInfoPage";
 import StoreSearchPage from "./pages/StoreSearchPage";
 
