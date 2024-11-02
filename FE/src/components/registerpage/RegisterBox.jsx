@@ -12,7 +12,6 @@ const FormWrapper = styled.div`
 `;
 
 const Container = styled.div`
-  margin-top: 100px;
   padding: 20px;
 `;
 
@@ -93,7 +92,7 @@ export default function RegisterBox() {
   const [password, setPassword] = useState("");
   const [passwordCheck, setPasswordCheck] = useState("");
   const [name, setName] = useState("");
-  const [studentId, setStudentId] = useState("");
+  const [email, setemail] = useState("");
   const [isIdAvailable, setIsIdAvailable] = useState(null);
   const [isIdChecked, setIsIdChecked] = useState(false);
   const navigate = useNavigate();
@@ -106,8 +105,8 @@ export default function RegisterBox() {
       setPassword(value);
     } else if (name === "passwordCheck") {
       setPasswordCheck(value);
-    } else if (name === "studentId") {
-      setStudentId(value);
+    } else if (name === "email") {
+      setemail(value);
     } else if (name === "name") {
       setName(value);
     }
@@ -152,13 +151,19 @@ export default function RegisterBox() {
 
   const validateForm = () => {
     const idRegex = /^[a-zA-Z0-9]{8,}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const studentIdRegex = /^\d{7}$/;
+
     if (!isIdAvailable) {
       alert("아이디 중복 확인을 해주세요.");
       return false;
     }
     if (!idRegex.test(id)) {
       alert("아이디는 최소 8자리로 이루어져야 합니다.");
+      return false;
+    }
+    if (!emailRegex.test(email)) {
+      alert("유효한 이메일 주소를 입력해 주세요.");
       return false;
     }
     if (password.length < 8) {
@@ -247,11 +252,11 @@ export default function RegisterBox() {
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="studentId"
-              name="studentId"
-              value={studentId}
+              id="email"
+              name="email"
+              value={email}
               onChange={handleChange}
-              placeholder="학번을 입력해주세요"
+              placeholder="이메일을 입력해주세요"
             />
           </InputWrapper>
           <InputWrapper>
