@@ -1,6 +1,10 @@
 {
-    "introduce" : "저희 가게는 50년 전통의 가게로 죽이는 손맛으로 고쳐드립니다.",
-    "product" : "삼성 노트북",
-    "address" : "홍길동대로 112번길 8 1층",
-    "storeName" : "춘식스토어"
+    "id": 1,
+    "name": "ABC 수리센터",
+    "description": "저희 업체는 신속하고 믿을 수 있는 서비스를 제공하고 있습니다. 모든 전자기기를 완벽하게 수리해드립니다.",
+    "supported_features": ["삼성 노트북", "갤럭시", "LG 노트북"],
+    "repair_count": 180,
+    "score": 4.3,
+    "review_cnt": 25,
+    "logo": "../../public/chunsik.png"
 }
