@@ -6,5 +6,7 @@
     "repair_count": 180,
     "score": 4.3,
     "review_cnt": 25,
-    "logo": "../../public/chunsik.png"
+    "logo": "../../public/chunsik.png",
+    "phone" : "010-1234-5678",
+    "address" : "홍길동대로 123번길 9 2층"
 }

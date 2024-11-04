@@ -1,0 +1,178 @@
+[
+    {
+      "id": 1,
+      "title": "리뷰 1",
+      "content": "리뷰 내용 1",
+      "author": "사용자1",
+      "created_at": "2024-10-05"
+    },
+    {
+      "id": 2,
+      "title": "리뷰 2",
+      "content": "리뷰 내용 2",
+      "author": "사용자2",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 3,
+      "title": "리뷰 3",
+      "content": "리뷰 내용 3",
+      "author": "사용자3",
+      "created_at": "2024-10-07"
+    },
+    {
+      "id": 4,
+      "title": "리뷰 4",
+      "content": "리뷰 내용 4",
+      "author": "사용자4",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 5,
+      "title": "리뷰 5",
+      "content": "리뷰 내용 5",
+      "author": "사용자5",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 6,
+      "title": "리뷰 6",
+      "content": "리뷰 내용 6",
+      "author": "사용자6",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 7,
+      "title": "리뷰 7",
+      "content": "리뷰 내용 7",
+      "author": "사용자7",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 8,
+      "title": "리뷰 8",
+      "content": "리뷰 내용 8",
+      "author": "사용자8",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 9,
+      "title": "리뷰 9",
+      "content": "리뷰 내용 9",
+      "author": "사용자9",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 10,
+      "title": "리뷰 10",
+      "content": "리뷰 내용 10",
+      "author": "사용자10",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 11,
+      "title": "리뷰 11",
+      "content": "리뷰 내용 11",
+      "author": "사용자11",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 12,
+      "title": "리뷰 12",
+      "content": "리뷰 내용 12",
+      "author": "사용자12",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 13,
+      "title": "리뷰 13",
+      "content": "리뷰 내용 13",
+      "author": "사용자13",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 14,
+      "title": "리뷰 14",
+      "content": "리뷰 내용 14",
+      "author": "사용자14",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 15,
+      "title": "리뷰 15",
+      "content": "리뷰 내용 15",
+      "author": "사용자15",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 16,
+      "title": "리뷰 16",
+      "content": "리뷰 내용 16",
+      "author": "사용자16",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 17,
+      "title": "리뷰 17",
+      "content": "리뷰 내용 17",
+      "author": "사용자17",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 18,
+      "title": "리뷰 18",
+      "content": "리뷰 내용 18",
+      "author": "사용자18",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 19,
+      "title": "리뷰 19",
+      "content": "리뷰 내용 19",
+      "author": "사용자19",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 20,
+      "title": "리뷰 20",
+      "content": "리뷰 내용 20",
+      "author": "사용자20",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 21,
+      "title": "리뷰 21",
+      "content": "리뷰 내용 21",
+      "author": "사용자21",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 22,
+      "title": "리뷰 22",
+      "content": "리뷰 내용 22",
+      "author": "사용자22",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 23,
+      "title": "리뷰 23",
+      "content": "리뷰 내용 23",
+      "author": "사용자23",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 24,
+      "title": "리뷰 24",
+      "content": "리뷰 내용 24",
+      "author": "사용자24",
+      "created_at": "2024-10-06"
+    },
+    {
+      "id": 25,
+      "title": "리뷰 25",
+      "content": "리뷰 내용 25",
+      "author": "사용자25",
+      "created_at": "2024-10-06"
+    }
+  ]
+  

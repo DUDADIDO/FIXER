@@ -12,7 +12,7 @@ import CommunityQnAData from "@/components/communitypage/CommunityQnADummy.json"
 const StoreContainer = styled.div`
   display: flex;
   align-items: flex-start;
-  margin-bottom: 40px; /* 아래쪽 마진 추가 */
+  margin-bottom: 40px;
 `;
 
 const StoreImageWrapper = styled.div`
@@ -71,7 +71,7 @@ const CommunitySection = styled.div`
   flex-direction: column;
   width: 100%;
   margin-top: 20px;
-  margin-bottom: 40px; /* 위아래 마진 추가 */
+  margin-bottom: 40px;
   padding: 10px;
   border: 2px solid #ccc;
   box-sizing: border-box;
@@ -111,9 +111,12 @@ const PageButton = styled.button`
   }
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
 const WriteButton = styled(Link)`
-  align-self: flex-end;
-  margin-bottom: 10px;
   padding: 8px 16px;
   background-color: #03c75a;
   color: white;
@@ -125,22 +128,6 @@ const WriteButton = styled(Link)`
 
   &:hover {
     background-color: #028a3d;
-  }
-`;
-
-const EditButton = styled.button`
-  padding: 8px 16px;
-  background-color: #ff9800;
-  color: white;
-  border: none;
-  font-weight: bold;
-  border-radius: 4px;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #e68900;
   }
 `;
 
@@ -190,13 +177,12 @@ const SaveButton = styled.button`
   }
 `;
 
-function CommunitySectionWithPagination({ title, data }) {
+
+function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  // 현재 페이지에 맞는 데이터 계산
   const currentItems = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -211,7 +197,21 @@ function CommunitySectionWithPagination({ title, data }) {
   return (
     <CommunitySection>
       <CommunityTitle>{title}</CommunityTitle>
-      <WriteButton to="">글쓰기</WriteButton>
+      <ButtonContainer>
+        <WriteButton
+          to={{
+            pathname:
+              title === "리뷰"
+                ? "/writereview"
+                : title === "업체 공지사항"
+                ? "/writenotice"
+                : "/writeqna",
+          }}
+          state = {{ storeId, storeName}}
+        >
+          글쓰기
+        </WriteButton>
+      </ButtonContainer>
       <CommunityList>
         {currentItems.map((item) => (
           <CommunityItem key={item.id} data={item} />
@@ -246,14 +246,13 @@ function CommunitySectionWithPagination({ title, data }) {
 
 function StoreInfoBox() {
   const [storeInfos, setStoreInfos] = useState([]);
-  const [isOwner, setIsOwner] = useState(false); // 사용자가 사장인지 여부
+  const [isOwner, setIsOwner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedStore, setEditedStore] = useState({});
 
   useEffect(() => {
     setStoreInfos([storeData]);
-    // TODO: 사용자가 사장인지 여부를 확인하는 로직 추가
-    setIsOwner(true); // 예시로 사장으로 설정
+    setIsOwner(true);
   }, []);
 
   const handleEditClick = (storeInfo) => {
@@ -266,12 +265,21 @@ function StoreInfoBox() {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedStore({ ...editedStore, [name]: value });
+    const { name, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      const [brand, device] = value.split(":");
+      const deviceId = `${brand}:${device}`;
+      const updatedFeatures = checked
+        ? [...(editedStore.supported_features || []), deviceId]
+        : editedStore.supported_features.filter((item) => item !== deviceId);
+
+      setEditedStore({ ...editedStore, supported_features: updatedFeatures });
+    } else {
+      setEditedStore({ ...editedStore, [name]: value });
+    }
   };
 
   const handleSaveChanges = () => {
-    // 저장 로직 추가 필요
     const updatedStores = storeInfos.map((store) =>
       store.id === editedStore.id ? editedStore : store
     );
@@ -286,12 +294,23 @@ function StoreInfoBox() {
           <StoreImageWrapper>
             <StoreImage src={storeInfo.logo} alt="Store Logo" />
             <StoreName>{storeInfo.name}</StoreName>
-            <StoreStats>
-              <div>수리 횟수: {storeInfo.repair_count}</div>
-              <div>평점: {storeInfo.score}</div>
-              <div>리뷰 수: {storeInfo.review_cnt}</div>
+            <StoreStats className="flex flex-col gap-2">
+              <div className="flex gap-4">
+                <div>수리 횟수: {storeInfo.repair_count}</div>
+                <div>평점: {storeInfo.score}</div>
+                <div>리뷰 수: {storeInfo.review_cnt}</div>
+              </div>
+              <div>전화번호: {storeInfo.phone}</div> {/* 전화번호는 아래 줄에 출력 */}
+              <div>주소: {storeInfo.address}</div>
             </StoreStats>
-            {isOwner && <EditButton onClick={() => handleEditClick(storeInfo)}>수정</EditButton>} {/* 사장만 수정 버튼 표시 */}
+            {isOwner && (
+              <button
+                onClick={() => handleEditClick(storeInfo)}
+                className="bg-yellow-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-yellow-600"
+              >
+                수정
+              </button>
+            )}
           </StoreImageWrapper>
           <StoreInfo>
             <div>{storeInfo.description}</div>
@@ -302,79 +321,131 @@ function StoreInfoBox() {
       ))}
 
       {isModalOpen && (
-        <ModalOverlay>
-          <ModalContent>
-            <ModalCloseButton onClick={handleModalClose}>X</ModalCloseButton>
-            <h3>업체 정보 수정</h3>
-            <div>
-              <label>업체명: </label>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="w-[700px] bg-white p-8 rounded-lg shadow-lg">
+            <button 
+              onClick={handleModalClose} 
+              className="bg-red-500 text-white px-4 py-2 rounded float-right">
+              X
+            </button>
+            <h3 className="text-lg font-bold mb-4">업체 정보 수정</h3>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">업체명:</label>
               <input
                 type="text"
                 name="name"
                 value={editedStore.name}
                 onChange={handleInputChange}
-                style={{ width: '100%', border: '2px solid #ccc' }}
+                className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div>
-              <label>설명: </label>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">설명:</label>
               <textarea
                 name="description"
                 value={editedStore.description}
                 onChange={handleInputChange}
-                style={{ width: '100%', height: '150px', border: '2px solid #ccc' }}
+                className="w-full p-2 border border-gray-300 rounded"
+                rows="5"
               />
             </div>
-            <div>
-              <label>업체 선택: </label>
-              <select name="brand" value={editedStore.brand} onChange={handleInputChange} style={{ width: '100%', border: '2px solid #ccc' }}>
-                <option value="">업체 선택</option>
-                {brandOptions.map((brand) => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-              <label>기기 선택: </label>
-              <select multiple name="supported_features" value={editedStore.supported_features} onChange={handleInputChange} style={{ width: '100%', border: '2px solid #ccc', height: '100px' }}>
-                {deviceOptions[editedStore.brand]?.map((device) => (
-                  <option key={device} value={device}>{device}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>주소: </label>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">주소:</label>
               <input
                 type="text"
                 name="address"
                 value={editedStore.address}
                 onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div>
-              <label>사진 URL: </label>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">휴대폰 번호:</label>
+              <input
+                type="text"
+                name="phone"
+                value={editedStore.phone}
+                onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">업체 선택:</label>
+              <select
+                name="brand"
+                value={editedStore.brand || ""}
+                onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
+              >
+                <option value="">업체 선택</option>
+                {brandOptions.map((brand) => (
+                  <option key={brand} value={brand}>
+                    {brand}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">기기 선택:</label>
+              <div className="max-h-24 overflow-y-auto border border-gray-300 p-2 rounded">
+                {deviceOptions[editedStore.brand]?.map((device) => {
+                  const deviceId = `${editedStore.brand}:${device}`;
+                  return (
+                    <div key={deviceId} className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        name="supported_features"
+                        value={deviceId}
+                        checked={editedStore.supported_features?.includes(deviceId) || false}
+                        onChange={handleInputChange}
+                        className="form-checkbox"
+                      />
+                      <label className="text-gray-700">{device}</label>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">사진 경로:</label>
               <input
                 type="text"
                 name="logo"
                 value={editedStore.logo}
                 onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <SaveButton onClick={handleSaveChanges}>저장</SaveButton>
-          </ModalContent>
-        </ModalOverlay>
+
+            
+            <button
+              onClick={handleSaveChanges}
+              className="w-full bg-green-500 text-white py-2 rounded mt-4 hover:bg-green-600 transition"
+            >
+              저장
+            </button>
+          </div>
+        </div>
       )}
 
-      {/* Community Sections with Pagination */}
+
       <CommunitySectionWithPagination
         title="업체 공지사항"
         data={CommunityNoticeData}
+        storeId={storeInfos[0]?.id}
+        storeName={storeInfos[0]?.name}
       />
       <CommunitySectionWithPagination
         title="리뷰"
         data={CommunityReviewData}
+        storeId={storeInfos[0]?.id}
+        storeName={storeInfos[0]?.name}
       />
       <CommunitySectionWithPagination
         title="Q&A"
         data={CommunityQnAData}
+        storeId={storeInfos[0]?.id}
+        storeName={storeInfos[0]?.name}
       />
     </>
   );
