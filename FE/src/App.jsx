@@ -6,7 +6,7 @@ import LoginLayout from "./layout/LoginLayout";
 import RegisterPage from "./pages/RegisterPage";
 import StoreInfoPage from "./pages/StoreInfoPage";
 import StoreSearchPage from "./pages/StoreSearchPage";
-
+import UserInfoPage from "./pages/UserInfoPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -15,6 +15,7 @@ const router = createBrowserRouter([
       { path: "/", element: <MainPage /> },
       { path: "/storeinfo", element: <StoreInfoPage /> },
       { path: "/storesearch", element: <StoreSearchPage /> },
+      { path: "/userinfo", element: <UserInfoPage /> },
     ],
   },
   {

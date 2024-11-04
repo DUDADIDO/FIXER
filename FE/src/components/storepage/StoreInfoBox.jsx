@@ -193,10 +193,8 @@ const SaveButton = styled.button`
 function CommunitySectionWithPagination({ title, data }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
-
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
-  // 현재 페이지에 맞는 데이터 계산
   const currentItems = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -246,14 +244,13 @@ function CommunitySectionWithPagination({ title, data }) {
 
 function StoreInfoBox() {
   const [storeInfos, setStoreInfos] = useState([]);
-  const [isOwner, setIsOwner] = useState(false); // 사용자가 사장인지 여부
+  const [isOwner, setIsOwner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedStore, setEditedStore] = useState({});
 
   useEffect(() => {
     setStoreInfos([storeData]);
-    // TODO: 사용자가 사장인지 여부를 확인하는 로직 추가
-    setIsOwner(true); // 예시로 사장으로 설정
+    setIsOwner(true);
   }, []);
 
   const handleEditClick = (storeInfo) => {
@@ -266,12 +263,23 @@ function StoreInfoBox() {
   };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setEditedStore({ ...editedStore, [name]: value });
+    const { name, value, type, checked } = e.target;
+    if (type === "checkbox") {
+      const [brand, device] = value.split(":");
+      const deviceId = `${brand}:${device}`;
+      
+      // 체크박스 처리: 고유 ID로 검사
+      const updatedFeatures = checked
+        ? [...(editedStore.supported_features || []), deviceId]
+        : editedStore.supported_features.filter((item) => item !== deviceId);
+      
+      setEditedStore({ ...editedStore, supported_features: updatedFeatures });
+    } else {
+      setEditedStore({ ...editedStore, [name]: value });
+    }
   };
 
   const handleSaveChanges = () => {
-    // 저장 로직 추가 필요
     const updatedStores = storeInfos.map((store) =>
       store.id === editedStore.id ? editedStore : store
     );
@@ -291,7 +299,7 @@ function StoreInfoBox() {
               <div>평점: {storeInfo.score}</div>
               <div>리뷰 수: {storeInfo.review_cnt}</div>
             </StoreStats>
-            {isOwner && <EditButton onClick={() => handleEditClick(storeInfo)}>수정</EditButton>} {/* 사장만 수정 버튼 표시 */}
+            {isOwner && <EditButton onClick={() => handleEditClick(storeInfo)}>수정</EditButton>}
           </StoreImageWrapper>
           <StoreInfo>
             <div>{storeInfo.description}</div>
@@ -327,18 +335,37 @@ function StoreInfoBox() {
             </div>
             <div>
               <label>업체 선택: </label>
-              <select name="brand" value={editedStore.brand} onChange={handleInputChange} style={{ width: '100%', border: '2px solid #ccc' }}>
+              <select
+                name="brand"
+                value={editedStore.brand}
+                onChange={handleInputChange}
+                style={{ width: '100%', border: '2px solid #ccc' }}
+              >
                 <option value="">업체 선택</option>
                 {brandOptions.map((brand) => (
                   <option key={brand} value={brand}>{brand}</option>
                 ))}
               </select>
+            </div>
+            <div>
               <label>기기 선택: </label>
-              <select multiple name="supported_features" value={editedStore.supported_features} onChange={handleInputChange} style={{ width: '100%', border: '2px solid #ccc', height: '100px' }}>
-                {deviceOptions[editedStore.brand]?.map((device) => (
-                  <option key={device} value={device}>{device}</option>
-                ))}
-              </select>
+              <div style={{ maxHeight: '100px', overflowY: 'auto', border: '2px solid #ccc', padding: '10px' }}>
+                {deviceOptions[editedStore.brand]?.map((device) => {
+                  const deviceId = `${editedStore.brand}:${device}`; // 브랜드와 기기를 결합하여 고유 ID 생성
+                  return (
+                    <div key={deviceId}>
+                      <input
+                        type="checkbox"
+                        name="supported_features"
+                        value={deviceId}
+                        checked={editedStore.supported_features?.includes(deviceId)}
+                        onChange={handleInputChange}
+                      />
+                      <label>{device}</label>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
             <div>
               <label>주소: </label>
@@ -347,6 +374,7 @@ function StoreInfoBox() {
                 name="address"
                 value={editedStore.address}
                 onChange={handleInputChange}
+                style={{ width: '100%', border: '2px solid #ccc' }}
               />
             </div>
             <div>
@@ -356,6 +384,7 @@ function StoreInfoBox() {
                 name="logo"
                 value={editedStore.logo}
                 onChange={handleInputChange}
+                style={{ width: '100%', border: '2px solid #ccc' }}
               />
             </div>
             <SaveButton onClick={handleSaveChanges}>저장</SaveButton>
@@ -363,19 +392,9 @@ function StoreInfoBox() {
         </ModalOverlay>
       )}
 
-      {/* Community Sections with Pagination */}
-      <CommunitySectionWithPagination
-        title="업체 공지사항"
-        data={CommunityNoticeData}
-      />
-      <CommunitySectionWithPagination
-        title="리뷰"
-        data={CommunityReviewData}
-      />
-      <CommunitySectionWithPagination
-        title="Q&A"
-        data={CommunityQnAData}
-      />
+      <CommunitySectionWithPagination title="업체 공지사항" data={CommunityNoticeData} />
+      <CommunitySectionWithPagination title="리뷰" data={CommunityReviewData} />
+      <CommunitySectionWithPagination title="Q&A" data={CommunityQnAData} />
     </>
   );
 }
