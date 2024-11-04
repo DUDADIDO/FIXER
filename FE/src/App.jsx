@@ -9,6 +9,7 @@ import StoreSearchPage from "./pages/StoreSearchPage";
 import UserInfoPage from "./pages/UserInfoPage";
 import WriteReview from "./components/storepage/writepostpage/WriteReview";
 import StoreRegisterPage from "./pages/StoreRegisterPage";
+import WriteNotice from "./components/storepage/writepostpage/WriteNotice";
 
 
 const router = createBrowserRouter([
@@ -21,6 +22,7 @@ const router = createBrowserRouter([
       { path: "/storesearch", element: <StoreSearchPage /> },
       { path: "/userinfo", element: <UserInfoPage /> },
       { path: "/writereview", element: <WriteReview /> },
+      { path: "/writenotice", element: <WriteNotice /> },
       { path: "/storeregister", element: <StoreRegisterPage /> },
     ],
   },
