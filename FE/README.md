@@ -1,4 +1,4 @@
-localhost:5173/        루트 페이지
+localhost:5173/        루트 페이지\n
 localhost:5173/login  로그인 페이지
 localhost:5173/register  회원가입 페이지
 localhost:5173/storeinfo  상점 페이지
