@@ -3,13 +3,12 @@ import { useLocation } from "react-router-dom";
 
 export default function WriteReview() {
   const location = useLocation();
-  const storeId = location.state?.storeId || ""; // 전달된 상점 ID를 가져옴
-  const storeName = location.state?.storeName || ""; // 전달된 상점 이름을 가져옴
+  const storeId = location.state?.storeId || "";
+  const storeName = location.state?.storeName || "";
   const [content, setContent] = useState("");
   const [file, setFile] = useState(null);
   const [rating, setRating] = useState(1);
-  console.log("Received storeId:", storeId);
-  console.log("Received storeName:", storeName);
+
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
@@ -17,12 +16,10 @@ export default function WriteReview() {
   const handleSubmit = (event) => {
     event.preventDefault();
     console.log({ content, file, rating, storeName, storeId });
-    // 서버에 데이터 제출하는 로직 추가
   };
 
   return (
-    <div className="max-w-lg mx-auto p-4 bg-white rounded shadow-md">
-        {console.log(storeId, storeName)}
+    <div className="max-w-2xl w-full mx-auto p-6 bg-white rounded shadow-md">
       <h2 className="text-2xl font-bold mb-6">리뷰 작성 - 상점 ID: {storeId}</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
@@ -47,11 +44,7 @@ export default function WriteReview() {
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 font-bold mb-2">파일 첨부</label>
-          <input
-            type="file"
-            onChange={handleFileChange}
-            className="w-full"
-          />
+          <input type="file" onChange={handleFileChange} className="w-full" />
         </div>
         <div className="mb-4">
           <label className="block text-gray-700 font-bold mb-2">평점</label>
