@@ -4,7 +4,6 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.JwtParserBuilder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,7 +15,7 @@ import java.util.Date;
 @RequiredArgsConstructor
 public class JwtUtil {
 
-    private final SecretKey secretKey;
+    private SecretKey secretKey;
 
     // Secret key is injected via configuration, which can be sourced from a secure vault or environment variable
     public JwtUtil(@Value("${jwt.secret}") String secret) {

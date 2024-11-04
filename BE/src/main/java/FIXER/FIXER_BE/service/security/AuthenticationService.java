@@ -1,7 +1,6 @@
 package FIXER.FIXER_BE.service.security;
 
 import FIXER.FIXER_BE.service.security.JwtUtil;
-import FIXER.FIXER_BE.service.security.InvalidCredentialsException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
