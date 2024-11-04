@@ -12,7 +12,7 @@ import CommunityQnAData from "@/components/communitypage/CommunityQnADummy.json"
 const StoreContainer = styled.div`
   display: flex;
   align-items: flex-start;
-  margin-bottom: 40px; /* 아래쪽 마진 추가 */
+  margin-bottom: 40px;
 `;
 
 const StoreImageWrapper = styled.div`
@@ -71,7 +71,7 @@ const CommunitySection = styled.div`
   flex-direction: column;
   width: 100%;
   margin-top: 20px;
-  margin-bottom: 40px; /* 위아래 마진 추가 */
+  margin-bottom: 40px;
   padding: 10px;
   border: 2px solid #ccc;
   box-sizing: border-box;
@@ -111,9 +111,12 @@ const PageButton = styled.button`
   }
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: flex-end;
+`;
+
 const WriteButton = styled(Link)`
-  align-self: flex-end;
-  margin-bottom: 10px;
   padding: 8px 16px;
   background-color: #03c75a;
   color: white;
@@ -125,22 +128,6 @@ const WriteButton = styled(Link)`
 
   &:hover {
     background-color: #028a3d;
-  }
-`;
-
-const EditButton = styled.button`
-  padding: 8px 16px;
-  background-color: #ff9800;
-  color: white;
-  border: none;
-  font-weight: bold;
-  border-radius: 4px;
-  margin-top: 10px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #e68900;
   }
 `;
 
@@ -190,7 +177,8 @@ const SaveButton = styled.button`
   }
 `;
 
-function CommunitySectionWithPagination({ title, data }) {
+
+function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -209,7 +197,22 @@ function CommunitySectionWithPagination({ title, data }) {
   return (
     <CommunitySection>
       <CommunityTitle>{title}</CommunityTitle>
-      <WriteButton to="">글쓰기</WriteButton>
+      <ButtonContainer>
+        <WriteButton
+          to={{
+            pathname:
+              title === "리뷰"
+                ? "/writereview"
+                : title === "업체 공지사항"
+                ? "/writenotice"
+                : "/writeqna",
+            state: { storeId, storeName},
+
+          }}
+        >
+          글쓰기
+        </WriteButton>
+      </ButtonContainer>
       <CommunityList>
         {currentItems.map((item) => (
           <CommunityItem key={item.id} data={item} />
@@ -267,12 +270,10 @@ function StoreInfoBox() {
     if (type === "checkbox") {
       const [brand, device] = value.split(":");
       const deviceId = `${brand}:${device}`;
-      
-      // 체크박스 처리: 고유 ID로 검사
       const updatedFeatures = checked
         ? [...(editedStore.supported_features || []), deviceId]
         : editedStore.supported_features.filter((item) => item !== deviceId);
-      
+
       setEditedStore({ ...editedStore, supported_features: updatedFeatures });
     } else {
       setEditedStore({ ...editedStore, [name]: value });
@@ -294,12 +295,23 @@ function StoreInfoBox() {
           <StoreImageWrapper>
             <StoreImage src={storeInfo.logo} alt="Store Logo" />
             <StoreName>{storeInfo.name}</StoreName>
-            <StoreStats>
-              <div>수리 횟수: {storeInfo.repair_count}</div>
-              <div>평점: {storeInfo.score}</div>
-              <div>리뷰 수: {storeInfo.review_cnt}</div>
+            <StoreStats className="flex flex-col gap-2">
+              <div className="flex gap-4">
+                <div>수리 횟수: {storeInfo.repair_count}</div>
+                <div>평점: {storeInfo.score}</div>
+                <div>리뷰 수: {storeInfo.review_cnt}</div>
+              </div>
+              <div>전화번호: {storeInfo.phone}</div> {/* 전화번호는 아래 줄에 출력 */}
+              <div>주소: {storeInfo.address}</div>
             </StoreStats>
-            {isOwner && <EditButton onClick={() => handleEditClick(storeInfo)}>수정</EditButton>}
+            {isOwner && (
+              <button
+                onClick={() => handleEditClick(storeInfo)}
+                className="bg-yellow-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-yellow-600"
+              >
+                수정
+              </button>
+            )}
           </StoreImageWrapper>
           <StoreInfo>
             <div>{storeInfo.description}</div>
@@ -321,7 +333,7 @@ function StoreInfoBox() {
                 name="name"
                 value={editedStore.name}
                 onChange={handleInputChange}
-                style={{ width: '100%', border: '2px solid #ccc' }}
+                style={{ width: "100%", border: "2px solid #ccc" }}
               />
             </div>
             <div>
@@ -330,42 +342,8 @@ function StoreInfoBox() {
                 name="description"
                 value={editedStore.description}
                 onChange={handleInputChange}
-                style={{ width: '100%', height: '150px', border: '2px solid #ccc' }}
+                style={{ width: "100%", height: "150px", border: "2px solid #ccc" }}
               />
-            </div>
-            <div>
-              <label>업체 선택: </label>
-              <select
-                name="brand"
-                value={editedStore.brand}
-                onChange={handleInputChange}
-                style={{ width: '100%', border: '2px solid #ccc' }}
-              >
-                <option value="">업체 선택</option>
-                {brandOptions.map((brand) => (
-                  <option key={brand} value={brand}>{brand}</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label>기기 선택: </label>
-              <div style={{ maxHeight: '100px', overflowY: 'auto', border: '2px solid #ccc', padding: '10px' }}>
-                {deviceOptions[editedStore.brand]?.map((device) => {
-                  const deviceId = `${editedStore.brand}:${device}`; // 브랜드와 기기를 결합하여 고유 ID 생성
-                  return (
-                    <div key={deviceId}>
-                      <input
-                        type="checkbox"
-                        name="supported_features"
-                        value={deviceId}
-                        checked={editedStore.supported_features?.includes(deviceId)}
-                        onChange={handleInputChange}
-                      />
-                      <label>{device}</label>
-                    </div>
-                  );
-                })}
-              </div>
             </div>
             <div>
               <label>주소: </label>
@@ -374,17 +352,27 @@ function StoreInfoBox() {
                 name="address"
                 value={editedStore.address}
                 onChange={handleInputChange}
-                style={{ width: '100%', border: '2px solid #ccc' }}
+                style={{ width: "100%", border: "2px solid #ccc" }}
               />
             </div>
             <div>
-              <label>사진 URL: </label>
+              <label>휴대폰 번호: </label>
+              <input
+                type="text"
+                name="phone"
+                value={editedStore.phone}
+                onChange={handleInputChange}
+                style={{ width: "100%", border: "2px solid #ccc" }}
+              />
+            </div>
+            <div>
+              <label>사진 경로: </label>
               <input
                 type="text"
                 name="logo"
                 value={editedStore.logo}
                 onChange={handleInputChange}
-                style={{ width: '100%', border: '2px solid #ccc' }}
+                style={{ width: "100%", border: "2px solid #ccc" }}
               />
             </div>
             <SaveButton onClick={handleSaveChanges}>저장</SaveButton>
@@ -392,9 +380,24 @@ function StoreInfoBox() {
         </ModalOverlay>
       )}
 
-      <CommunitySectionWithPagination title="업체 공지사항" data={CommunityNoticeData} />
-      <CommunitySectionWithPagination title="리뷰" data={CommunityReviewData} />
-      <CommunitySectionWithPagination title="Q&A" data={CommunityQnAData} />
+      <CommunitySectionWithPagination
+        title="업체 공지사항"
+        data={CommunityNoticeData}
+        storeId={storeInfos[0]?.id}
+        storeName={storeInfos[0]?.name}
+      />
+      <CommunitySectionWithPagination
+        title="리뷰"
+        data={CommunityReviewData}
+        storeId={storeInfos[0]?.id}
+        storeName={storeInfos[0]?.name}
+      />
+      <CommunitySectionWithPagination
+        title="Q&A"
+        data={CommunityQnAData}
+        storeId={storeInfos[0]?.id}
+        storeName={storeInfos[0]?.name}
+      />
     </>
   );
 }
