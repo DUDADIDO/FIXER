@@ -93,15 +93,99 @@ const dummy = [
 ];
 
 export default function StoreList() {
+  const [searchType, setSearchType] = useState("name"); // 검색 타입: "name" 또는 "feature"
+  const [searchKeyword, setSearchKeyword] = useState("");
+  const [sortType, setSortType] = useState("score"); // 정렬 타입: "score", "repair_count", "review_cnt"
+  const [filteredStores, setFilteredStores] = useState(dummy);
+
+  useEffect(() => {
+    let filtered = dummy;
+
+    // 검색 필터링
+    if (searchKeyword !== "") {
+      if (searchType === "name") {
+        filtered = filtered.filter((store) =>
+          store.name.toLowerCase().includes(searchKeyword.toLowerCase())
+        );
+      } else if (searchType === "feature") {
+        filtered = filtered.filter((store) =>
+          store.supported_features.some((feature) =>
+            feature.toLowerCase().includes(searchKeyword.toLowerCase())
+          )
+        );
+      }
+    }
+
+    // 정렬 적용
+    if (sortType === "score") {
+      filtered.sort((a, b) => b.score - a.score);
+    } else if (sortType === "repair_count") {
+      filtered.sort((a, b) => b.repair_count - a.repair_count);
+    } else if (sortType === "review_cnt") {
+      filtered.sort((a, b) => b.review_cnt - a.review_cnt);
+    }
+
+    setFilteredStores([...filtered]);
+  }, [searchKeyword, searchType, sortType]);
+
   return (
-    <div className="flex w-full h-full p-4 space-y-4">
-      <div className="flex flex-wrap w-full">
-        {dummy.map((store) => (
-          <div key={store.id} className="w-1/2 p-2">
-            <StoreInfoCard data={store} />
-          </div>
-        ))}
+    <div className="flex flex-col min-w-full min-h-full p-4 space-y-4">
+      {/* 검색 타입 선택 드롭박스 */}
+      <div className="flex items-center gap-4">
+        <div className="w-1/12 mb-4">
+          <select
+            value={searchType}
+            onChange={(e) => setSearchType(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          >
+            <option value="name">가게 이름</option>
+            <option value="feature">수리 품목</option>
+          </select>
+        </div>
+
+        {/* 검색 입력 필드 */}
+        <div className="flex-grow mb-4">
+          <input
+            type="text"
+            placeholder={
+              searchType === "name"
+                ? "가게 이름을 입력하세요..."
+                : "수리 품목을 입력하세요..."
+            }
+            value={searchKeyword}
+            onChange={(e) => setSearchKeyword(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          />
+        </div>
+
+        {/* 정렬 옵션 선택 드롭박스 */}
+        <div className="w-1/12 mb-4">
+          <select
+            value={sortType}
+            onChange={(e) => setSortType(e.target.value)}
+            className="w-full p-2 border border-gray-300 rounded-md"
+          >
+            <option value="score">평점순</option>
+            <option value="repair_count">수리 횟수순</option>
+            <option value="review_cnt">리뷰 개수순</option>
+          </select>
+        </div>
       </div>
+
+      {/* 검색 결과가 없을 때 표시할 메시지 */}
+      {filteredStores.length === 0 ? (
+        <div className="flex items-center justify-center w-full h-screen border border-gray-300 rounded-md">
+          검색 결과가 없습니다.
+        </div>
+      ) : (
+        <div className="flex flex-wrap w-full">
+          {filteredStores.map((store) => (
+            <div key={store.id} className="w-1/2 p-2">
+              <StoreInfoCard data={store} />
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
