@@ -3,8 +3,11 @@ package FIXER.FIXER_BE.service;
 import FIXER.FIXER_BE.dto.UserDTO;
 import FIXER.FIXER_BE.entity.User;
 import FIXER.FIXER_BE.repository.UserRepository;
-import FIXER.FIXER_BE.service.AuthenticationService;
-import FIXER.FIXER_BE.service.PasswordService;
+
+import FIXER.FIXER_BE.service.security.PasswordService;
+import FIXER.FIXER_BE.service.security.AuthenticationService;
+import FIXER.FIXER_BE.service.security.InvalidCredentialsException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,30 +16,30 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-class UserServiceImpl implements UserService {
+public class UserService {
+
     private final UserRepository userRepository;
     private final PasswordService passwordService;
     private final AuthenticationService authenticationService;
 
-    // 유저 정보 생성
-    @Override
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
-        User user = userDTO.toEntity();
+        User user = User.builder()
+                .userId(userDTO.getUserId())
+                .password(passwordService.encodePassword(userDTO.getPassword()))
+                .userEmail(userDTO.getUserEmail())
+                .userState(userDTO.getUserState())
+                .build();
         User savedUser = userRepository.save(user);
         return UserDTO.fromEntity(savedUser);
     }
 
-    // 유저 식별자를 통해 유저 정보 추출
-    @Override
     @Transactional(readOnly = true)
     public UserDTO getUserById(Integer userNum) {
         Optional<User> user = userRepository.findById(userNum);
         return user.map(UserDTO::fromEntity).orElse(null);
     }
 
-    // 유저 정보 갱신
-    @Override
     @Transactional
     public UserDTO updateUser(Integer userNum, UserDTO userDTO) {
         Optional<User> existingUser = userRepository.findById(userNum);
@@ -50,8 +53,6 @@ class UserServiceImpl implements UserService {
         return null;
     }
 
-    // 비밀번호 갱신
-    @Override
     @Transactional
     public UserDTO updateUserPassword(Integer userNum, String newPassword, String token) {
         Optional<User> existingUser = userRepository.findById(userNum);
@@ -62,11 +63,9 @@ class UserServiceImpl implements UserService {
             User updatedUser = userRepository.save(user);
             return UserDTO.fromEntity(updatedUser);
         }
-        return null;
+        throw new InvalidCredentialsException("User not found or invalid credentials");
     }
 
-    // 유저 정보 삭제
-    @Override
     @Transactional
     public boolean deleteUser(Integer userNum) {
         if (userRepository.existsById(userNum)) {
@@ -75,12 +74,4 @@ class UserServiceImpl implements UserService {
         }
         return false;
     }
-}
-
-public interface UserService {
-    UserDTO createUser(UserDTO userDTO);
-    UserDTO getUserById(Integer userNum);
-    UserDTO updateUser(Integer userNum, UserDTO userDTO);
-    UserDTO updateUserPassword(Integer userNum, String newPassword, String token);
-    boolean deleteUser(Integer userNum);
 }

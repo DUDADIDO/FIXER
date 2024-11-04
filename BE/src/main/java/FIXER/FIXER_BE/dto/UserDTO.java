@@ -4,6 +4,7 @@ import FIXER.FIXER_BE.entity.User;
 import lombok.Builder;
 import lombok.Data;
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Data
 @Builder
@@ -14,8 +15,8 @@ public class UserDTO {
     private String userName;
     private String userEmail;
     private Integer userState;
-    private String createdAt;
-    private String updatedAt;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 
     public static UserDTO fromEntity(User user) {
         return UserDTO.builder()
@@ -25,8 +26,8 @@ public class UserDTO {
                 .userName(user.getUserName())
                 .userEmail(user.getUserEmail())
                 .userState(user.getUserState())
-                .createdAt(user.getCreatedAt().toString())
-                .updatedAt(user.getUpdatedAt().toString())
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt())
                 .build();
     }
 
@@ -38,8 +39,8 @@ public class UserDTO {
                 .userName(this.userName)
                 .userEmail(this.userEmail)
                 .userState(this.userState)
-                .createdAt(Date.valueOf(this.createdAt))
-                .updatedAt(Date.valueOf(this.updatedAt))
+                .createdAt(this.createdAt)
+                .updatedAt(this.updatedAt)
                 .build();
     }
 }
