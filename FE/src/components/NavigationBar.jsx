@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 export default function NavigationBar() {
   return (
-    <div className=" bg-slate-300 h-[8vh] flex justify-between items-center px-5">
+    <div className=" bg-slate-300 h-[8vh] min-h-[75px] flex justify-between items-center px-5 ">
       <Link to="/">로고</Link>
       <div className="flex justify-evenly items-center gap-20">
         <Link to="/question">질문하기</Link>
