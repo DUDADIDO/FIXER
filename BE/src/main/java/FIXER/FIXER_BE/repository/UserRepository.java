@@ -2,9 +2,8 @@ package FIXER.FIXER_BE.repository;
 
 import FIXER.FIXER_BE.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
-@Repository
 public interface UserRepository extends JpaRepository<User, Integer> {
-    User findUsernameByUser(Stirng username);
+    Optional<User> findByUserId(String userId);
 }

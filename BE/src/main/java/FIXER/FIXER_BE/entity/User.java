@@ -1,14 +1,12 @@
 package FIXER.FIXER_BE.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.sql.Date;
 
 @Getter
+@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 
@@ -16,37 +14,42 @@ import java.sql.Date;
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "user_num")
+    private Integer userNum;
+
     @Column(name = "user_id")
-    private Long id;
+    private String userId;
 
-    @Column(name = "username", length = 50, nullable = false)
-    private String username;
-
-    @Column(name = "user_pw", length = 100, nullable = false)
+    @Setter
+    @Column(name = "user_pw")
     private String password;
 
-    @Column(name = "email", length = 100, nullable = false, unique = true)
-    private String email;
+    @Setter
+    @Column(name = "user_name")
+    private String userName;
 
-    @Column(name = "profile_picture", columnDefinition = "JSON")
-    private String profilePicture;
+    @Setter
+    @Column(name = "user_email")
+    private String userEmail;
 
-    @Column(name = "user_state", nullable = false)
+    @Setter
+    @Column(name = "user_state")
     private Integer userState;
 
-    @Column(name = "created_at", nullable = false, updatable = false, insertable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP")
+    @Column(name = "created_at")
     private Date createdAt;
 
-    @Column(name = "updated_at", nullable = false, columnDefinition = "TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP")
+    @Setter
+    @Column(name = "updated_at")
     private Date updatedAt;
 
     @Builder
-    public User(long id, String email, String password, String username, String profilePicture, Integer userState, Date createdAt, Date updatedAt) {
-        this.id = id;
-        this.email = email;
+    public User(Integer userNum, String userId, String password, String userName, String userEmail, Integer userState, Date createdAt, Date updatedAt) {
+        this.userNum = userNum;
+        this.userId = userId;
         this.password = password;
-        this.username = username;
-        this.profilePicture = profilePicture;
+        this.userName = userName;
+        this.userEmail = userEmail;
         this.userState = userState;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
