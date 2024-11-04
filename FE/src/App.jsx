@@ -8,6 +8,9 @@ import StoreInfoPage from "./pages/StoreInfoPage";
 import StoreSearchPage from "./pages/StoreSearchPage";
 import UserInfoPage from "./pages/UserInfoPage";
 import WriteReview from "./components/storepage/writepostpage/WriteReview";
+import StoreRegisterPage from "./pages/StoreRegisterPage";
+
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -18,6 +21,7 @@ const router = createBrowserRouter([
       { path: "/storesearch", element: <StoreSearchPage /> },
       { path: "/userinfo", element: <UserInfoPage /> },
       { path: "/writereview", element: <WriteReview /> },
+      { path: "/storeregister", element: <StoreRegisterPage /> },
     ],
   },
   {
