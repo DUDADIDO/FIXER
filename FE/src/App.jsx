@@ -14,6 +14,7 @@ import WriteQnA from "./components/storepage/writepostpage/WriteQnA";
 import QnADetail from "./components/storepage/detailpage/QnADetail";
 import ReviewDetail from "./components/storepage/detailpage/ReviewDetail";
 import NoticeDetail from "./components/storepage/detailpage/NoticeDetail";
+import AnswerForm from "./components/storepage/detailpage/AnswerForm";
 
 
 const router = createBrowserRouter([
@@ -32,6 +33,7 @@ const router = createBrowserRouter([
       { path: "/qnadetail", element: <QnADetail /> },
       { path: "/reviewdetail", element: <ReviewDetail /> },
       { path: "/noticedetail", element: <NoticeDetail /> },
+      { path: "/qnaanswer", element: <AnswerForm /> },
     ],
   },
   {
