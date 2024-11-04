@@ -11,6 +11,9 @@ import WriteReview from "./components/storepage/writepostpage/WriteReview";
 import StoreRegisterPage from "./pages/StoreRegisterPage";
 import WriteNotice from "./components/storepage/writepostpage/WriteNotice";
 import WriteQnA from "./components/storepage/writepostpage/WriteQnA";
+import QnADetail from "./components/storepage/detailpage/QnADetail";
+import ReviewDetail from "./components/storepage/detailpage/ReviewDetail";
+import NoticeDetail from "./components/storepage/detailpage/NoticeDetail";
 
 
 const router = createBrowserRouter([
@@ -26,6 +29,9 @@ const router = createBrowserRouter([
       { path: "/writenotice", element: <WriteNotice /> },
       { path: "/writeqna", element: <WriteQnA /> },
       { path: "/storeregister", element: <StoreRegisterPage /> },
+      { path: "/qnadetail", element: <QnADetail /> },
+      { path: "/reviewdetail", element: <ReviewDetail /> },
+      { path: "/noticedetail", element: <NoticeDetail /> },
     ],
   },
   {
