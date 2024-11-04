@@ -10,6 +10,7 @@ import UserInfoPage from "./pages/UserInfoPage";
 import WriteReview from "./components/storepage/writepostpage/WriteReview";
 import StoreRegisterPage from "./pages/StoreRegisterPage";
 import WriteNotice from "./components/storepage/writepostpage/WriteNotice";
+import WriteQnA from "./components/storepage/writepostpage/WriteQnA";
 
 
 const router = createBrowserRouter([
@@ -23,6 +24,7 @@ const router = createBrowserRouter([
       { path: "/userinfo", element: <UserInfoPage /> },
       { path: "/writereview", element: <WriteReview /> },
       { path: "/writenotice", element: <WriteNotice /> },
+      { path: "/writeqna", element: <WriteQnA /> },
       { path: "/storeregister", element: <StoreRegisterPage /> },
     ],
   },
