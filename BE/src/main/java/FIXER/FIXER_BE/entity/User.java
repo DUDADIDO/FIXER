@@ -2,14 +2,16 @@ package FIXER.FIXER_BE.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-
 @Table(name = "Users")
 public class User {
     @Id
@@ -17,19 +19,19 @@ public class User {
     @Column(name = "user_num")
     private Integer userNum;
 
-    @Column(name = "user_id")
+    @Column(name = "user_id", nullable = false, length = 100)
     private String userId;
 
     @Setter
-    @Column(name = "user_pw")
+    @Column(name = "user_pw", nullable = false)
     private String password;
 
     @Setter
-    @Column(name = "user_name")
+    @Column(name = "user_name", nullable = false, length = 50)
     private String userName;
 
     @Setter
-    @Column(name = "user_email")
+    @Column(name = "user_email", length = 100)
     private String userEmail;
 
     @Setter
@@ -37,14 +39,15 @@ public class User {
     private Integer userState;
 
     @Column(name = "created_at")
-    private Date createdAt;
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @Setter
     @Column(name = "updated_at")
-    private Date updatedAt;
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
     @Builder
-    public User(Integer userNum, String userId, String password, String userName, String userEmail, Integer userState, Date createdAt, Date updatedAt) {
+    public User(Integer userNum, String userId, String password, String userName, String userEmail, Integer userState, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.userNum = userNum;
         this.userId = userId;
         this.password = password;
