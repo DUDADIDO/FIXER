@@ -17,12 +17,23 @@ public class JwtUtil {
 
     private SecretKey secretKey;
 
-    // Secret key is injected via configuration, which can be sourced from a secure vault or environment variable
+    /**
+     * JWT 시크릿 키를 생성자 주입 방식으로 초기화.
+     * 보안상의 이유로 환경 변수나 보안 저장소에서 시크릿 키를 불러오는 방식으로 구성.
+     *
+     * @param secret 환경 변수로부터 받은 Base64 인코딩된 시크릿 키
+     */
     public JwtUtil(@Value("${jwt.secret}") String secret) {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
     }
 
+    /**
+     * 사용자 ID를 이용해 JWT 토큰 생성.
+     *
+     * @param userId 토큰에 포함할 사용자 ID
+     * @return 생성된 JWT 토큰
+     */
     public String generateToken(String userId) {
         return Jwts.builder()
                 .claim("sub", userId)
@@ -32,6 +43,13 @@ public class JwtUtil {
                 .compact();
     }
 
+    /**
+     * JWT 토큰에서 클레임을 추출.
+     *
+     * @param token 추출할 JWT 토큰
+     * @return 토큰의 클레임 정보
+     * @throws SecurityException 유효하지 않은 토큰일 경우 예외 발생
+     */
     public Claims extractClaims(String token) {
         try {
             return Jwts.parser()
@@ -44,16 +62,35 @@ public class JwtUtil {
         }
     }
 
+    /**
+     * 토큰이 유효한지 확인. 사용자 이름과 만료 여부를 체크.
+     *
+     * @param token 검증할 JWT 토큰
+     * @param username 사용자 이름 (검증할 사용자 ID)
+     * @return 토큰이 유효하면 true, 그렇지 않으면 false
+     */
     public boolean isTokenValid(String token, String username) {
         final String extractedUsername = extractClaims(token).getSubject();
         return (extractedUsername.equals(username) && !isTokenExpired(token));
     }
 
+    /**
+     * 토큰이 만료되었는지 확인.
+     *
+     * @param token 확인할 JWT 토큰
+     * @return 토큰이 만료되었으면 true, 그렇지 않으면 false
+     */
     private boolean isTokenExpired(String token) {
         return extractClaims(token).getExpiration().before(new Date());
     }
 
-    // Method for generating a refresh token
+    /**
+     * 새로 고침 토큰을 생성하는 메서드.
+     * 이 메서드는 기존 토큰과 동일한 유효 기간을 가지는 새 토큰을 발급.
+     *
+     * @param userId 새로 고침 토큰을 발급할 사용자 ID
+     * @return 생성된 새로 고침 토큰
+     */
     public String generateRefreshToken(String userId) {
         return Jwts.builder()
                 .claim("sub", userId)
