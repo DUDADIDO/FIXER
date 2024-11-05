@@ -1,12 +1,47 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function LoginBox() {
   const [id, setId] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     console.log("ID:", id, "Password:", password);
+    
+    try {
+      const response = await fetch("http://localhost:8080/api/users/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          user_id: id,
+          user_pw: password,
+        }),
+      });
+
+      if (response.ok) {
+        // 요청이 성공한 경우 처리
+        const token = await response.text(); // 서버에서 JWT 토큰 문자열만 반환한다고 가정
+        console.log("Login successful:", token);
+        
+        // 토큰을 로컬 스토리지에 저장
+        if (token) {
+          localStorage.setItem("authToken", token);
+        }
+
+        // 루트 페이지로 리다이렉트
+        navigate("/");
+      } else {
+        // 요청이 실패한 경우 처리
+        console.error("Login failed:", response.status);
+        alert("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.");
+      }
+    } catch (error) {
+      console.error("An error occurred during login:", error);
+      alert("로그인 도중 문제가 발생했습니다. 다시 시도해주세요.");
+    }
   };
 
   return (
@@ -52,8 +87,10 @@ export default function LoginBox() {
             >
               로그인
             </button>
-            <Link to="/register"
-            className="bg-appBlue2 text-white font-bold py-2 px-6 rounded-lg hover:bg-appBlue1 transition duration-300">
+            <Link
+              to="/register"
+              className="bg-appBlue2 text-white font-bold py-2 px-6 rounded-lg hover:bg-appBlue1 transition duration-300"
+            >
               회원가입
             </Link>
           </div>
