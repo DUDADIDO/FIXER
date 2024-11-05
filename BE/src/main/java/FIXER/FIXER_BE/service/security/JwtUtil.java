@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -16,17 +17,43 @@ import java.util.Date;
 public class JwtUtil {
 
     private SecretKey secretKey;
+    private long expiration;
+    @Value("${jwt.secret}")
+    private String secret;
 
+    @Value("${jwt.expiration}")
+    private long exp;
+
+
+    /**
+     * Bean이 생성된 이후에 시크릿 키를 초기화하는 메서드.
+     */
+    @PostConstruct
+    public void init() {
+        if (secret == null || secret.isEmpty()) {
+            throw new IllegalArgumentException("JWT secret cannot be null or empty");
+        }
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        this.expiration = exp;
+    }
     /**
      * JWT 시크릿 키를 생성자 주입 방식으로 초기화.
      * 보안상의 이유로 환경 변수나 보안 저장소에서 시크릿 키를 불러오는 방식으로 구성.
      *
      * @param secret 환경 변수로부터 받은 Base64 인코딩된 시크릿 키
      */
-    public JwtUtil(@Value("${jwt.secret}") String secret) {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
-    }
+//    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+//        System.out.println("secret: " + secret);
+//        if (secret == null || secret.isEmpty()) {
+//            throw new IllegalArgumentException("JWT secret cannot be null or empty");
+//        }
+//        byte[] keyBytes = Decoders.BASE64.decode(secret);
+//
+//        System.out.println("keyBytes: " + keyBytes.length);
+//        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+//        this.expiration = expiration;
+//    }
 
     /**
      * 사용자 ID를 이용해 JWT 토큰 생성.
