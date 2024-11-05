@@ -2,13 +2,17 @@ package FIXER.FIXER_BE.dto;
 
 import FIXER.FIXER_BE.entity.User;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor // 모든 필드를 초기화하는 생성자 추가
 public class UserDTO {
     private Integer userNum;
 
