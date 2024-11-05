@@ -1,5 +1,6 @@
 package FIXER.FIXER_BE.controller;
 
+import FIXER.FIXER_BE.dto.LoginRequest;
 import FIXER.FIXER_BE.dto.UserDTO;
 import FIXER.FIXER_BE.service.UserService;
 import FIXER.FIXER_BE.service.security.AuthenticationService;
@@ -22,15 +23,15 @@ public class UserController {
     private final JwtUtil jwtUtil; // JWT 유틸리티
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody String userId, String password) {
+    public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         // 유저 아이디를 이용해 사용자 조회
-        UserDTO loginUser = userService.checkUserById(userId);
+        UserDTO loginUser = userService.checkUserById(loginRequest.getUser_id());
         if (loginUser == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid user");
         }
 
         // 유저 비밀번호 확인
-        if (!passwordService.isPasswordValid(password, loginUser.getPassword())) {
+        if (!passwordService.isPasswordValid(loginRequest.getUser_pw(), loginUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
         }
 
@@ -39,9 +40,13 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(token);
     }
 
+
+
     @PostMapping("/register")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         System.out.println("Received UserDTO in Controller: " + userDTO);
+        String encryptedPassword = passwordService.encodePassword(userDTO.getPassword());
+        userDTO.setPassword(encryptedPassword);
         UserDTO createdUser = userService.createUser(userDTO);
         return ResponseEntity.ok(createdUser);
     }

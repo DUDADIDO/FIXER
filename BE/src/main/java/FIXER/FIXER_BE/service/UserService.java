@@ -30,8 +30,8 @@ public class UserService {
     }
 
     @Transactional(readOnly = true)
-    public UserDTO checkUserById(String userId) {
-        Optional<User> user = userRepository.findByUserId(userId);
+    public UserDTO checkUserById(String user_id) {
+        Optional<User> user = userRepository.findByUserId(user_id);
         return user.map(UserDTO::fromEntity).orElse(null);
     }
 

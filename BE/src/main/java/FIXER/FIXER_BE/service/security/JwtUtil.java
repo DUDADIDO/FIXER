@@ -16,6 +16,7 @@ import java.util.Date;
 public class JwtUtil {
 
     private SecretKey secretKey;
+    private long expiration;
 
     /**
      * JWT 시크릿 키를 생성자 주입 방식으로 초기화.
@@ -23,9 +24,10 @@ public class JwtUtil {
      *
      * @param secret 환경 변수로부터 받은 Base64 인코딩된 시크릿 키
      */
-    public JwtUtil(@Value("${jwt.secret}") String secret) {
+    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
         byte[] keyBytes = Decoders.BASE64.decode(secret);
         this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        this.expiration = expiration;
     }
 
     /**
