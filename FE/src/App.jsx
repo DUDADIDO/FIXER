@@ -15,7 +15,7 @@ import QnADetail from "./components/storepage/detailpage/QnADetail";
 import ReviewDetail from "./components/storepage/detailpage/ReviewDetail";
 import NoticeDetail from "./components/storepage/detailpage/NoticeDetail";
 import AnswerForm from "./components/storepage/detailpage/AnswerForm";
-
+import CrawerPage from "./pages/CrawerPage";
 
 const router = createBrowserRouter([
   {
