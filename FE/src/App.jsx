@@ -34,6 +34,7 @@ const router = createBrowserRouter([
       { path: "/reviewdetail", element: <ReviewDetail /> },
       { path: "/noticedetail", element: <NoticeDetail /> },
       { path: "/qnaanswer", element: <AnswerForm /> },
+      { path: "/crawer", element: <CrawerPage /> },
     ],
   },
   {
