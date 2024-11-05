@@ -42,9 +42,23 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
+        // 유저 아이디 중복확인
+        if(userService.checkUserById(userDTO.getUserId()) != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User ID already exists");
+        }
+        System.out.println(userDTO);
+
+        // 비밀번호 인코딩
+        String encodedPassword = passwordService.encodePassword(userDTO.getPassword());
+        userDTO.setPassword(encodedPassword);
+
+        // 사용자 생성
         UserDTO createdUser = userService.createUser(userDTO);
-        return ResponseEntity.ok(createdUser);
+
+        // 비밀번호를 제외한 사용자 정보 응답
+        createdUser.setPassword(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
 
 
