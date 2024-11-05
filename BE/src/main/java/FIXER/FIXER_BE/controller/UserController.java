@@ -1,5 +1,6 @@
 package FIXER.FIXER_BE.controller;
 
+import FIXER.FIXER_BE.dto.CheckUserIdRequest;
 import FIXER.FIXER_BE.dto.LoginRequest;
 import FIXER.FIXER_BE.dto.UserDTO;
 import FIXER.FIXER_BE.service.UserService;
@@ -52,8 +53,8 @@ public class UserController {
     }
 
     @PostMapping("/register/checkid")
-    public ResponseEntity<Boolean> checkUser(@RequestBody String user_id) {
-        UserDTO userDTO = userService.checkUserById(user_id);
+    public ResponseEntity<Boolean> checkUser(@RequestBody CheckUserIdRequest request) {
+        UserDTO userDTO = userService.checkUserById(request.getUser_id());
         boolean isAvailable = (userDTO == null);
         return ResponseEntity.ok(isAvailable);
     }
