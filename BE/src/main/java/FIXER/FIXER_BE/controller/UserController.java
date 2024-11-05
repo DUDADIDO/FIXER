@@ -51,6 +51,13 @@ public class UserController {
         return ResponseEntity.ok(createdUser);
     }
 
+    @PostMapping("/register/checkid")
+    public ResponseEntity<Boolean> checkUser(@RequestBody String user_id) {
+        UserDTO userDTO = userService.checkUserById(user_id);
+        boolean isAvailable = (userDTO == null);
+        return ResponseEntity.ok(isAvailable);
+    }
+
     @PutMapping("/{userNum}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer userNum, @RequestBody UserDTO userDTO) {
         UserDTO updatedUser = userService.updateUser(userNum, userDTO);
