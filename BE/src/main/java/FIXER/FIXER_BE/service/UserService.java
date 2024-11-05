@@ -24,9 +24,14 @@ public class UserService {
 
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
-        User user = userDTO.toEntity();  // UserDTO를 User 엔티티로 변환
-        userRepository.save(user);  // User 엔티티 저장
-        return UserDTO.fromEntity(user);  // 저장된 엔티티를 다시 DTO로 변환하여 반환
+        User user = User.builder()
+                .userId(userDTO.getUserId())
+                .password(passwordService.encodePassword(userDTO.getPassword()))
+                .userEmail(userDTO.getUserEmail())
+                .userState(userDTO.getUserState())
+                .build();
+        User savedUser = userRepository.save(user);
+        return UserDTO.fromEntity(savedUser);
     }
 
     @Transactional(readOnly = true)

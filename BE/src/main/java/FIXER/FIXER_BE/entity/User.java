@@ -37,11 +37,11 @@ public class User {
     @Column(name = "user_state")
     private Integer userState;
 
-    @Column(name = "created_at", insertable = false)
+    @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", insertable = false)
+    @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
@@ -52,7 +52,7 @@ public class User {
         this.password = password;
         this.userName = userName;
         this.userEmail = userEmail;
-        this.userState = (userState == null) ? 1 : userState;
+        this.userState = userState;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }

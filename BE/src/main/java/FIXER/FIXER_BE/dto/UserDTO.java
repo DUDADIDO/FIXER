@@ -1,29 +1,19 @@
 package FIXER.FIXER_BE.dto;
 
 import FIXER.FIXER_BE.entity.User;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.Data;
-
+import java.sql.Date;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
 public class UserDTO {
     private Integer userNum;
-
-    @JsonProperty("user_id")
     private String userId;
-
-    @JsonProperty("user_pw")
     private String password;
-
-    @JsonProperty("user_name")
     private String userName;
-
-    @JsonProperty("user_email")
     private String userEmail;
-
     private Integer userState;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

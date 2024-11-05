@@ -16,10 +16,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserService userService; // 유저 서비스
-    private final PasswordService passwordService; // 패스워드 서비스
-    private final AuthenticationService authenticationService; // 인증 서비스
-    private final JwtUtil jwtUtil; // JWT 유틸리티
+    private UserService userService;
+    private PasswordService passwordService;
+    private AuthenticationService authenticationService;
+    private JwtUtil jwtUtil;
+
+
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody String userId, String password) {
@@ -30,7 +32,7 @@ public class UserController {
         }
 
         // 유저 비밀번호 확인
-        if (!passwordService.isPasswordValid(password, loginUser.getPassword())) {
+        if(!passwordService.isPasswordValid(password, loginUser.getPassword())) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid password");
         }
 
@@ -40,21 +42,43 @@ public class UserController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
-        System.out.println("Received UserDTO in Controller: " + userDTO);
+    public ResponseEntity<?> createUser(@RequestBody UserDTO userDTO) {
+        // 유저 아이디 중복확인
+        if(userService.checkUserById(userDTO.getUserId()) != null) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("User ID already exists");
+        }
+        System.out.println(userDTO);
+
+        // 비밀번호 인코딩
+        String encodedPassword = passwordService.encodePassword(userDTO.getPassword());
+        userDTO.setPassword(encodedPassword);
+
+        // 사용자 생성
         UserDTO createdUser = userService.createUser(userDTO);
-        return ResponseEntity.ok(createdUser);
+
+        // 비밀번호를 제외한 사용자 정보 응답
+        createdUser.setPassword(null);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
     }
+
 
     @PutMapping("/{userNum}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer userNum, @RequestBody UserDTO userDTO) {
         UserDTO updatedUser = userService.updateUser(userNum, userDTO);
-        return updatedUser != null ? ResponseEntity.ok(updatedUser) : ResponseEntity.notFound().build();
+        if (updatedUser != null) {
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @DeleteMapping("/{userNum}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer userNum) {
         boolean isDeleted = userService.deleteUser(userNum);
-        return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+        if (isDeleted) {
+            return ResponseEntity.noContent().build();
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 }
