@@ -88,59 +88,45 @@ const BackButton = styled.button`
 `;
 
 export default function RegisterBox() {
-  const [id, setId] = useState("");
-  const [password, setPassword] = useState("");
-  const [passwordCheck, setPasswordCheck] = useState("");
-  const [name, setName] = useState("");
-  const [email, setemail] = useState("");
+  const [user_id, setId] = useState("");
+  const [user_pw, setPassword] = useState("");
+  const [user_pw_check, setPasswordCheck] = useState("");
+  const [user_name, setName] = useState("");
+  const [user_email, setEmail] = useState("");
   const [isIdAvailable, setIsIdAvailable] = useState(null);
   const [isIdChecked, setIsIdChecked] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "id") {
-      setId(value);
-    } else if (name === "password") {
-      setPassword(value);
-    } else if (name === "passwordCheck") {
-      setPasswordCheck(value);
-    } else if (name === "email") {
-      setemail(value);
-    } else if (name === "name") {
-      setName(value);
-    }
+    if (name === "user_id") setId(value);
+    else if (name === "user_pw") setPassword(value);
+    else if (name === "user_pw_check") setPasswordCheck(value);
+    else if (name === "user_name") setName(value);
+    else if (name === "user_email") setEmail(value);
   };
 
   const handleIdCheck = () => {
     const idRegex = /^[a-zA-Z0-9]{8,}$/;
-
-    if (!idRegex.test(id)) {
+    if (!idRegex.test(user_id)) {
       alert("아이디는 최소 8자리의 영어와 숫자로 이루어져야 합니다.");
       return;
     }
-
-    const textbox = { id };
-
-    fetch("http://localhost:8080/checkId", {
-      method: "post",
+  
+    fetch("http://localhost:8080/api/users/register/checkid", {
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(textbox),
+      body: JSON.stringify({ user_id }),
     })
-      .then((res) => {
-        if (res.status === 200) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((data) => {
-        if (data !== null) {
+      .then((res) => res.text()) // 응답을 텍스트로 변환
+      .then((text) => {
+        const isValid = text === "true"; // 텍스트가 "true"인지 확인
+        if (isValid) {
           alert("사용 가능한 아이디입니다.");
           setIsIdAvailable(true);
-          setIsIdChecked(true); // ID 확인 후 상태 업데이트
+          setIsIdChecked(true); // 중복 확인 완료 상태 업데이트
         } else {
           alert("이미 사용 중인 아이디입니다.");
           setIsIdAvailable(false);
@@ -152,29 +138,24 @@ export default function RegisterBox() {
   const validateForm = () => {
     const idRegex = /^[a-zA-Z0-9]{8,}$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    const studentIdRegex = /^\d{7}$/;
 
     if (!isIdAvailable) {
       alert("아이디 중복 확인을 해주세요.");
       return false;
     }
-    if (!idRegex.test(id)) {
+    if (!idRegex.test(user_id)) {
       alert("아이디는 최소 8자리로 이루어져야 합니다.");
       return false;
     }
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(user_email)) {
       alert("유효한 이메일 주소를 입력해 주세요.");
       return false;
     }
-    if (password.length < 8) {
+    if (user_pw.length < 8) {
       alert("비밀번호는 8자리 이상이어야 합니다.");
       return false;
     }
-    if (!studentIdRegex.test(studentId)) {
-      alert("학번은 숫자로 이루어진 7자리여야 합니다.");
-      return false;
-    }
-    if (password !== passwordCheck) {
+    if (user_pw !== user_pw_check) {
       alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       return false;
     }
@@ -186,13 +167,13 @@ export default function RegisterBox() {
       return;
     }
     const textbox = {
-      id,
-      password,
-      studentId,
-      name,
+      user_id,
+      user_pw,
+      user_email,
+      user_name,
     };
     fetch("http://localhost:8080/register", {
-      method: "post",
+      method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
@@ -200,21 +181,14 @@ export default function RegisterBox() {
     })
       .then((res) => {
         if (res.status === 201) {
-          return res.json();
-        } else {
-          return null;
-        }
-      })
-      .then((data) => {
-        if (data !== null) {
           alert("회원가입 성공.");
           navigate("/");
         } else {
-          alert("이미 가입된 학번입니다.");
+          alert("회원가입에 실패했습니다.");
         }
       })
       .catch((error) => {
-        alert("실패");
+        alert("회원가입 실패");
         console.error("Error:", error);
       });
   };
@@ -230,12 +204,12 @@ export default function RegisterBox() {
         <FormWrapper>
           <InputWrapper>
             <Input
-              id="id"
-              name="id"
-              value={id}
+              id="user_id"
+              name="user_id"
+              value={user_id}
               onChange={handleChange}
               placeholder="아이디를 입력해주세요"
-              disabled={isIdChecked} // 아이디 중복 확인 후 비활성화
+              disabled={isIdChecked} // 중복 확인 후 비활성화
             />
             <CheckButton onClick={handleIdCheck} disabled={isIdChecked}>
               중복 확인
@@ -243,38 +217,38 @@ export default function RegisterBox() {
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="name"
-              name="name"
-              value={name}
+              id="user_name"
+              name="user_name"
+              value={user_name}
               onChange={handleChange}
               placeholder="이름을 입력하세요"
             />
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="email"
-              name="email"
-              value={email}
+              id="user_email"
+              name="user_email"
+              value={user_email}
               onChange={handleChange}
               placeholder="이메일을 입력해주세요"
             />
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="password"
-              name="password"
+              id="user_pw"
+              name="user_pw"
               type="password"
-              value={password}
+              value={user_pw}
               onChange={handleChange}
               placeholder="비밀번호를 입력해주세요"
             />
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="passwordCheck"
-              name="passwordCheck"
+              id="user_pw_check"
+              name="user_pw_check"
               type="password"
-              value={passwordCheck}
+              value={user_pw_check}
               onChange={handleChange}
               placeholder="비밀번호를 한번 더 입력해주세요"
             />
