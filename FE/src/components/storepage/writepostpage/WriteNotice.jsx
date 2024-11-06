@@ -1,18 +1,43 @@
 import React, { useState } from "react";
+import { useParams } from "react-router-dom";
+import api from "@/api.jsx"; // api 인스턴스 가져오기
 
 export default function WriteNotice() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [file, setFile] = useState(null);
+  const { companyId } = useParams(); // URL에서 companyId 가져오기
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({ title, content, file });
-    // 서버에 데이터 제출하는 로직 추가
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    if (file) {
+      formData.append("file", file); // 파일이 있을 경우에만 추가
+    }
+
+    try {
+      const response = await api.post(`/api/company/storeinfo/${companyId}/writenotice`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 201) {
+        alert("공지사항이 성공적으로 등록되었습니다.");
+      } else {
+        alert("공지사항 등록에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("공지사항 등록 중 오류 발생:", error);
+      alert("공지사항 등록에 실패했습니다.");
+    }
   };
 
   return (

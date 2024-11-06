@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import api from "@/api"; // "@/api.jsx"에서 default export로 되어 있어야 함.
 
 export default function WriteReview() {
   const location = useLocation();
@@ -8,14 +9,37 @@ export default function WriteReview() {
   const [content, setContent] = useState("");
   const [file, setFile] = useState(null);
   const [rating, setRating] = useState(1);
-
+  
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({ content, file, rating, storeName, storeId });
+
+    const formData = new FormData();
+    formData.append("comment", content);
+    formData.append("score", rating);
+    formData.append("user_num", localStorage.getItem("userNum")); // 사용자 ID를 localStorage에서 가져오기
+    formData.append("file", file);
+
+    try {
+      console.log(localStorage.getItem("userNum"));
+      const response = await api.post(`/api/company/storeinfo/${storeId}/writereview`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 201) {
+        alert("리뷰 작성이 완료되었습니다.");
+      } else {
+        alert("리뷰 작성에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("리뷰 작성 중 오류 발생:", error);
+      alert("리뷰 작성 중 문제가 발생했습니다.");
+    }
   };
 
   return (

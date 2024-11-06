@@ -2,6 +2,7 @@ package FIXER.FIXER_BE.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+
 import java.time.LocalDateTime;
 
 @Getter
@@ -10,22 +11,29 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "notices")
-public class Notice {
+@Table(name = "reviews")
+public class Review {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "notice_id")
-    private Integer noticeId;
+    @Column(name = "review_id")
+    private Integer reviewId;
 
-    @Column(name = "title", nullable = false, length = 100)
-    private String title;
+    @Column(name = "user_num", nullable = false)
+    private Integer userNum;
 
-    @Column(name = "content", nullable = false)
-    private String content;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 
-    @Column(name = "file_path")
-    private String filePath;  // 파일 경로 추가
+    @Column(name = "comment", columnDefinition = "TEXT")
+    private String comment;
+
+    @Column(name = "images_url", length = 255)
+    private String imagesUrl;
+
+    @Column(name = "score")
+    private Double score;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -33,14 +41,9 @@ public class Notice {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
-    private Company company;
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate

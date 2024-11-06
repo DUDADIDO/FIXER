@@ -4,6 +4,7 @@ import FIXER.FIXER_BE.dto.CompanyDTO;
 import FIXER.FIXER_BE.dto.NoticeDTO;
 import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.service.CompanyService;
+import FIXER.FIXER_BE.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -23,8 +24,8 @@ import java.time.format.DateTimeFormatter;
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final NoticeService noticeService;
     private static final String UPLOAD_DIR = "uploads/";
-
 
     @GetMapping("/storeinfo/{companyId}")
     public ResponseEntity<CompanyDTO> getCompanyInfo(@PathVariable("companyId") Integer companyId) {
@@ -32,26 +33,32 @@ public class CompanyController {
         return ResponseEntity.ok(companyDTO);
     }
 
-    @PostMapping("/{companyId}/notices")
+    @PostMapping("/storeinfo/{companyId}/writenotice")
     public ResponseEntity<?> createNotice(
             @PathVariable Integer companyId,
             @RequestParam("title") String title,
             @RequestParam("content") String content,
-            @RequestParam("file") MultipartFile file) {
+            @RequestParam(value = "file", required = false) MultipartFile file) {
 
-        // 파일 저장 경로 설정
-        String fileName = generateFileName(file.getOriginalFilename());
-        Path filePath = Paths.get(UPLOAD_DIR, fileName);
+        String filePath = null;
 
         try {
-            // 파일을 지정한 경로에 저장
-            Files.createDirectories(filePath.getParent());
-            file.transferTo(filePath.toFile());
+            if (file != null && !file.isEmpty()) {
+                // 파일 저장 경로 설정
+                String fileName = generateFileName(file.getOriginalFilename());
+                Path path = Paths.get(UPLOAD_DIR, fileName);
 
-            // 이후, Notice 생성 및 저장 로직 추가
-            // 예: noticeService.createNotice(companyId, title, content, filePath.toString());
+                // 파일을 지정한 경로에 저장
+                Files.createDirectories(path.getParent());
+                file.transferTo(path.toFile());
 
-            return ResponseEntity.status(HttpStatus.CREATED).body("Notice created with file uploaded.");
+                filePath = path.toString(); // 파일 경로 설정
+            }
+
+            // Notice 생성 및 저장
+            Notice newNotice = noticeService.createNotice(companyId, title, content, filePath);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(newNotice);
 
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
