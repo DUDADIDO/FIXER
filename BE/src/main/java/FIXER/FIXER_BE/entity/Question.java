@@ -10,32 +10,36 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "notices")
-public class Notice {
+@Table(name = "question")
+public class Question {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "notice_id")
-    private Integer noticeId;
+    @Column(name = "question_id")
+    private Integer questionId;
 
-    @Column(name = "title", nullable = false, length = 100)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_num", nullable = false)
+    private User user;
+
+    @Column(name = "title", length = 30)
     private String title;
 
-    @Column(name = "content", nullable = false)
+    @Column(name = "content")
     private String content;
 
-    @Column(name = "file_path")
-    private String filePath;  // 파일 경로 추가
+    @Column(name = "answer_check", columnDefinition = "TINYINT(1)")
+    private Boolean answerCheck = false;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company_id", nullable = false)
-    private Company company;
 
     @PrePersist
     protected void onCreate() {

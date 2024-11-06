@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import api from "../../api.jsx" // axios 인스턴스 가져오기
 
 export default function LoginBox() {
   const [id, setId] = useState("");
@@ -8,39 +9,42 @@ export default function LoginBox() {
 
   const handleLogin = async () => {
     console.log("ID:", id, "Password:", password);
-    
+
     try {
-      const response = await fetch("http://localhost:8080/api/users/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          user_id: id,
-          user_pw: password,
-        }),
+      const response = await api.post("/api/users/login", {
+        user_id: id,
+        user_pw: password,
       });
 
-      if (response.ok) {
+      if (response.status === 200) {
         // 요청이 성공한 경우 처리
-        const token = await response.text(); // 서버에서 JWT 토큰 문자열만 반환한다고 가정
-        console.log("Login successful:", token);
+        const { token, user_num, user_name } = response.data;
+        console.log("Login successful:", token, user_num, user_name);
         
         // 토큰을 로컬 스토리지에 저장
         if (token) {
           localStorage.setItem("authToken", token);
+          localStorage.setItem("userNum", user_num);
+          localStorage.setItem("userName", user_name);
         }
+
+        // 다른 사용자 정보를 필요에 따라 로컬 스토리지에 저장하거나 상태로 관리 가능
+        console.log("User Number:", localStorage.getItem("userNum"));
+        console.log("User Name:", localStorage.get("userName"));
 
         // 루트 페이지로 리다이렉트
         navigate("/");
-      } else {
-        // 요청이 실패한 경우 처리
-        console.error("Login failed:", response.status);
-        alert("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.");
       }
     } catch (error) {
-      console.error("An error occurred during login:", error);
-      alert("로그인 도중 문제가 발생했습니다. 다시 시도해주세요.");
+      if (error.response) {
+        // 서버가 2xx 외의 상태 코드를 반환한 경우
+        console.error("Login failed:", error.response.status);
+        alert("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.");
+      } else {
+        // 서버가 응답하지 않거나 요청이 전달되지 않은 경우
+        console.error("An error occurred during login:", error.message);
+        alert("로그인 도중 문제가 발생했습니다. 다시 시도해주세요.");
+      }
     }
   };
 

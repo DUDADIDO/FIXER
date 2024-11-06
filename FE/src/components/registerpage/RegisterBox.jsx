@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useNavigate } from 'react-router-dom';
+import api from '../../api'; // 생성한 api.js 파일에서 api 가져오기
 
 const FormWrapper = styled.div`
   display: flex;
@@ -106,33 +107,27 @@ export default function RegisterBox() {
     else if (name === "user_email") setEmail(value);
   };
 
-  const handleIdCheck = () => {
+  const handleIdCheck = async () => {
     const idRegex = /^[a-zA-Z0-9]{8,}$/;
     if (!idRegex.test(user_id)) {
       alert("아이디는 최소 8자리의 영어와 숫자로 이루어져야 합니다.");
       return;
     }
   
-    fetch("http://localhost:8080/api/users/register/checkid", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ user_id }),
-    })
-      .then((res) => res.text()) // 응답을 텍스트로 변환
-      .then((text) => {
-        const isValid = text === "true"; // 텍스트가 "true"인지 확인
-        if (isValid) {
-          alert("사용 가능한 아이디입니다.");
-          setIsIdAvailable(true);
-          setIsIdChecked(true); // 중복 확인 완료 상태 업데이트
-        } else {
-          alert("이미 사용 중인 아이디입니다.");
-          setIsIdAvailable(false);
-        }
-      })
-      .catch((error) => console.error("Error:", error));
+    try {
+      const response = await api.post("/api/users/register/checkid", { user_id });
+      const isValid = response.data === true; // 서버 응답이 true 인지 확인
+      if (isValid) {
+        alert("사용 가능한 아이디입니다.");
+        setIsIdAvailable(true);
+        setIsIdChecked(true); // 중복 확인 완료 상태 업데이트
+      } else {
+        alert("이미 사용 중인 아이디입니다.");
+        setIsIdAvailable(false);
+      }
+    } catch (error) {
+      console.error("Error:", error);
+    }
   };
 
   const validateForm = () => {
@@ -162,7 +157,7 @@ export default function RegisterBox() {
     return true;
   };
 
-  const onClick = () => {
+  const onClick = async () => {
     if (!validateForm()) {
       return;
     }
@@ -172,25 +167,18 @@ export default function RegisterBox() {
       user_email,
       user_name,
     };
-    fetch("http://localhost:8080/api/users/register", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(textbox),
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          alert("회원가입 성공.");
-          navigate("/");
-        } else {
-          alert("회원가입에 실패했습니다.");
-        }
-      })
-      .catch((error) => {
-        alert("회원가입 실패");
-        console.error("Error:", error);
-      });
+    try {
+      const response = await api.post("/api/users/register", textbox);
+      if (response.status === 200) {
+        alert("회원가입 성공.");
+        navigate("/");
+      } else {
+        alert("회원가입에 실패했습니다.");
+      }
+    } catch (error) {
+      alert("회원가입 실패");
+      console.error("Error:", error);
+    }
   };
 
   const handleBackClick = () => {

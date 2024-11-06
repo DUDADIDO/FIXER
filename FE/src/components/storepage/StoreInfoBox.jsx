@@ -9,6 +9,7 @@ import CommunityNoticeData from "@/components/communitypage/CommunityNoticeDummy
 import CommunityReviewData from "@/components/communitypage/CommunityReviewDummy.json";
 import CommunityQnAData from "@/components/communitypage/CommunityQnADummy.json";
 import axios from "axios";
+import api from "../../api";
 
 const StoreContainer = styled.div`
   display: flex;
@@ -183,7 +184,6 @@ function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(data.length / itemsPerPage);
-
   const currentItems = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
@@ -199,19 +199,19 @@ function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
     <CommunitySection>
       <CommunityTitle>{title}</CommunityTitle>
       <ButtonContainer>
-        <WriteButton
-          to={{
-            pathname:
-              title === "리뷰"
-                ? "/writereview"
-                : title === "업체 공지사항"
-                ? "/writenotice"
-                : "/writeqna",
-          }}
-          state={{ storeId, storeName }}
-        >
-          글쓰기
-        </WriteButton>
+      <WriteButton
+        to={{
+          pathname:
+            title === "리뷰"
+              ? `/storeinfo/${storeId}/writereview`
+              : title === "업체 공지사항"
+              ? `/storeinfo/${storeId}/writenotice`
+              : `/storeinfo/${storeId}/writeqna`,
+        }}
+        state={{ storeId, storeName }}
+      >
+        글쓰기
+      </WriteButton>
       </ButtonContainer>
       <CommunityList>
         {currentItems.map((item) => (
@@ -253,8 +253,8 @@ function StoreInfoBox() {
   const { companyId } = useParams();
   // 데이터 가져오기
   useEffect(() => {
-    axios
-      .get(`http://localhost:8080/api/company/storeinfo/${companyId}`) // companyId로 API 호출
+    api
+      .get(`/api/company/storeinfo/${companyId}`) // companyId로 API 호출
       .then((response) => {
         setStoreInfos([response.data]);
         setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
@@ -290,8 +290,8 @@ function StoreInfoBox() {
 
   // 저장 버튼 클릭 시
   const handleSaveChanges = () => {
-    axios
-      .post("http://localhost:8080/api/company/storeinfo/update", editedStore)
+    api
+      .post("/api/company/storeinfo/update", editedStore)
       .then((response) => {
         setStoreInfos((prevInfos) =>
           prevInfos.map((store) =>
