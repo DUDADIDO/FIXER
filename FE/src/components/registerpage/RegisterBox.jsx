@@ -172,7 +172,7 @@ export default function RegisterBox() {
       user_email,
       user_name,
     };
-    fetch("http://localhost:8080/register", {
+    fetch("http://localhost:8080/api/users/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -180,7 +180,7 @@ export default function RegisterBox() {
       body: JSON.stringify(textbox),
     })
       .then((res) => {
-        if (res.status === 201) {
+        if (res.status === 200) {
           alert("회원가입 성공.");
           navigate("/");
         } else {
