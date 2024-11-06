@@ -245,23 +245,23 @@ function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
   );
 }
 
-function StoreInfoBox() {
+function StoreInfoBox({ companyId }) {
   const [storeInfos, setStoreInfos] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedStore, setEditedStore] = useState({});
-  const { companyId } = useParams();
+
   // 데이터 가져오기
   useEffect(() => {
-    api
-      .get(`/api/company/storeinfo/${companyId}`) // companyId로 API 호출
-      .then((response) => {
-        setStoreInfos([response.data]);
-        setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
-      })
-      .catch((error) => {
-        console.error("Error fetching store info:", error);
-      });
+      api
+          .get(`/api/company/storeinfo/${companyId}`) // companyId로 API 호출
+          .then((response) => {
+              setStoreInfos([response.data]);
+              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
+          })
+          .catch((error) => {
+              console.error("Error fetching store info:", error);
+          });
   }, [companyId]); // companyId 변경 시 useEffect 재실행
 
   const handleEditClick = (storeInfo) => {
