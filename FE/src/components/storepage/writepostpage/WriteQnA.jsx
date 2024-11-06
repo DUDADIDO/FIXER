@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import api from "@/api"; // "@/api.jsx"에서 default export로 되어 있어야 함.
 
 export default function WriteQnA() {
   const location = useLocation();
+  const storeId = location.state?.storeId || ""; // 전달된 상점 ID를 가져옴
   const storeName = location.state?.storeName || ""; // 전달된 상점 이름을 가져옴
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -12,10 +14,31 @@ export default function WriteQnA() {
     setFile(event.target.files[0]);
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({ storeName, title, content, file });
-    // 서버에 데이터 제출하는 로직 추가
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("content", content);
+    formData.append("user_num", localStorage.getItem("userNum")); // 사용자 ID를 localStorage에서 가져오기
+    formData.append("file", file);
+
+    try {
+      const response = await api.post(`/api/company/storeinfo/${storeId}/writequestion`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (response.status === 201) {
+        alert("Q&A 작성이 완료되었습니다.");
+      } else {
+        alert("Q&A 작성에 실패했습니다.");
+      }
+    } catch (error) {
+      console.error("Q&A 작성 중 오류 발생:", error);
+      alert("Q&A 작성 중 문제가 발생했습니다.");
+    }
   };
 
   return (
