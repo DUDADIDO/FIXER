@@ -5,11 +5,11 @@ export default function StoreInfoCard({ data }) {
     logo,
     name,
     description,
-    supported_features,
+    supported_features = [], // 기본값을 빈 배열로 설정하여 undefined 방지
     repair_count,
     score,
     review_cnt,
-  } = data;
+  } = data || {}; // data가 undefined일 경우를 대비해 기본값 설정
 
   return (
     <div className="bg-green-100 border border-gray-300 rounded-lg p-4 shadow-lg flex items-center space-x-4">
@@ -24,13 +24,11 @@ export default function StoreInfoCard({ data }) {
         <div>
           <p className="text-gray-500 mt-2 text-sm text-center">주요 품목</p>
           <div className="flex justify-around">
-            {supported_features.map((feature) => {
-              return (
-                <p key={feature} className="text-sm">
-                  {feature}
-                </p>
-              );
-            })}
+            {supported_features.map((feature) => (
+              <p key={feature} className="text-sm">
+                {feature}
+              </p>
+            ))}
           </div>
         </div>
         <div className="flex justify-around items-center mt-4">

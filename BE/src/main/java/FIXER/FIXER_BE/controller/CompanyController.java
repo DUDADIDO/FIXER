@@ -1,6 +1,7 @@
 package FIXER.FIXER_BE.controller;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
+import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.service.CompanyService;
 import FIXER.FIXER_BE.service.NoticeService;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +31,7 @@ public class CompanyController {
     private static final String UPLOAD_DIR = "uploads/";
 
     @GetMapping("/storesearch")
-    public ResponseEntity<Map<String, Object>> getCompanies(@RequestParam(defaultValue = "0") int pageSize, @RequestParam(defaultValue = "false") Integer lastId) {
+    public ResponseEntity<Map<String, Object>> getCompanies(@RequestParam(defaultValue = "0") int pageSize, @RequestParam(required = false) Integer lastId) {
         List<CompanyDTO> companies = companyService.getCompanies(pageSize, lastId);
         boolean isNext = !companies.isEmpty() && companies.size() == pageSize;
         Map<String, Object> response = new HashMap<>();
