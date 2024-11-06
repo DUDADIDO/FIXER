@@ -1,15 +1,15 @@
 package FIXER.FIXER_BE.controller;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
-import FIXER.FIXER_BE.dto.NoticeDTO;
-import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.service.CompanyService;
 import FIXER.FIXER_BE.service.NoticeService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,6 +26,12 @@ public class CompanyController {
     private final CompanyService companyService;
     private final NoticeService noticeService;
     private static final String UPLOAD_DIR = "uploads/";
+
+    @GetMapping("/storesearch")
+    public ResponseEntity<Page<CompanyDTO>> getCompanies(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        Page<CompanyDTO> companies = companyService.getCompanies(page, size);
+        return ResponseEntity.ok(companies);
+    }
 
     @GetMapping("/storeinfo/{companyId}")
     public ResponseEntity<CompanyDTO> getCompanyInfo(@PathVariable("companyId") Integer companyId) {
@@ -71,4 +77,6 @@ public class CompanyController {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         return timestamp + "_" + originalFileName;
     }
+
+
 }
