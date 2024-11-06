@@ -1,4 +1,4 @@
-package FIXER.FIXER_BE.dto;
+package FIXER.FIXER_BE.dto.User;
 
 import lombok.Data;
 

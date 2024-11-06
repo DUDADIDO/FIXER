@@ -1,6 +1,6 @@
 package FIXER.FIXER_BE.service;
 
-import FIXER.FIXER_BE.dto.UserDTO;
+import FIXER.FIXER_BE.dto.User.UserDTO;
 import FIXER.FIXER_BE.entity.User;
 import FIXER.FIXER_BE.repository.UserRepository;
 

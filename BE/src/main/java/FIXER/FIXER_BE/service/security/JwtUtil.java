@@ -58,12 +58,16 @@ public class JwtUtil {
     /**
      * 사용자 ID를 이용해 JWT 토큰 생성.
      *
-     * @param userId 토큰에 포함할 사용자 ID
+     * @param user_num 토큰에 포함할 사용자 NUM
+     * @param user_id 토큰에 포함할 사용자 ID
+     * @param user_name 토큰에 포함할 사용자 NAME
      * @return 생성된 JWT 토큰
      */
-    public String generateToken(String userId) {
+    public String generateToken(Integer user_num, String user_id, String user_name) {
         return Jwts.builder()
-                .claim("sub", userId)
+                .claim("user_num", user_num)
+                .claim("user_id", user_id)
+                .claim("user_name", user_name)
                 .claim("iat", new Date().getTime() / 1000)
                 .claim("exp", (System.currentTimeMillis() + 1000 * 60 * 60) / 1000) // 1 hour validity
                 .signWith(secretKey)
