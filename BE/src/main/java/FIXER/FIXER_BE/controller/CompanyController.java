@@ -30,8 +30,9 @@ public class CompanyController {
     private final NoticeService noticeService;
     private static final String UPLOAD_DIR = "uploads/";
 
-    @GetMapping("/storesearch")
-    public ResponseEntity<Map<String, Object>> getCompanies(@RequestParam(defaultValue = "0") int pageSize, @RequestParam(required = false) Integer lastId) {
+        @GetMapping("/storesearch")
+    public ResponseEntity<Map<String, Object>> getCompanies(@RequestParam(name = "pageSize", defaultValue = "0") int pageSize, @RequestParam(name = "lastId", required = false) Integer lastId) {
+        System.out.println("히히히힣");
         List<CompanyDTO> companies = companyService.getCompanies(pageSize, lastId);
         boolean isNext = !companies.isEmpty() && companies.size() == pageSize;
         Map<String, Object> response = new HashMap<>();
