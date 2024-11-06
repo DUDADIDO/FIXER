@@ -24,7 +24,7 @@ public class QuestionController {
 
     @PostMapping("/storeinfo/{companyId}/writequestion")
     public ResponseEntity<?> createQuestion(
-            @PathVariable Integer companyId,
+            @PathVariable("companyId") Integer companyId,
             @RequestParam("user_num") Integer userNum,
             @RequestParam("title") String title,
             @RequestParam("content") String content,

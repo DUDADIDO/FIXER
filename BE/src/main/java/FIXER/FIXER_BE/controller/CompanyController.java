@@ -49,7 +49,7 @@ public class CompanyController {
 
     @PostMapping("/storeinfo/{companyId}/writenotice")
     public ResponseEntity<?> createNotice(
-            @PathVariable Integer companyId,
+            @PathVariable("companyId") Integer companyId,
             @RequestParam("title") String title,
             @RequestParam("content") String content,
             @RequestParam(value = "file", required = false) MultipartFile file) {

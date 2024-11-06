@@ -24,10 +24,10 @@ public class ReviewController {
 
     @PostMapping("/storeinfo/{companyId}/writereview")
     public ResponseEntity<?> createReview(
-            @PathVariable Integer companyId,
+            @PathVariable("companyId") Integer companyId,
             @RequestParam("user_num") Integer userNum,
             @RequestParam("comment") String comment,
-            @RequestParam("score") Double  score,
+            @RequestParam("score") Double score,
             @RequestParam(value = "file", required = false) MultipartFile file) {
 
         String imagesUrl = null;
