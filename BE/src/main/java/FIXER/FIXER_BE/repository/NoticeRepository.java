@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Integer> {
-    // 필요한 커스텀 메서드가 있다면 추가
+    // 필요한 커스텀 메서드를 추가할 수 있습니다.
 }
