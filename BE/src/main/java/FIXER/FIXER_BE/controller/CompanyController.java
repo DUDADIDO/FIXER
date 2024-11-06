@@ -4,7 +4,6 @@ import FIXER.FIXER_BE.dto.CompanyDTO;
 import FIXER.FIXER_BE.service.CompanyService;
 import FIXER.FIXER_BE.service.NoticeService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +16,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/company")
@@ -28,9 +30,13 @@ public class CompanyController {
     private static final String UPLOAD_DIR = "uploads/";
 
     @GetMapping("/storesearch")
-    public ResponseEntity<Page<CompanyDTO>> getCompanies(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
-        Page<CompanyDTO> companies = companyService.getCompanies(page, size);
-        return ResponseEntity.ok(companies);
+    public ResponseEntity<Map<String, Object>> getCompanies(@RequestParam(defaultValue = "0") int pageSize, @RequestParam(defaultValue = "false") Integer lastId) {
+        List<CompanyDTO> companies = companyService.getCompanies(pageSize, lastId);
+        boolean isNext = !companies.isEmpty() && companies.size() == pageSize;
+        Map<String, Object> response = new HashMap<>();
+        response.put("companies", companies);
+        response.put("isNext", isNext);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/storeinfo/{companyId}")
