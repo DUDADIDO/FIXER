@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import {useParams, Link } from "react-router-dom";
 import styled from "styled-components";
 import storeData from "./dummy.json";
 import brandOptions from "./brandOptions.json";
@@ -8,6 +8,7 @@ import CommunityItem from "@/components/communitypage/CommunityItem.jsx";
 import CommunityNoticeData from "@/components/communitypage/CommunityNoticeDummy.json";
 import CommunityReviewData from "@/components/communitypage/CommunityReviewDummy.json";
 import CommunityQnAData from "@/components/communitypage/CommunityQnADummy.json";
+import axios from "axios";
 
 const StoreContainer = styled.div`
   display: flex;
@@ -207,7 +208,7 @@ function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
                 ? "/writenotice"
                 : "/writeqna",
           }}
-          state = {{ storeId, storeName}}
+          state={{ storeId, storeName }}
         >
           글쓰기
         </WriteButton>
@@ -249,11 +250,19 @@ function StoreInfoBox() {
   const [isOwner, setIsOwner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedStore, setEditedStore] = useState({});
-
+  const { companyId } = useParams();
+  // 데이터 가져오기
   useEffect(() => {
-    setStoreInfos([storeData]);
-    setIsOwner(true);
-  }, []);
+    axios
+      .get(`http://localhost:8080/api/company/storeinfo/${companyId}`) // companyId로 API 호출
+      .then((response) => {
+        setStoreInfos([response.data]);
+        setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
+      })
+      .catch((error) => {
+        console.error("Error fetching store info:", error);
+      });
+  }, [companyId]); // companyId 변경 시 useEffect 재실행
 
   const handleEditClick = (storeInfo) => {
     setEditedStore(storeInfo);
@@ -279,18 +288,27 @@ function StoreInfoBox() {
     }
   };
 
+  // 저장 버튼 클릭 시
   const handleSaveChanges = () => {
-    const updatedStores = storeInfos.map((store) =>
-      store.id === editedStore.id ? editedStore : store
-    );
-    setStoreInfos(updatedStores);
-    setIsModalOpen(false);
+    axios
+      .post("http://localhost:8080/api/company/storeinfo/update", editedStore)
+      .then((response) => {
+        setStoreInfos((prevInfos) =>
+          prevInfos.map((store) =>
+            store.company_id === editedStore.company_id ? response.data : store
+          )
+        );
+        setIsModalOpen(false);
+      })
+      .catch((error) => {
+        console.error("Error updating store info:", error);
+      });
   };
 
   return (
     <>
       {storeInfos.map((storeInfo) => (
-        <StoreContainer key={storeInfo.id}>
+        <StoreContainer key={storeInfo.company_id}>
           <StoreImageWrapper>
             <StoreImage src={storeInfo.logo} alt="Store Logo" />
             <StoreName>{storeInfo.name}</StoreName>
@@ -301,7 +319,7 @@ function StoreInfoBox() {
                 <div>리뷰 수: {storeInfo.review_cnt}</div>
               </div>
               <div>전화번호: {storeInfo.phone}</div> {/* 전화번호는 아래 줄에 출력 */}
-              <div>주소: {storeInfo.address}</div>
+              <div>주소: {storeInfo.location}</div>
             </StoreStats>
             {isOwner && (
               <button
@@ -314,13 +332,13 @@ function StoreInfoBox() {
           </StoreImageWrapper>
           <StoreInfo>
             <div>{storeInfo.description}</div>
-            <div>지원 기기: {storeInfo.supported_features.join(", ")}</div>
+            <div>지원 기기: {storeInfo.supported_features?.join(", ")}</div>
           </StoreInfo>
           <MapPlaceholder>지도 위치</MapPlaceholder>
         </StoreContainer>
       ))}
 
-      {isModalOpen && (
+{isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="w-[700px] bg-white p-8 rounded-lg shadow-lg">
             <button 
@@ -353,8 +371,8 @@ function StoreInfoBox() {
               <label className="block text-gray-700 mb-2">주소:</label>
               <input
                 type="text"
-                name="address"
-                value={editedStore.address}
+                name="location"
+                value={editedStore.location}
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded"
               />
@@ -428,23 +446,22 @@ function StoreInfoBox() {
         </div>
       )}
 
-
       <CommunitySectionWithPagination
         title="업체 공지사항"
         data={CommunityNoticeData}
-        storeId={storeInfos[0]?.id}
+        storeId={storeInfos[0]?.company_id}
         storeName={storeInfos[0]?.name}
       />
       <CommunitySectionWithPagination
         title="리뷰"
         data={CommunityReviewData}
-        storeId={storeInfos[0]?.id}
+        storeId={storeInfos[0]?.company_id}
         storeName={storeInfos[0]?.name}
       />
       <CommunitySectionWithPagination
         title="Q&A"
         data={CommunityQnAData}
-        storeId={storeInfos[0]?.id}
+        storeId={storeInfos[0]?.company_id}
         storeName={storeInfos[0]?.name}
       />
     </>

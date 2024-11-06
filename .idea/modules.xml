@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/FIXER.iml" filepath="$PROJECT_DIR$/.idea/FIXER.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/FIXER_BE.main.iml" filepath="$PROJECT_DIR$/.idea/modules/FIXER_BE.main.iml" />
     </modules>
   </component>
 </project>

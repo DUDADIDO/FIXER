@@ -1,8 +1,41 @@
-# React + Vite
+## 페이지 경로 안내
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+- **루트 페이지**  
+  `localhost:5173/`  
+  애플리케이션의 메인 랜딩 페이지입니다.
 
-Currently, two official plugins are available:
+- **로그인 페이지**  
+  `localhost:5173/login`  
+  사용자 로그인 페이지입니다.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **회원가입 페이지**  
+  `localhost:5173/register`  
+  새로운 사용자 회원가입 페이지입니다.
+
+- **상점 정보 페이지**  
+  `localhost:5173/storeinfo`  
+  상점 정보를 보여주는 페이지입니다. 여기서 "글쓰기" 버튼을 눌러 상점 관련 게시글을 작성할 수 있습니다.
+
+- **상점 검색 페이지**  
+  `localhost:5173/storesearch`  
+  특정 상점을 검색할 수 있는 페이지입니다.
+
+- **상점 등록 페이지**  
+  `localhost:5173/stroeregister`  
+  새로운 상점을 등록할 수 있는 페이지입니다.
+
+- **Q&A 상세 페이지**  
+  `localhost:5173/qnadetail`  
+  특정 Q&A 게시글을 상세히 보여주는 페이지입니다. "답변하기" 버튼을 눌러 답변을 작성할 수 있습니다.
+
+- **공지사항 상세 페이지**  
+  `localhost:5173/noticedetail`  
+  특정 공지사항 게시글을 상세히 보여주는 페이지입니다.
+
+- **리뷰 상세 페이지**  
+  `localhost:5173/reviewdetail`  
+  특정 리뷰 게시글의 상세 정보를 제공하는 페이지입니다.
+
+- **유저 정보 페이지**  
+  `localhost:5173/userinfo`  
+  사용자 정보와 설정을 볼 수 있는 페이지입니다.
