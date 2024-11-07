@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/company")
@@ -21,6 +22,12 @@ public class ReviewController {
 
     private final ReviewService reviewService;
     private static final String UPLOAD_DIR = "uploads/";
+
+    @GetMapping("/storeinfo/{companyId}/reviews")
+    public ResponseEntity<List<ReviewDTO>> getCompanyReviews(@PathVariable("companyId") Integer companyId) {
+        List<ReviewDTO> reviews = reviewService.getReviewsByCompanyId(companyId);
+        return ResponseEntity.ok(reviews);
+    }
 
     @PostMapping("/storeinfo/{companyId}/writereview")
     public ResponseEntity<?> createReview(
@@ -45,7 +52,7 @@ public class ReviewController {
             }
         }
 
-        ReviewDTO reviewDTO = new ReviewDTO(comment, imagesUrl, score);
+        ReviewDTO reviewDTO = new ReviewDTO(null, null, null, comment, imagesUrl, score);
         Review newReview = reviewService.createReview(companyId, userNum, reviewDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newReview);

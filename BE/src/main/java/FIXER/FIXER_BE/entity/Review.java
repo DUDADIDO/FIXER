@@ -5,13 +5,13 @@ import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "reviews")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Entity
-@Table(name = "reviews")
 public class Review {
 
     @Id
@@ -19,8 +19,9 @@ public class Review {
     @Column(name = "review_id")
     private Integer reviewId;
 
-    @Column(name = "user_num", nullable = false)
-    private Integer userNum;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_num", nullable = false)
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "company_id", nullable = false)
@@ -43,7 +44,9 @@ public class Review {
 
     @PrePersist
     protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
     @PreUpdate
