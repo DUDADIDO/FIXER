@@ -30,7 +30,7 @@ public class CompanyController {
 
     private final CompanyService companyService;
     private final NoticeService noticeService;
-    private static final String UPLOAD_DIR = "uploads/";
+    private static final String UPLOAD_DIR = "C:/uploads/";
 
     @GetMapping("/storesearch")
     public ResponseEntity<Map<String, Object>> getCompanies(@RequestParam(name = "pageSize", defaultValue = "0") int pageSize, @RequestParam(name = "lastId", required = false) Integer lastId) {
@@ -92,6 +92,54 @@ public class CompanyController {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         return timestamp + "_" + originalFileName;
     }
+
+    @PostMapping("/storeinfo/register")
+    public ResponseEntity<?> registerCompany(
+            @RequestParam("companyInfoFile") MultipartFile companyInfoFile,
+            @RequestParam("zipFile") MultipartFile zipFile) {
+
+        String companyInfoFilePath = null;
+        String zipFilePath = null;
+
+        try {
+            // companyInfoFile 파일 저장
+            if (companyInfoFile != null && !companyInfoFile.isEmpty()) {
+                String fileName = generateFileName(companyInfoFile.getOriginalFilename());
+                Path path = Paths.get(UPLOAD_DIR, fileName);
+
+                // 파일을 지정한 경로에 저장
+                Files.createDirectories(path.getParent());
+                companyInfoFile.transferTo(path.toFile());
+
+                companyInfoFilePath = path.toString();
+            }
+
+            // zipFile 파일 저장
+            if (zipFile != null && !zipFile.isEmpty()) {
+                String fileName = generateFileName(zipFile.getOriginalFilename());
+                Path path = Paths.get(UPLOAD_DIR, fileName);
+
+                // 파일을 지정한 경로에 저장
+                Files.createDirectories(path.getParent());
+                zipFile.transferTo(path.toFile());
+
+                zipFilePath = path.toString();
+            }
+
+            // 파일 저장 경로와 상태 반환
+            Map<String, String> response = new HashMap<>();
+            response.put("companyInfoFilePath", companyInfoFilePath);
+            response.put("zipFilePath", zipFilePath);
+
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("File upload failed: " + e.getMessage());
+        }
+    }
+
+
 
 
 }
