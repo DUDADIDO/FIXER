@@ -27,8 +27,12 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	// 크롤링 기능용
 	implementation 'org.jsoup:jsoup:1.16.1'
 	implementation 'org.seleniumhq.selenium:selenium-java:4.8.0'
+	// 엑셀 파일 읽기용
+	implementation 'org.apache.poi:poi-ooxml:5.2.3'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 
 	implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.3'

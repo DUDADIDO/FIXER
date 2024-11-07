@@ -4,6 +4,7 @@ import FIXER.FIXER_BE.dto.CompanyDTO;
 import FIXER.FIXER_BE.dto.NoticeDTO;
 import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.service.CompanyService;
+import FIXER.FIXER_BE.service.CompanyUploadService;
 import FIXER.FIXER_BE.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ import java.util.stream.Collectors;
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final CompanyUploadService companyUploadService;
     private final NoticeService noticeService;
     private static final String UPLOAD_DIR = "uploads/";
 
@@ -93,5 +95,14 @@ public class CompanyController {
         return timestamp + "_" + originalFileName;
     }
 
+    @GetMapping("/storeregister")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            companyUploadService.saveCompanyData(file);
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
 
 }
