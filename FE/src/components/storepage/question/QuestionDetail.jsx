@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import dummyQnAData from "./dummyQnAData.json";
 
-export default function QnADetail({ isAdmin }) {
+export default function QuestionDetail({ isAdmin }) {
   const {
     questionTitle,
     questionContent,

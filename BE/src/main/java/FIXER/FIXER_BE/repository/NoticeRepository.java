@@ -8,5 +8,5 @@ import java.util.List;
 @Repository
 public interface NoticeRepository extends JpaRepository<Notice, Integer> {
     // 특정 회사의 공지사항을 작성일 기준으로 정렬하여 가져오는 메서드
-    List<Notice> findByCompanyCompanyIdOrderByCreatedAtDesc(Integer companyId);
+    List<Notice> findByCompanyCompanyIdOrderByNoticeIdAsc(Integer companyId);
 }

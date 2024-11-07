@@ -2,12 +2,16 @@ package FIXER.FIXER_BE.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class NoticeDTO {
-    private Integer index; // 공지사항 인덱스
+    private Integer noticeId; // notice_id 추가
+    private Integer index;
     private String title;
     private String content;
     private String filePath;

@@ -21,34 +21,32 @@ public class NoticeService {
     private final CompanyRepository companyRepository;
 
     public Notice createNotice(Integer companyId, String title, String content, String filePath) {
-        // Company 엔티티 찾기
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new IllegalArgumentException("Company not found with id: " + companyId));
 
-        // Notice 엔티티 생성
         Notice notice = Notice.builder()
                 .company(company)
                 .title(title)
                 .content(content)
                 .createdAt(LocalDateTime.now())
                 .updatedAt(LocalDateTime.now())
-                .filePath(filePath)  // 파일 경로 추가
+                .filePath(filePath)
                 .build();
 
-        // Notice 저장
         return noticeRepository.save(notice);
     }
 
-    // 회사별 공지사항 목록을 가져와 인덱스 추가 처리
+    // 회사별 공지사항 목록을 가져와 notice_id 기준으로 정렬 후 인덱스 설정
     public List<NoticeDTO> getNoticesByCompanyId(Integer companyId) {
-        List<Notice> notices = noticeRepository.findByCompanyCompanyIdOrderByCreatedAtDesc(companyId);
+        List<Notice> notices = noticeRepository.findByCompanyCompanyIdOrderByNoticeIdAsc(companyId);
 
-        // 공지사항 목록에 인덱스 추가
+        // notice_id 오름차순으로 인덱스와 noticeId를 포함해 NoticeDTO 리스트 생성
         return IntStream.range(0, notices.size())
                 .mapToObj(i -> {
                     Notice notice = notices.get(i);
                     return new NoticeDTO(
-                            i + 1, // 공지사항의 인덱스를 추가
+                            notice.getNoticeId(), // noticeId
+                            i + 1, // 작은 순서대로 부여된 인덱스
                             notice.getTitle(),
                             notice.getContent(),
                             notice.getFilePath(),
@@ -57,6 +55,4 @@ public class NoticeService {
                 })
                 .collect(Collectors.toList());
     }
-//
-
 }
