@@ -1,6 +1,7 @@
 package FIXER.FIXER_BE.controller;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
+import FIXER.FIXER_BE.dto.NoticeDTO;
 import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.service.CompanyService;
 import FIXER.FIXER_BE.service.NoticeService;
@@ -20,6 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/company")
@@ -30,7 +32,7 @@ public class CompanyController {
     private final NoticeService noticeService;
     private static final String UPLOAD_DIR = "uploads/";
 
-        @GetMapping("/storesearch")
+    @GetMapping("/storesearch")
     public ResponseEntity<Map<String, Object>> getCompanies(@RequestParam(name = "pageSize", defaultValue = "0") int pageSize, @RequestParam(name = "lastId", required = false) Integer lastId) {
         System.out.println("히히히힣");
         List<CompanyDTO> companies = companyService.getCompanies(pageSize, lastId);
@@ -78,6 +80,11 @@ public class CompanyController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("File upload failed: " + e.getMessage());
         }
+    }
+    @GetMapping("/storeinfo/{companyId}/notices")
+    public ResponseEntity<List<NoticeDTO>> getCompanyNotices(@PathVariable("companyId") Integer companyId) {
+        List<NoticeDTO> notices = noticeService.getNoticesByCompanyId(companyId);
+        return ResponseEntity.ok(notices);
     }
 
     // 파일 이름을 고유하게 생성하는 유틸리티 메서드
