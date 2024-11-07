@@ -30,7 +30,7 @@ export default function LoginBox() {
 
         // 다른 사용자 정보를 필요에 따라 로컬 스토리지에 저장하거나 상태로 관리 가능
         console.log("User Number:", localStorage.getItem("userNum"));
-        console.log("User Name:", localStorage.get("userName"));
+        console.log("User Name:", localStorage.getItem("userName"));
 
         // 루트 페이지로 리다이렉트
         navigate("/");

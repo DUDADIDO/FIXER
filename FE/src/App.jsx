@@ -7,15 +7,15 @@ import RegisterPage from "./pages/RegisterPage";
 import StoreInfoPage from "./pages/StoreInfoPage";
 import StoreSearchPage from "./pages/StoreSearchPage";
 import UserInfoPage from "./pages/UserInfoPage";
-import WriteReview from "./components/storepage/writepostpage/WriteReview";
+import WriteReview from "./components/storepage/reviews/WriteReview";
 import StoreRegisterPage from "./pages/StoreRegisterPage";
-import WriteNotice from "./components/storepage/writepostpage/WriteNotice";
-import WriteQnA from "./components/storepage/writepostpage/WriteQnA";
-import QnADetail from "./components/storepage/detailpage/QnADetail";
-import ReviewDetail from "./components/storepage/detailpage/ReviewDetail";
-import NoticeDetail from "./components/storepage/detailpage/NoticeDetail";
-import AnswerForm from "./components/storepage/detailpage/AnswerForm";
-
+import WriteNotice from "./components/storepage/notice/WriteNotice";
+import WriteQnA from "./components/storepage/question/WriteQnA";
+import QuestionDetail from "./components/storepage/question/QuestionDetail";
+import ReviewDetail from "./components/storepage/reviews/ReviewDetail";
+import NoticeDetail from "./components/storepage/notice/NoticeDetail";
+import AnswerForm from "./components/storepage/question/AnswerForm";
+import CrawerPage from "./pages/CrawerPage";
 
 const router = createBrowserRouter([
   {
@@ -30,10 +30,11 @@ const router = createBrowserRouter([
       { path: "/storeinfo/:companyId/writenotice", element: <WriteNotice /> },
       { path: "/storeinfo/:companyId/writeqna", element: <WriteQnA /> },
       { path: "/storeregister", element: <StoreRegisterPage /> },
-      { path: "/qnadetail", element: <QnADetail /> },
+      { path: "/qnadetail", element: <QuestionDetail /> },
       { path: "/reviewdetail", element: <ReviewDetail /> },
-      { path: "/noticedetail", element: <NoticeDetail /> },
+      { path: "/storeinfo/:companyId/noticedtail/:noticeId", element: <NoticeDetail /> },
       { path: "/qnaanswer", element: <AnswerForm /> },
+      { path: "/crawer", element: <CrawerPage /> },
     ],
   },
   {

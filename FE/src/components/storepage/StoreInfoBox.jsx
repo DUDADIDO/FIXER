@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from "react";
 import {useParams, Link } from "react-router-dom";
 import styled from "styled-components";
-import storeData from "./dummy.json";
 import brandOptions from "./brandOptions.json";
 import deviceOptions from "./deviceOptions.json";
-import CommunityItem from "@/components/communitypage/CommunityItem.jsx";
 import CommunityNoticeData from "@/components/communitypage/CommunityNoticeDummy.json";
 import CommunityReviewData from "@/components/communitypage/CommunityReviewDummy.json";
 import CommunityQnAData from "@/components/communitypage/CommunityQnADummy.json";
-import axios from "axios";
 import api from "../../api";
+import CommunitySectionWithPagination from "./CommunitySectionWithPagination.JSX";
+import NoticeBox from "./notice/NoticeBox";
 
 const StoreContainer = styled.div`
   display: flex;
@@ -179,90 +178,39 @@ const SaveButton = styled.button`
   }
 `;
 
-
-function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
-  const totalPages = Math.ceil(data.length / itemsPerPage);
-  const currentItems = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const handlePageChange = (pageNumber) => {
-    if (pageNumber >= 1 && pageNumber <= totalPages) {
-      setCurrentPage(pageNumber);
-    }
-  };
-
-  return (
-    <CommunitySection>
-      <CommunityTitle>{title}</CommunityTitle>
-      <ButtonContainer>
-      <WriteButton
-        to={{
-          pathname:
-            title === "리뷰"
-              ? `/storeinfo/${storeId}/writereview`
-              : title === "업체 공지사항"
-              ? `/storeinfo/${storeId}/writenotice`
-              : `/storeinfo/${storeId}/writeqna`,
-        }}
-        state={{ storeId, storeName }}
-      >
-        글쓰기
-      </WriteButton>
-      </ButtonContainer>
-      <CommunityList>
-        {currentItems.map((item) => (
-          <CommunityItem key={item.id} data={item} />
-        ))}
-      </CommunityList>
-      <Pagination>
-        <PageButton
-          onClick={() => handlePageChange(currentPage - 1)}
-          disabled={currentPage === 1}
-        >
-          이전
-        </PageButton>
-        {Array.from({ length: totalPages }, (_, index) => (
-          <PageButton
-            key={index}
-            onClick={() => handlePageChange(index + 1)}
-            active={currentPage === index + 1}
-          >
-            {index + 1}
-          </PageButton>
-        ))}
-        <PageButton
-          onClick={() => handlePageChange(currentPage + 1)}
-          disabled={currentPage === totalPages}
-        >
-          다음
-        </PageButton>
-      </Pagination>
-    </CommunitySection>
-  );
-}
-
-function StoreInfoBox() {
+function StoreInfoBox({ companyId }) {
   const [storeInfos, setStoreInfos] = useState([]);
+  const [noticeInfos, setNoticeInfos] = useState([]);
+  const [questionInfos, setQuestionInfos] = useState([]);
+  const [reviewInfos, setReviewInfos] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedStore, setEditedStore] = useState({});
-  const { companyId } = useParams();
+  
   // 데이터 가져오기
   useEffect(() => {
-    api
-      .get(`/api/company/storeinfo/${companyId}`) // companyId로 API 호출
-      .then((response) => {
-        setStoreInfos([response.data]);
-        setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
-      })
-      .catch((error) => {
-        console.error("Error fetching store info:", error);
-      });
+      api
+          .get(`/api/company/storeinfo/${companyId}`) // companyId로 API 호출
+          .then((response) => {
+              setStoreInfos([response.data]);
+              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
+          })
+          .catch((error) => {
+              console.error("Error fetching store info:", error);
+          });
+
+        api //공지사항 API 호출
+          .get(`/api/company/storeinfo/${companyId}/notices`) // companyId로 API 호출
+          .then((response) => {
+              setNoticeInfos(response.data);
+              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
+          })
+          .catch((error) => {
+              console.error("Error fetching store info:", error);
+          });
   }, [companyId]); // companyId 변경 시 useEffect 재실행
+
+
 
   const handleEditClick = (storeInfo) => {
     setEditedStore(storeInfo);
@@ -446,9 +394,9 @@ function StoreInfoBox() {
         </div>
       )}
 
-      <CommunitySectionWithPagination
+      <NoticeBox
         title="업체 공지사항"
-        data={CommunityNoticeData}
+        data={noticeInfos}
         storeId={storeInfos[0]?.company_id}
         storeName={storeInfos[0]?.name}
       />

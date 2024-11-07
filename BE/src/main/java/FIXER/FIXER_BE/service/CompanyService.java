@@ -23,7 +23,7 @@ public class CompanyService {
             companies = companyRepository.findAll(pageable).getContent();
         }
         else{
-            companies = companyRepository.findByCompanyIdLessThanOrderByCompanyIdDesc(lastId, pageable);
+            companies = companyRepository.findByCompanyIdGreaterThanOrderByCompanyIdAsc(lastId, pageable);
         }
         return companies.stream().map(CompanyDTO::fromEntity).collect(Collectors.toList());
     }
