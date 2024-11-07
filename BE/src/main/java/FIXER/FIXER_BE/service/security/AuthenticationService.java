@@ -15,10 +15,10 @@ public class AuthenticationService {
      * 유효하지 않으면 InvalidCredentialsException 예외를 발생시킴.
      *
      * @param token 검증할 JWT 토큰
-     * @param userId 검증할 사용자 ID
+     * @param user_num 검증할 사용자 ID
      **/
-    public void validateToken(String token, String userId) {
-        if (!jwtUtil.isTokenValid(token, userId)) {
+    public void validateToken(String token, String user_num) {
+        if (!jwtUtil.isTokenValid(token, user_num)) {
             throw new InvalidCredentialsException("Invalid credentials provided");
         }
     }

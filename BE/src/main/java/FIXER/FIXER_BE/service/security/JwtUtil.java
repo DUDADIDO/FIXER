@@ -4,6 +4,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -17,28 +18,56 @@ public class JwtUtil {
 
     private SecretKey secretKey;
     private long expiration;
+    @Value("${jwt.secret}")
+    private String secret;
 
+    @Value("${jwt.expiration}")
+    private long exp;
+
+
+    /**
+     * Bean이 생성된 이후에 시크릿 키를 초기화하는 메서드.
+     */
+    @PostConstruct
+    public void init() {
+        if (secret == null || secret.isEmpty()) {
+            throw new IllegalArgumentException("JWT secret cannot be null or empty");
+        }
+        byte[] keyBytes = Decoders.BASE64.decode(secret);
+        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+        this.expiration = exp;
+    }
     /**
      * JWT 시크릿 키를 생성자 주입 방식으로 초기화.
      * 보안상의 이유로 환경 변수나 보안 저장소에서 시크릿 키를 불러오는 방식으로 구성.
      *
      * @param secret 환경 변수로부터 받은 Base64 인코딩된 시크릿 키
      */
-    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
-        byte[] keyBytes = Decoders.BASE64.decode(secret);
-        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
-        this.expiration = expiration;
-    }
+//    public JwtUtil(@Value("${jwt.secret}") String secret, @Value("${jwt.expiration}") long expiration) {
+//        System.out.println("secret: " + secret);
+//        if (secret == null || secret.isEmpty()) {
+//            throw new IllegalArgumentException("JWT secret cannot be null or empty");
+//        }
+//        byte[] keyBytes = Decoders.BASE64.decode(secret);
+//
+//        System.out.println("keyBytes: " + keyBytes.length);
+//        this.secretKey = Keys.hmacShaKeyFor(keyBytes);
+//        this.expiration = expiration;
+//    }
 
     /**
      * 사용자 ID를 이용해 JWT 토큰 생성.
      *
-     * @param userId 토큰에 포함할 사용자 ID
+     * @param user_num 토큰에 포함할 사용자 NUM
+     * @param user_id 토큰에 포함할 사용자 ID
+     * @param user_name 토큰에 포함할 사용자 NAME
      * @return 생성된 JWT 토큰
      */
-    public String generateToken(String userId) {
+    public String generateToken(Integer user_num, String user_id, String user_name) {
         return Jwts.builder()
-                .claim("sub", userId)
+                .claim("user_num", user_num)
+                .claim("user_id", user_id)
+                .claim("user_name", user_name)
                 .claim("iat", new Date().getTime() / 1000)
                 .claim("exp", (System.currentTimeMillis() + 1000 * 60 * 60) / 1000) // 1 hour validity
                 .signWith(secretKey)

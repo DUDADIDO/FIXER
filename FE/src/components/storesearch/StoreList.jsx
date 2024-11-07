@@ -1,119 +1,81 @@
-import { useState, useEffect } from "react";
-
+import { useState, useEffect, useCallback, useRef } from "react";
 import StoreInfoCard from "./StoreInfoCard.jsx";
-import chunsik from "../../../public/chunsik.png";
-
-const dummy = [
-  {
-    id: 1,
-    name: "ABC 수리센터",
-    description:
-      "저희 업체는 신속하고 믿을 수 있는 서비스를 제공하고 있습니다. 모든 전자기기를 완벽하게 수리해드립니다.",
-    supported_features: ["삼성 노트북", "갤럭시", "LG 노트북"],
-    repair_count: 180,
-    score: 4.3,
-    review_cnt: 25,
-    logo: chunsik,
-  },
-  {
-    id: 2,
-    name: "수리천국",
-    description:
-      "저렴한 가격과 뛰어난 기술로 최고의 수리 서비스를 제공하는 수리천국입니다.",
-    supported_features: ["애플 맥북", "갤럭시 탭", "델 노트북"],
-    repair_count: 150,
-    score: 4.5,
-    review_cnt: 30,
-    logo: chunsik,
-  },
-  {
-    id: 3,
-    name: "고객만족 수리점",
-    description: "고객 만족을 최우선으로 생각하는 수리점입니다. 믿고 맡기세요.",
-    supported_features: ["레노버 노트북", "삼성 갤럭시", "LG 모니터"],
-    repair_count: 220,
-    score: 4.1,
-    review_cnt: 18,
-    logo: chunsik,
-  },
-  {
-    id: 4,
-    name: "테크닥터",
-    description:
-      "기술력으로 승부하는 테크닥터! 모든 기기를 빠르게 복구해드립니다.",
-    supported_features: ["소니 바이오", "삼성 노트북", "갤럭시 폰"],
-    repair_count: 195,
-    score: 4.4,
-    review_cnt: 22,
-    logo: chunsik,
-  },
-  {
-    id: 5,
-    name: "수리마스터",
-    description:
-      "수리에 있어서만큼은 우리가 최고! 친절하고 신뢰할 수 있는 서비스를 제공합니다.",
-    supported_features: ["에이서 노트북", "아이폰", "MS 서피스"],
-    repair_count: 210,
-    score: 4.2,
-    review_cnt: 19,
-    logo: chunsik,
-  },
-  {
-    id: 6,
-    name: "프로수리센터",
-    description:
-      "프로답게 꼼꼼하게 수리해드립니다. 전문 수리센터 프로수리센터입니다.",
-    supported_features: ["LG 그램", "삼성 갤럭시", "HP 노트북"],
-    repair_count: 240,
-    score: 4.6,
-    review_cnt: 35,
-    logo: chunsik,
-  },
-  {
-    id: 7,
-    name: "기기천재",
-    description:
-      "모든 전자기기를 완벽하게 수리해드립니다. 신뢰할 수 있는 기기천재입니다.",
-    supported_features: ["갤럭시 노트북", "애플 아이패드", "델 모니터"],
-    repair_count: 165,
-    score: 4.3,
-    review_cnt: 28,
-    logo: chunsik,
-  },
-  {
-    id: 8,
-    name: "노트북 메카닉스",
-    description: "노트북 수리 전문 메카닉스입니다. 빠르고 정확하게 수리합니다.",
-    supported_features: ["MS 서피스", "애플 맥북", "삼성 노트북"],
-    repair_count: 230,
-    score: 4.7,
-    review_cnt: 32,
-    logo: chunsik,
-  },
-];
+import api from "../../api.jsx";
 
 export default function StoreList() {
-  const [searchType, setSearchType] = useState("name"); // 검색 타입: "name" 또는 "feature"
+  const [stores, setStores] = useState([]); // 전체 상점 목록
+  const [filteredStores, setFilteredStores] = useState([]); // 필터링된 상점 목록
+  const [pageSize] = useState(10); // 페이지 크기
+  const [lastId, setLastId] = useState(null); // 마지막 ID 추적
+  const [hasMore, setHasMore] = useState(true); // 더 가져올 데이터 여부
+  const [loading, setLoading] = useState(false);
+
+  // 검색 및 정렬 관련 상태값
+  const [searchType, setSearchType] = useState("name");
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [sortType, setSortType] = useState("score"); // 정렬 타입: "score", "repair_count", "review_cnt"
-  const [filteredStores, setFilteredStores] = useState(dummy);
+  const [sortType, setSortType] = useState("score");
 
+  const observer = useRef(); // 관찰 대상 참조
+
+  // Intersection Observer 핸들러
+  const lastStoreRef = useCallback(
+    (node) => {
+      if (loading) return;
+      if (observer.current) observer.current.disconnect();
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          fetchStores();
+        }
+      });
+      if (node) observer.current.observe(node);
+    },
+    [loading, hasMore]
+  );
+
+  // 데이터를 가져오는 함수
+  const fetchStores = async () => {
+    if (!hasMore || loading) return;
+    setLoading(true);
+    try {
+      const response = await api.get("/api/company/storesearch", {
+        params: { pageSize, lastId },
+      });
+      const newStores = response.data.companies || [];
+      
+      // 중복된 상점을 필터링하여 추가
+      setStores((prevStores) => {
+        const allStores = [...prevStores, ...newStores];
+        const uniqueStores = allStores.filter(
+          (store, index, self) =>
+            index === self.findIndex((s) => s.company_id === store.company_id)
+        );
+        return uniqueStores;
+      });
+      
+      setLastId(newStores.length > 0 ? newStores[newStores.length - 1].company_id : null);
+      setHasMore(response.data.isNext);
+    } catch (error) {
+      console.error("Error fetching store data:", error);
+    }
+    setLoading(false);
+  };
+
+  // 검색 및 정렬 기능 적용
   useEffect(() => {
-    let filtered = dummy;
-
+    let filtered = [...stores];
+    
     // 검색 필터링
     if (searchKeyword !== "") {
-      if (searchType === "name") {
-        filtered = filtered.filter((store) =>
-          store.name.toLowerCase().includes(searchKeyword.toLowerCase())
-        );
-      } else if (searchType === "feature") {
-        filtered = filtered.filter((store) =>
-          store.supported_features.some((feature) =>
+      filtered = filtered.filter((store) => {
+        if (searchType === "name") {
+          return store.name.toLowerCase().includes(searchKeyword.toLowerCase());
+        } else if (searchType === "feature") {
+          return store.supported_features.some((feature) =>
             feature.toLowerCase().includes(searchKeyword.toLowerCase())
-          )
-        );
-      }
+          );
+        }
+        return true;
+      });
     }
 
     // 정렬 적용
@@ -125,12 +87,17 @@ export default function StoreList() {
       filtered.sort((a, b) => b.review_cnt - a.review_cnt);
     }
 
-    setFilteredStores([...filtered]);
-  }, [searchKeyword, searchType, sortType]);
+    setFilteredStores(filtered);
+  }, [stores, searchKeyword, searchType, sortType]);
+
+  // 초기 데이터 로드
+  useEffect(() => {
+    fetchStores();
+  }, []);
 
   return (
     <div className="flex flex-col min-w-full min-h-full p-4 space-y-4">
-      {/* 검색 타입 선택 드롭박스 */}
+      {/* 검색 및 정렬 UI */}
       <div className="flex items-center gap-4">
         <div className="w-1/12 mb-4">
           <select
@@ -143,14 +110,11 @@ export default function StoreList() {
           </select>
         </div>
 
-        {/* 검색 입력 필드 */}
         <div className="flex-grow mb-4">
           <input
             type="text"
             placeholder={
-              searchType === "name"
-                ? "가게 이름을 입력하세요..."
-                : "수리 품목을 입력하세요..."
+              searchType === "name" ? "가게 이름을 입력하세요..." : "수리 품목을 입력하세요..."
             }
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
@@ -158,7 +122,6 @@ export default function StoreList() {
           />
         </div>
 
-        {/* 정렬 옵션 선택 드롭박스 */}
         <div className="w-1/12 mb-4">
           <select
             value={sortType}
@@ -172,20 +135,20 @@ export default function StoreList() {
         </div>
       </div>
 
-      {/* 검색 결과가 없을 때 표시할 메시지 */}
-      {filteredStores.length === 0 ? (
-        <div className="flex items-center justify-center w-full h-screen border border-gray-300 rounded-md">
-          검색 결과가 없습니다.
-        </div>
-      ) : (
-        <div className="flex flex-wrap w-full">
-          {filteredStores.map((store) => (
-            <div key={store.id} className="w-1/2 p-2">
-              <StoreInfoCard data={store} />
-            </div>
-          ))}
-        </div>
-      )}
+      {/* 필터링된 상점 목록 표시 */}
+      <div className="flex flex-wrap w-full">
+        {filteredStores.map((store, index) => (
+          <div
+            key={store.company_id}
+            className="w-1/2 p-2"
+            ref={filteredStores.length === index + 1 ? lastStoreRef : null}
+          >
+            <StoreInfoCard data={store} />
+          </div>
+        ))}
+      </div>
+      {loading && <p className="text-center">Loading...</p>}
+      {!hasMore && <p className="text-center">모든 데이터를 로드했습니다.</p>}
     </div>
   );
 }

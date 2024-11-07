@@ -1,7 +1,10 @@
 package FIXER.FIXER_BE.controller;
 
-import FIXER.FIXER_BE.dto.LoginRequest;
-import FIXER.FIXER_BE.dto.UserDTO;
+import FIXER.FIXER_BE.dto.User.CheckUserIdRequest;
+import FIXER.FIXER_BE.dto.User.LoginRequest;
+import FIXER.FIXER_BE.dto.User.UserDTO;
+import FIXER.FIXER_BE.dto.User.UserToken;
+
 import FIXER.FIXER_BE.service.UserService;
 import FIXER.FIXER_BE.service.security.AuthenticationService;
 import FIXER.FIXER_BE.service.security.JwtUtil;
@@ -36,8 +39,12 @@ public class UserController {
         }
 
         // JWT 토큰 생성
-        String token = jwtUtil.generateToken(loginUser.getUserId());
-        return ResponseEntity.status(HttpStatus.OK).body(token);
+        String token = jwtUtil.generateToken(loginUser.getUserNum(), loginUser.getUserId(), loginUser.getUserName());
+        UserToken usertoken = new UserToken();
+        usertoken.setUser_num(loginUser.getUserNum());
+        usertoken.setUser_name(loginUser.getUserName());
+        usertoken.setToken(token);
+        return ResponseEntity.status(HttpStatus.OK).body(usertoken);
     }
 
 
@@ -49,6 +56,13 @@ public class UserController {
         userDTO.setPassword(encryptedPassword);
         UserDTO createdUser = userService.createUser(userDTO);
         return ResponseEntity.ok(createdUser);
+    }
+
+    @PostMapping("/register/checkid")
+    public ResponseEntity<Boolean> checkUser(@RequestBody CheckUserIdRequest request) {
+        UserDTO userDTO = userService.checkUserById(request.getUser_id());
+        boolean isAvailable = (userDTO == null);
+        return ResponseEntity.ok(isAvailable);
     }
 
     @PutMapping("/{userNum}")

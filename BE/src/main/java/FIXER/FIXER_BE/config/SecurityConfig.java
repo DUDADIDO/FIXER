@@ -16,9 +16,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // CSRF 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll() // 특정 경로에 대한 접근 허용
-                        .anyRequest().permitAll() // 인증 없이 모든 요청 허용 (Postman에서 403 방지)
-                )
-                .headers(headers -> headers.frameOptions(frameOptions -> frameOptions.disable())); // frameOptions 설정 비활성화
+                        .anyRequest().authenticated()
+                );
 
         return http.build();
     }
