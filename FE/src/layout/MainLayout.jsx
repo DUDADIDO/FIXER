@@ -9,7 +9,7 @@ export default function MainLayout() {
         <NavigationBar />
       </header>
 
-      <main className="flex-grow flex justify-center items-start mx-20 mt-10 overflow-auto">
+      <main className="flex-grow flex justify-center items-start mx-20 overflow-auto">
         <Outlet />
       </main>
 
