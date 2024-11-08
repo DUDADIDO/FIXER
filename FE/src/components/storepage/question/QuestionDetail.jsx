@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useLocation } from "react-router-dom";
 import api from "@/api";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export default function QuestionDetail({ isAdmin }) {
   const { companyId, questionId } = useParams();
@@ -36,6 +37,19 @@ export default function QuestionDetail({ isAdmin }) {
             <span>작성일시: {data.createdAt}</span>
           </div>
           <p className="mt-2">{data.content}</p>
+          {data.filePath && (
+        <div className="p-4">
+          <p className="font-semibold">첨부된 파일:</p>
+          <a
+            href={`${apiBaseUrl}${data.filePath}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 underline"
+          >
+            첨부 파일 열기
+          </a>
+        </div>
+      )}
         </div>
       </section>
 

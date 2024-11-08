@@ -32,6 +32,9 @@ public class Question {
     @Column(name = "content")
     private String content;
 
+    @Column(name = "file_path", length = 255)
+    private String filePath;
+
     @Column(name = "answer_check", columnDefinition = "TINYINT(1)")
     private Boolean answerCheck = false;
 
