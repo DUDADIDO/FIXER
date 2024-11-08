@@ -11,6 +11,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 @Service
 @RequiredArgsConstructor
 public class QuestionService {
@@ -35,5 +39,24 @@ public class QuestionService {
                 .build();
 
         return questionRepository.save(question);
+    }
+
+    public List<QuestionDTO> getQuestionsByCompanyId(Integer companyId) {
+        List<Question> questions = questionRepository.findByCompanyCompanyIdOrderByQuestionIdAsc(companyId);
+
+        return IntStream.range(0, questions.size())
+                .mapToObj(i -> {
+                    Question question = questions.get(i);
+                    return new QuestionDTO(
+                            question.getQuestionId(),
+                            i + 1,
+                            question.getUser().getUserName(),
+                            question.getTitle(),
+                            question.getContent(),
+                            null,
+                            question.getAnswerCheck()
+                    );
+                })
+                .collect(Collectors.toList());
     }
 }

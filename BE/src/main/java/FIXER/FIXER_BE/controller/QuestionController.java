@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/company")
@@ -20,7 +21,7 @@ import java.nio.file.Paths;
 public class QuestionController {
 
     private final QuestionService questionService;
-    private static final String UPLOAD_DIR = "uploads/"; // 파일 업로드 경로
+    private static final String UPLOAD_DIR = "uploads/";
 
     @PostMapping("/storeinfo/{companyId}/writequestion")
     public ResponseEntity<?> createQuestion(
@@ -37,17 +38,22 @@ public class QuestionController {
                 Path path = Paths.get(UPLOAD_DIR, fileName);
                 Files.createDirectories(path.getParent());
                 file.transferTo(path.toFile());
-                filePath = path.toString(); // 파일 경로 저장
+                filePath = path.toString();
             } catch (IOException e) {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .body("File upload failed: " + e.getMessage());
             }
         }
 
-        // QuestionDTO 생성 및 서비스 호출
-        QuestionDTO questionDTO = new QuestionDTO(title, content, filePath);
+        QuestionDTO questionDTO = new QuestionDTO(null, null, null, title, content, filePath, false);
         Question newQuestion = questionService.createQuestion(companyId, userNum, questionDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newQuestion);
+    }
+
+    @GetMapping("/storeinfo/{companyId}/questions")
+    public ResponseEntity<List<QuestionDTO>> getCompanyQuestions(@PathVariable("companyId") Integer companyId) {
+        List<QuestionDTO> questions = questionService.getQuestionsByCompanyId(companyId);
+        return ResponseEntity.ok(questions);
     }
 }

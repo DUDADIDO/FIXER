@@ -1,20 +1,18 @@
 package FIXER.FIXER_BE.dto;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class QuestionDTO {
+public class AnswerDTO {
+    private Integer answerId;
     private Integer questionId;
-    private Integer index;
-    private String author; // 작성자 이름
-    private String title;
+    private Integer userNum;
     private String content;
-    private String filePath;
-    private Boolean answerCheck;
+    private LocalDateTime createdAt;
 }
