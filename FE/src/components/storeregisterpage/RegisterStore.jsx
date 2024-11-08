@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function RegisterStore() {
   const [applicationForm, setApplicationForm] = useState(null);
-  const [videoFiles, setVideoFiles] = useState([]);
+  const [zipFiles, setZipFiles] = useState([]);
   const [videoPreviewURLs, setVideoPreviewURLs] = useState([]);
 
   const handleApplicationFormChange = (e) => {
@@ -11,7 +11,7 @@ export default function RegisterStore() {
 
   const handleVideoFileChange = (e) => {
     const files = Array.from(e.target.files);
-    setVideoFiles(files);
+    setZipFiles(files);
 
     // 동영상 파일의 미리보기 URL 생성
     const fileURLs = files.map((file) => URL.createObjectURL(file));
@@ -20,7 +20,7 @@ export default function RegisterStore() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!applicationForm || videoFiles.length === 0) {
+    if (!applicationForm || zipFiles.length === 0) {
       alert("신청서와 동영상 파일을 모두 첨부해주세요.");
       return;
     }

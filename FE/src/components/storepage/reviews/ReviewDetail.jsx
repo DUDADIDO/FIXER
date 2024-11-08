@@ -1,6 +1,7 @@
 import React from "react";
 import dummyReviewData from "./dummyReviewData.json"; // JSON 파일로부터 데이터 가져오기
 import { useLocation } from "react-router-dom";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL;
 
 export default function ReviewDetail() {
   const location = useLocation();
@@ -24,17 +25,17 @@ export default function ReviewDetail() {
       <div className="p-4">
         <p>{data.comment}</p>
       </div>
-      {data.attached_file && (
+      {data.filePath && (
         <div className="p-4">
-          {/* <p className="font-semibold">첨부된 파일:</p>
+          <p className="font-semibold">첨부된 파일:</p>
           <a
-            href={data.attached_file}
+            href={`${apiBaseUrl}${data.filePath}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 underline"
           >
             첨부 파일 열기
-          </a> */}
+          </a>
         </div>
       )}
     </div>
