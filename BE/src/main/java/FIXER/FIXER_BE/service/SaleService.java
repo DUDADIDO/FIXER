@@ -1,21 +1,17 @@
 package FIXER.FIXER_BE.service;
 
+import FIXER.FIXER_BE.dto.DealDTO;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -24,8 +20,8 @@ import java.util.concurrent.TimeUnit;
 public class SaleService {
 
     // Selenium을 사용하여 무한 스크롤 페이지에서 최대 500개의 제품만 크롤링하는 메소드
-    public List<DealDto> getLimitedDeals() {
-        List<DealDto> productList = new ArrayList<>();
+    public List<DealDTO> getLimitedDeals() {
+        List<DealDTO> productList = new ArrayList<>();
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--headless"); // 브라우저 UI를 표시하지 않는 headless 모드 사용
         options.addArguments("--no-sandbox");
@@ -120,7 +116,7 @@ public class SaleService {
 
                 // DealDto에 데이터를 추가
                 if (!platform.isEmpty() && !productName.isEmpty() && !price.isEmpty() && !imageUrl.isEmpty() && !link.isEmpty()) {
-                    DealDto dealDto = new DealDto(platform, productName, price, imageUrl, link);
+                    DealDTO dealDto = new DealDTO(platform, productName, price, imageUrl, link);
                     productList.add(dealDto);
                 }
                 count++;
@@ -136,87 +132,12 @@ public class SaleService {
     // 일정 시간마다 실행하여 실시간으로 크롤링 데이터를 가져오는 메소드
     @Scheduled(fixedRate = 60000) // 1분마다 실행
     public void scheduledCrawling() {
-        List<DealDto> deals = getLimitedDeals();
+        List<DealDTO> deals = getLimitedDeals();
 
         // 크롤링한 데이터 출력 (추후 데이터베이스 저장 등의 처리 가능)
         System.out.println("실시간 딜 목록:");
-        for (DealDto deal : deals) {
+        for (DealDTO deal : deals) {
             System.out.println(deal.getPlatform() + " - " + deal.getProductName() + " - " + deal.getPrice() + " - " + deal.getImageUrl() + " - " + deal.getLink());
         }
-    }
-}
-
-@RestController
-@RequestMapping("/api/sales")
-@CrossOrigin(origins = "*")
-class SaleController {
-
-    private final SaleService saleService;
-
-    public SaleController(SaleService saleService) {
-        this.saleService = saleService;
-    }
-
-    // Postman에서 호출할 수 있는 엔드포인트 추가
-    @GetMapping("/realtime-deals")
-    public List<DealDto> getLimitedDeals() {
-        return saleService.getLimitedDeals();
-    }
-}
-
-// DTO 클래스 정의
-class DealDto {
-    private String platform;
-    private String productName;
-    private String price;
-    private String imageUrl;
-    private String link;
-
-    public DealDto(String platform, String productName, String price, String imageUrl, String link) {
-        this.platform = platform;
-        this.productName = productName;
-        this.price = price;
-        this.imageUrl = imageUrl;
-        this.link = link;
-    }
-
-    public String getPlatform() {
-        return platform;
-    }
-
-    public void setPlatform(String platform) {
-        this.platform = platform;
-    }
-
-    public String getProductName() {
-        return productName;
-    }
-
-    public void setProductName(String productName) {
-        this.productName = productName;
-    }
-
-    public String getPrice() {
-        return price;
-    }
-
-    public void setPrice(String price) {
-        this.price = price;
-    }
-
-    public String getImageUrl() {
-        return imageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
     }
 }
