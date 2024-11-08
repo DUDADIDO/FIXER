@@ -54,6 +54,7 @@ public class QuestionService {
                             question.getTitle(),
                             question.getContent(),
                             null,
+                            question.getCreatedAt(),
                             question.getAnswerCheck()
                     );
                 })

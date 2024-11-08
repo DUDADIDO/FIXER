@@ -52,7 +52,7 @@ public class ReviewController {
             }
         }
 
-        ReviewDTO reviewDTO = new ReviewDTO(null, null, null, comment, imagesUrl, score);
+        ReviewDTO reviewDTO = new ReviewDTO(null, null, null, comment, imagesUrl,null, score);
         Review newReview = reviewService.createReview(companyId, userNum, reviewDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newReview);

@@ -43,6 +43,7 @@ public class ReviewService {
                 .comment(reviewDTO.getComment())
                 .imagesUrl(reviewDTO.getFilePath())
                 .score(reviewDTO.getScore())
+                .createdAt(reviewDTO.getCreatedAt())
                 .build();
 
         return reviewRepository.save(review);

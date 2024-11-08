@@ -33,7 +33,7 @@ const router = createBrowserRouter([
       { path: "/storeinfo/:companyId/qnadetail/:questionId", element: <QuestionDetail /> },
       { path: "/storeinfo/:companyId/reviewdetail/:reviewId", element: <ReviewDetail /> },
       { path: "/storeinfo/:companyId/noticedtail/:noticeId", element: <NoticeDetail /> },
-      { path: "/qnaanswer", element: <AnswerForm /> },
+      { path: "/storeinfo/:companyId/answer/:questionId", element: <AnswerForm /> },
       { path: "/crawer", element: <CrawerPage /> },
     ],
   },

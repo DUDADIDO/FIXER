@@ -45,7 +45,7 @@ public class QuestionController {
             }
         }
 
-        QuestionDTO questionDTO = new QuestionDTO(null, null, null, title, content, filePath, false);
+        QuestionDTO questionDTO = new QuestionDTO(null, null, null, title, content, filePath, null, false);
         Question newQuestion = questionService.createQuestion(companyId, userNum, questionDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newQuestion);

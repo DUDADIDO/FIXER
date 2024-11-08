@@ -12,7 +12,7 @@ import java.util.List;
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, Integer> {
 
-    @Query("SELECT new FIXER.FIXER_BE.dto.ReviewDTO(r.reviewId, u.userName, r.comment, r.imagesUrl, r.score) " +
+    @Query("SELECT new FIXER.FIXER_BE.dto.ReviewDTO(r.reviewId, u.userName, r.comment, r.imagesUrl, r.createdAt, r.score) " +
             "FROM Review r JOIN r.user u WHERE r.company.companyId = :companyId ORDER BY r.reviewId ASC")
     List<ReviewDTO> findReviewsByCompanyIdWithUserName(@Param("companyId") Integer companyId);
 }

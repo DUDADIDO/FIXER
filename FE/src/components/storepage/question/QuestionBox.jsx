@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
-import api from "../../api";
-import NoticeItem from "./notice/NoticeItem";
+import api from "@/api";
+import QuestionItem from "./QuestionItem";
 
 
 
@@ -116,7 +116,7 @@ const SaveButton = styled.button`
     background-color: #028a3d;
   }
 `;
-function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
+function QuestionBox({ title, data, storeId, storeName }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(data.length / itemsPerPage);
@@ -151,7 +151,7 @@ function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
       </ButtonContainer>
       <CommunityList>
         {currentItems.map((item) => (
-          <NoticeItem key={item.index} data={item} />
+          <QuestionItem key={item.index} data={item} storeId={storeId} questionId={item.questionId} />
         ))}
       </CommunityList>
       <Pagination>
@@ -180,4 +180,4 @@ function CommunitySectionWithPagination({ title, data, storeId, storeName }) {
     </CommunitySection>
   );
 }
-export default CommunitySectionWithPagination;
+export default QuestionBox;
