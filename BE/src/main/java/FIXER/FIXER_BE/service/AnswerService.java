@@ -7,9 +7,9 @@ import FIXER.FIXER_BE.entity.User;
 import FIXER.FIXER_BE.repository.AnswerRepository;
 import FIXER.FIXER_BE.repository.QuestionRepository;
 import FIXER.FIXER_BE.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,18 +24,28 @@ public class AnswerService {
 
     @Transactional
     public Answer createAnswer(Integer questionId, Integer userNum, AnswerDTO answerDTO) {
+        // 질문과 사용자 엔티티 조회
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid question ID"));
         User user = userRepository.findById(userNum)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user ID"));
 
+        // 답변 엔티티 생성 및 저장
         Answer answer = Answer.builder()
                 .question(question)
                 .user(user)
                 .content(answerDTO.getContent())
                 .build();
 
-        return answerRepository.save(answer);
+        Answer savedAnswer = answerRepository.save(answer);
+
+        // answerCheck 값을 true로 설정하고 question 저장
+        if (!question.getAnswerCheck()) {  // answerCheck가 false인 경우에만 업데이트
+            question.setAnswerCheck(true);
+            questionRepository.save(question);
+        }
+
+        return savedAnswer;
     }
 
     public List<AnswerDTO> getAnswersByQuestionId(Integer questionId) {
