@@ -9,6 +9,8 @@ import CommunityQnAData from "@/components/communitypage/CommunityQnADummy.json"
 import api from "../../api";
 import CommunitySectionWithPagination from "./CommunitySectionWithPagination.JSX";
 import NoticeBox from "./notice/NoticeBox";
+import ReviewBox from "./reviews/ReviewBox";
+import QuestionBox from "./question/QuestionBOx";
 
 const StoreContainer = styled.div`
   display: flex;
@@ -208,6 +210,26 @@ function StoreInfoBox({ companyId }) {
           .catch((error) => {
               console.error("Error fetching store info:", error);
           });
+
+          api //리뷰 API 호출
+          .get(`/api/company/storeinfo/${companyId}/reviews`) // companyId로 API 호출
+          .then((response) => {
+              setReviewInfos(response.data);
+              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
+          })
+          .catch((error) => {
+              console.error("Error fetching store info:", error);
+          });     
+
+          api //qna API 호출
+          .get(`/api/company/storeinfo/${companyId}/questions`) // companyId로 API 호출
+          .then((response) => {
+              setQuestionInfos(response.data);
+              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
+          })
+          .catch((error) => {
+              console.error("Error fetching store info:", error);
+          });     
   }, [companyId]); // companyId 변경 시 useEffect 재실행
 
 
@@ -279,7 +301,7 @@ function StoreInfoBox({ companyId }) {
             )}
           </StoreImageWrapper>
           <StoreInfo>
-            <div>{storeInfo.description}</div>
+            <div>{storeInfo.content}</div>
             <div>지원 기기: {storeInfo.supported_features?.join(", ")}</div>
           </StoreInfo>
           <MapPlaceholder>지도 위치</MapPlaceholder>
@@ -400,15 +422,15 @@ function StoreInfoBox({ companyId }) {
         storeId={storeInfos[0]?.company_id}
         storeName={storeInfos[0]?.name}
       />
-      <CommunitySectionWithPagination
+      <ReviewBox
         title="리뷰"
-        data={CommunityReviewData}
+        data={reviewInfos}
         storeId={storeInfos[0]?.company_id}
         storeName={storeInfos[0]?.name}
       />
-      <CommunitySectionWithPagination
+      <QuestionBox
         title="Q&A"
-        data={CommunityQnAData}
+        data={questionInfos}
         storeId={storeInfos[0]?.company_id}
         storeName={storeInfos[0]?.name}
       />

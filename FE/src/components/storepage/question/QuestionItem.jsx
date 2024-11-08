@@ -1,18 +1,18 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-export default function QuestionItem({ data }) {
+export default function QuestionItem({ data, storeId, questionId }) {
   const [isHover, setIsHover] = useState(false);
-
+  console.log(data);
   return (
     <Link
-      to={`${data.id}`}
+      to={`/storeinfo/${storeId}/qnadetail/${questionId}`}
       state={{ data }}
       className="flex justify-between items-center font-bold"
       onMouseEnter={() => setIsHover(true)}
       onMouseLeave={() => setIsHover(false)}
     >
-      <p className="w-1/12 text-center">{data.id}</p>
+      <p className="w-1/12 text-center">{data.index}</p>
       <div className="w-8/12 flex justify-start items-center">
         <p
           className={`truncate ${isHover ? "text-blue-500" : ""} duration-150`}
@@ -20,11 +20,11 @@ export default function QuestionItem({ data }) {
           {data.title}
         </p>
         <p>&nbsp;&nbsp;&nbsp;</p>
-        <span className="text-gray-400 font-light">[{data.comment_cnt}]</span>
+        {/* <span className="text-gray-400 font-light">[{data.comment_cnt}]</span> */}
       </div>
       <p className="w-1/12 text-center">{data.author}</p>
-      <p className="w-1/12 text-center">{data.created_at}</p>
-      <p className="w-1/12 text-center">{data.view_cnt}</p>
+      <p className="w-1/12 text-center">{data.createdAt}</p>
+      {/* <p className="w-1/12 text-center">{data.view_cnt}</p> */}
     </Link>
   );
 }
