@@ -15,13 +15,9 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.http.MediaType;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -184,16 +180,24 @@ public class CompanyController {
     }
 
 
-    @PutMapping("/storeinfo/{companyId}/update")
-    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDTO companyDTO) {
+    @PostMapping("/storeinfo/{companyId}/update")
+    public ResponseEntity<CompanyDTO> updateCompany(
+            @PathVariable("companyId") Integer companyId,
+            @RequestPart CompanyDTO companyDTO,
+            @RequestPart("logoFile") MultipartFile logoFile) {
+        String logoFilePath = null;
         companyDTO.setCompanyId(companyId);
-        CompanyDTO updateCompany = companyService.updateCompany(companyDTO);
 
-        if (updateCompany != null){
-            return ResponseEntity.ok(updateCompany);
-        }
-        else {
-            return ResponseEntity.notFound().build();
+        try {
+            // 로고 파일 저장 경로 설정 및 파일 저장
+            if (logoFile != null && !logoFile.isEmpty()) {
+                logoFilePath = companyUploadService.saveLogoFile(logoFile);
+            }
+
+            CompanyDTO updateCompany = companyService.updateCompany(companyDTO, logoFilePath);
+            return (updateCompany != null) ? ResponseEntity.ok(updateCompany) : ResponseEntity.notFound().build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 

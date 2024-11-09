@@ -38,7 +38,7 @@ public class CompanyService {
     }
 
     @Transactional
-    public CompanyDTO updateCompany(CompanyDTO companyDTO) {
+    public CompanyDTO updateCompany(CompanyDTO companyDTO, String logoPath) {
         Optional<Company> oldCompanyData = companyRepository.findById(companyDTO.getCompanyId());
         if (oldCompanyData.isPresent()) {
             Company company = oldCompanyData.get();
@@ -47,7 +47,7 @@ public class CompanyService {
             company.setPhone(companyDTO.getPhone());
 
             if (company.getCompaniesInfo() != null) {
-                company.getCompaniesInfo().setLogo(companyDTO.getLogo());
+                company.getCompaniesInfo().setLogo(logoPath);
                 company.getCompaniesInfo().setDescription(companyDTO.getDescription());
                 company.getCompaniesInfo().setContent(companyDTO.getContent());
             }

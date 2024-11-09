@@ -5,8 +5,6 @@ import FIXER.FIXER_BE.entity.Company;
 import FIXER.FIXER_BE.repository.CompanyRepository;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -17,10 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
