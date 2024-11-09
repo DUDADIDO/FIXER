@@ -16,7 +16,9 @@ import ReviewDetail from "./components/storepage/reviews/ReviewDetail";
 import NoticeDetail from "./components/storepage/notice/NoticeDetail";
 import AnswerForm from "./components/storepage/question/AnswerForm";
 import CrawerPage from "./pages/CrawerPage";
-
+import ManageRegisterStore from "./components/storeregisterpage/manageRegister/ManageRegisterStore";
+import RegisterDetail from "./components/storeregisterpage/manageRegister/RegisterDetail";
+import StoreRegister from "./components/storeregisterpage/manageRegister/StoreRegister";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -35,6 +37,9 @@ const router = createBrowserRouter([
       { path: "/storeinfo/:companyId/noticedtail/:noticeId", element: <NoticeDetail /> },
       { path: "/storeinfo/:companyId/answer/:questionId", element: <AnswerForm /> },
       { path: "/crawer", element: <CrawerPage /> },
+      { path: "/manageregister", element: <ManageRegisterStore /> },
+      { path: "/application/detail/:formId", element: <RegisterDetail /> },
+      { path: "/manageregister/register", element: <StoreRegister /> },
     ],
   },
   {
