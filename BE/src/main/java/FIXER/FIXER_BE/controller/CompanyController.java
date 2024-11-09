@@ -5,7 +5,6 @@ import FIXER.FIXER_BE.dto.NoticeDTO;
 import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.repository.CompanyRepository;
 import FIXER.FIXER_BE.service.CompanyService;
-import FIXER.FIXER_BE.service.CompanyUploadService;
 import FIXER.FIXER_BE.service.NoticeService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +14,9 @@ import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.http.MediaType;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -37,17 +32,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-
 @RestController
 @RequestMapping("/api/company")
 @RequiredArgsConstructor
 public class CompanyController {
 
     private final CompanyService companyService;
-    private final CompanyUploadService companyUploadService;
     private final NoticeService noticeService;
     private final CompanyRepository companyRepository;
     private static final String UPLOAD_DIR = "uploads/";
@@ -179,7 +169,7 @@ public class CompanyController {
             }
 
             // 엑셀 파일은 메모리 내에서 읽어와 처리
-            companyUploadService.saveCompanyData(excelFile, logoFilePath);
+            companyService.saveCompanyData(excelFile, logoFilePath);
 
             return ResponseEntity.ok("Files processed successfully");
         } catch (IOException e) {
@@ -188,16 +178,28 @@ public class CompanyController {
     }
 
 
-    @PutMapping("/storeinfo/{companyId}/update")
-    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDTO companyDTO) {
+    @PostMapping("/storeinfo/{companyId}/update")
+    public ResponseEntity<CompanyDTO> updateCompany(
+            @PathVariable("companyId") Integer companyId,
+            @RequestPart CompanyDTO companyDTO,
+            @RequestPart("logoFile") MultipartFile logoFile) {
+        String logoFilePath = null;
         companyDTO.setCompanyId(companyId);
-        CompanyDTO updateCompany = companyService.updateCompany(companyDTO);
 
-        if (updateCompany != null){
-            return ResponseEntity.ok(updateCompany);
-        }
-        else {
-            return ResponseEntity.notFound().build();
+        try {
+            // 로고 파일 저장 경로 설정 및 파일 저장
+            if (logoFile != null && !logoFile.isEmpty()) {
+                String logoFileName = generateFileName(logoFile.getOriginalFilename());
+                Path logoPath = Paths.get(System.getProperty("user.dir"), UPLOAD_DIR, "logos", logoFileName);
+                Files.createDirectories(logoPath.getParent());
+                logoFile.transferTo(logoPath.toFile());
+                logoFilePath = baseUrl + "/api/company/uploads/logos/" + logoFileName; // 프론트엔드에서 접근 가능한 URL 경로
+            }
+
+            CompanyDTO updateCompany = companyService.updateCompany(companyDTO, logoFilePath);
+            return (updateCompany != null) ? ResponseEntity.ok(updateCompany) : ResponseEntity.notFound().build();
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }
