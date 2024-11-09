@@ -187,14 +187,41 @@ function StoreInfoBox({ companyId }) {
   const [reviewInfos, setReviewInfos] = useState([]);
   const [isOwner, setIsOwner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editedStore, setEditedStore] = useState({});
-  
+  const [editedStore, setEditedStore] = useState({
+    supported_features: [],
+  });
+  const [brands, setBrands] = useState([]);  // API로 가져온 브랜드 옵션 저장
+  const [deviceTypes, setDeviceTypes] = useState([]);  // API로 가져온 기기 유형 옵션 저장
+  const [selectedDevices, setSelectedDevices] = useState({}); // 브랜드별 선택된 기기 목록 저장
+
   // 데이터 가져오기
   useEffect(() => {
+    api.get("/api/common-codes/brands")
+    .then((response) => {
+      setBrands(response.data);  // API 응답으로 설정
+    })
+    .catch((error) => {
+      console.error("Error fetching brands:", error);
+    });
+
+  // // 기기 유형 목록 가져오기
+  // api.get("/api/common-codes/device-types")
+  //   .then((response) => {
+  //     setDeviceTypes(response.data);  // API 응답으로 설정
+  //   })
+  //   .catch((error) => {
+  //     console.error("Error fetching device types:", error);
+  //   });
+
+
       api
           .get(`/api/company/storeinfo/${companyId}`) // companyId로 API 호출
           .then((response) => {
               setStoreInfos([response.data]);
+              setEditedStore({ 
+                ...response.data,
+                supported_features: response.data.supported_features || [],
+              }); // 기존 선택된 기기 불러오기
               setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
           })
           .catch((error) => {
@@ -210,6 +237,13 @@ function StoreInfoBox({ companyId }) {
           .catch((error) => {
               console.error("Error fetching store info:", error);
           });
+
+
+        const handleEditClick = (storeInfo) => {
+            setEditedStore({ ...storeInfo });
+            setIsModalOpen(true);
+          };
+
 
           api //리뷰 API 호출
           .get(`/api/company/storeinfo/${companyId}/reviews`) // companyId로 API 호출
@@ -235,27 +269,53 @@ function StoreInfoBox({ companyId }) {
 
 
   const handleEditClick = (storeInfo) => {
-    setEditedStore(storeInfo);
+    setEditedStore({...storeInfo});
     setIsModalOpen(true);
   };
 
   const handleModalClose = () => {
     setIsModalOpen(false);
   };
+  const handleBrandChange = (e) => {
+    const brandId = e.target.value;
+    setEditedStore({ ...editedStore, brand: brandId, supported_features: [] });
 
+    // 선택된 브랜드에 맞는 기기 유형을 가져옵니다.
+    if (brandId) {
+      api.get(`/api/common-codes/device-types-by-brand/${brandId}`)
+        .then((response) => {
+          setDeviceTypes(response.data); // 해당 브랜드의 기기 유형 목록 저장
+        })
+        .catch((error) => {
+          console.error("Error fetching device types:", error);
+        });
+    } else {
+      setDeviceTypes([]); // 브랜드가 선택되지 않은 경우, 기기 목록을 초기화
+    }
+  };
+  // 기기 선택 시 상태 업데이트
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
-    if (type === "checkbox") {
-      const [brand, device] = value.split(":");
-      const deviceId = `${brand}:${device}`;
-      const updatedFeatures = checked
-        ? [...(editedStore.supported_features || []), deviceId]
-        : editedStore.supported_features.filter((item) => item !== deviceId);
+    const brandId = editedStore.brand;
 
-      setEditedStore({ ...editedStore, supported_features: updatedFeatures });
-    } else {
-      setEditedStore({ ...editedStore, [name]: value });
-    }
+    // 선택된 기기 목록 관리
+    setSelectedDevices((prevSelectedDevices) => {
+      const updatedDevices = { ...prevSelectedDevices };
+      if (!updatedDevices[brandId]) {
+        updatedDevices[brandId] = [];
+      }
+
+      if (type === "checkbox") {
+        if (checked) {
+          updatedDevices[brandId] = [...updatedDevices[brandId], value];
+        } else {
+          updatedDevices[brandId] = updatedDevices[brandId].filter(
+            (item) => item !== value
+          );
+        }
+      }
+      return updatedDevices;
+    });
   };
 
   // 저장 버튼 클릭 시
@@ -368,42 +428,51 @@ function StoreInfoBox({ companyId }) {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">업체 선택:</label>
-              <select
-                name="brand"
-                value={editedStore.brand || ""}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-              >
-                <option value="">업체 선택</option>
-                {brandOptions.map((brand) => (
-                  <option key={brand} value={brand}>
-                    {brand}
-                  </option>
-                ))}
-              </select>
+  {/* 브랜드 선택 */}
+  <div className="mb-4">
+        <label>브랜드 선택:</label>
+        <select
+          name="brand"
+          value={editedStore.brand || ""}
+          onChange={handleBrandChange}
+          className="w-full p-2 border border-gray-300 rounded"
+        >
+          <option value="">브랜드 선택</option>
+          {brands.map((brand) => (
+            <option key={brand.codeId} value={brand.codeId}>
+              {brand.codeName}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      {/* 브랜드 선택 시 해당 기기 유형만 표시 */}
+      {editedStore.brand && (
+        <div className="mb-4">
+          <label className="block text-gray-700 mb-2">기기 선택:</label>
+          <div className="max-h-24 overflow-y-auto border border-gray-300 p-2 rounded">
+            {deviceTypes.map((device) => {
+              const deviceId = `${editedStore.brand}:${device.codeId}`;
+              return (
+                <div key={deviceId} className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="supported_features"
+                    value={deviceId}
+                    checked={selectedDevices[editedStore.brand]?.includes(deviceId) || false}
+                    onChange={handleInputChange}
+                    className="form-checkbox"
+                  />
+                  <label className="text-gray-700">{device.codeName}</label>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">기기 선택:</label>
-              <div className="max-h-24 overflow-y-auto border border-gray-300 p-2 rounded">
-                {deviceOptions[editedStore.brand]?.map((device) => {
-                  const deviceId = `${editedStore.brand}:${device}`;
-                  return (
-                    <div key={deviceId} className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        name="supported_features"
-                        value={deviceId}
-                        checked={editedStore.supported_features?.includes(deviceId) || false}
-                        onChange={handleInputChange}
-                        className="form-checkbox"
-                      />
-                      <label className="text-gray-700">{device}</label>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
+            
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">사진 경로:</label>
               <input

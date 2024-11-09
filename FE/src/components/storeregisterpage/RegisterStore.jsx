@@ -36,7 +36,7 @@ export default function RegisterStore() {
           "Content-Type": "multipart/form-data", // 파일 업로드를 위해 필요
         },
       });
-      if (response.status === 201) {
+      if (response.status === 200) {
         alert("업체 등록 신청이 완료되었습니다.");
       }
     } catch (error) {

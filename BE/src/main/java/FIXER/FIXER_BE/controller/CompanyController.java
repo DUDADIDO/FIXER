@@ -196,6 +196,4 @@ public class CompanyController {
             return ResponseEntity.notFound().build();
         }
     }
-
-
 }
