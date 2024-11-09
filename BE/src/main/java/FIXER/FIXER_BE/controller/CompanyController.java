@@ -3,7 +3,9 @@ package FIXER.FIXER_BE.controller;
 import FIXER.FIXER_BE.dto.CompanyDTO;
 import FIXER.FIXER_BE.dto.NoticeDTO;
 import FIXER.FIXER_BE.entity.Notice;
+import FIXER.FIXER_BE.repository.CompanyRepository;
 import FIXER.FIXER_BE.service.CompanyService;
+import FIXER.FIXER_BE.service.CompanyUploadService;
 import FIXER.FIXER_BE.service.NoticeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -11,7 +13,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+
 import org.springframework.http.MediaType;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -27,13 +34,19 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+
 @RestController
 @RequestMapping("/api/company")
 @RequiredArgsConstructor
 public class CompanyController {
 
     private final CompanyService companyService;
+    private final CompanyUploadService companyUploadService;
     private final NoticeService noticeService;
+    private final CompanyRepository companyRepository;
     private static final String UPLOAD_DIR = "uploads/";
 
     @Value("${base.url}")
@@ -144,4 +157,30 @@ public class CompanyController {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         return timestamp + "_" + originalFileName;
     }
+
+
+    @GetMapping("/storeregister")
+    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            companyUploadService.saveCompanyData(file);
+            return ResponseEntity.ok("Success");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/storeinfo/{companyId}/update")
+    public ResponseEntity<CompanyDTO> updateCompany(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDTO companyDTO) {
+        companyDTO.setCompanyId(companyId);
+        CompanyDTO updateCompany = companyService.updateCompany(companyDTO);
+
+        if (updateCompany != null){
+            return ResponseEntity.ok(updateCompany);
+        }
+        else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
 }

@@ -19,7 +19,7 @@ public class Company {
     @Column(name = "company_id")
     private Integer companyId;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "info_bord_id", referencedColumnName = "info_bord_id", nullable = false)
     private CompaniesInfo companiesInfo;
 

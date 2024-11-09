@@ -7,8 +7,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -32,5 +35,30 @@ public class CompanyService {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new RuntimeException("Company not found"));
         return CompanyDTO.fromEntity(company);
+    }
+
+    @Transactional
+    public CompanyDTO updateCompany(CompanyDTO companyDTO) {
+        Optional<Company> oldCompanyData = companyRepository.findById(companyDTO.getCompanyId());
+        if (oldCompanyData.isPresent()) {
+            Company company = oldCompanyData.get();
+            company.setName(companyDTO.getName());
+            company.setLocation(companyDTO.getLocation());
+            company.setPhone(companyDTO.getPhone());
+
+            if (company.getCompaniesInfo() != null) {
+                company.getCompaniesInfo().setLogo(companyDTO.getLogo());
+                company.getCompaniesInfo().setDescription(companyDTO.getDescription());
+                company.getCompaniesInfo().setContent(companyDTO.getContent());
+            }
+
+            company.setUpdatedAt(LocalDateTime.now());
+
+            Company updatedCompany = companyRepository.save(company);
+            return CompanyDTO.fromEntity(updatedCompany);
+        }
+        else {
+            return null;
+        }
     }
 }
