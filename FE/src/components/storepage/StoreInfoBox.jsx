@@ -1,16 +1,11 @@
 import React, { useEffect, useState } from "react";
 import {useParams, Link } from "react-router-dom";
 import styled from "styled-components";
-import brandOptions from "./brandOptions.json";
-import deviceOptions from "./deviceOptions.json";
-import CommunityNoticeData from "@/components/communitypage/CommunityNoticeDummy.json";
-import CommunityReviewData from "@/components/communitypage/CommunityReviewDummy.json";
-import CommunityQnAData from "@/components/communitypage/CommunityQnADummy.json";
 import api from "../../api";
-import CommunitySectionWithPagination from "./CommunitySectionWithPagination.JSX";
 import NoticeBox from "./notice/NoticeBox";
 import ReviewBox from "./reviews/ReviewBox";
 import QuestionBox from "./question/QuestionBOx";
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"; 
 
 const StoreContainer = styled.div`
   display: flex;
@@ -193,7 +188,7 @@ function StoreInfoBox({ companyId }) {
   const [brands, setBrands] = useState([]);  // API로 가져온 브랜드 옵션 저장
   const [deviceTypes, setDeviceTypes] = useState([]);  // API로 가져온 기기 유형 옵션 저장
   const [selectedDevices, setSelectedDevices] = useState({}); // 브랜드별 선택된 기기 목록 저장
-
+  const [logoUrl, setLogoUrl] = useState({}); //
   // 데이터 가져오기
   useEffect(() => {
     api.get("/api/common-codes/brands")
@@ -203,17 +198,6 @@ function StoreInfoBox({ companyId }) {
     .catch((error) => {
       console.error("Error fetching brands:", error);
     });
-
-  // // 기기 유형 목록 가져오기
-  // api.get("/api/common-codes/device-types")
-  //   .then((response) => {
-  //     setDeviceTypes(response.data);  // API 응답으로 설정
-  //   })
-  //   .catch((error) => {
-  //     console.error("Error fetching device types:", error);
-  //   });
-
-
       api
           .get(`/api/company/storeinfo/${companyId}`) // companyId로 API 호출
           .then((response) => {
@@ -223,6 +207,7 @@ function StoreInfoBox({ companyId }) {
                 supported_features: response.data.supported_features || [],
               }); // 기존 선택된 기기 불러오기
               setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
+              setLogoUrl([`${apiBaseUrl}${response.data.logo}`]);
           })
           .catch((error) => {
               console.error("Error fetching store info:", error);
@@ -340,7 +325,7 @@ function StoreInfoBox({ companyId }) {
       {storeInfos.map((storeInfo) => (
         <StoreContainer key={storeInfo.company_id}>
           <StoreImageWrapper>
-            <StoreImage src={storeInfo.logo} alt="Store Logo" />
+            <StoreImage src={logoUrl} alt="Store Logo" />
             <StoreName>{storeInfo.name}</StoreName>
             <StoreStats className="flex flex-col gap-2">
               <div className="flex gap-4">
