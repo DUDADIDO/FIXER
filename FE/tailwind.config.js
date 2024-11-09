@@ -1,5 +1,9 @@
 /** @type {import('tailwindcss').Config} */
 export default {
+  server: {
+    host: '0.0.0.0',
+    port: 3000,
+  },
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",

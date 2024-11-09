@@ -49,4 +49,17 @@ public class Company {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        updatedAt = LocalDateTime.now();
+        repairCount = 0;
+        score = BigDecimal.valueOf(0);
+        tag = 1;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+    }
 }
