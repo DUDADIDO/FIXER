@@ -21,7 +21,7 @@ export default function WriteNotice() {
     if (file) {
       formData.append("file", file); // 파일이 있을 경우에만 추가
     }
-
+    console.log(formData.title, formData.content);
     try {
       const response = await api.post(`/api/company/storeinfo/${companyId}/writenotice`, formData, {
         headers: {

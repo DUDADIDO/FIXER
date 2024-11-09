@@ -35,6 +35,7 @@ public class QuestionService {
                 .user(user)
                 .title(questionDTO.getTitle())
                 .content(questionDTO.getContent())
+                .filePath(questionDTO.getFilePath())
                 .answerCheck(false)
                 .build();
 
@@ -53,7 +54,7 @@ public class QuestionService {
                             question.getUser().getUserName(),
                             question.getTitle(),
                             question.getContent(),
-                            null,
+                            question.getFilePath(),
                             question.getCreatedAt(),
                             question.getAnswerCheck()
                     );

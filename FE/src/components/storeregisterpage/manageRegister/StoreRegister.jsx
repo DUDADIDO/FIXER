@@ -1,8 +1,7 @@
 import { useState } from "react";
-import axios from "axios";
 import api from "@/api"
 
-export default function RegisterStore() {
+export default function StoreRegister() {
   const [applicationForm, setApplicationForm] = useState(null);
   const [zipFile, setZipFile] = useState(null);
 
