@@ -308,7 +308,7 @@ function StoreInfoBox({ companyId }) {
         </StoreContainer>
       ))}
 
-{isModalOpen && (
+      {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="w-[700px] bg-white p-8 rounded-lg shadow-lg">
             <button 
@@ -328,13 +328,23 @@ function StoreInfoBox({ companyId }) {
               />
             </div>
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">설명:</label>
+              <label className="block text-gray-700 mb-2">검색 창 설명:</label>
               <textarea
                 name="description"
                 value={editedStore.description}
                 onChange={handleInputChange}
                 className="w-full p-2 border border-gray-300 rounded"
-                rows="5"
+                rows="4"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">설명:</label>
+              <textarea
+                name="content"
+                value={editedStore.content}
+                onChange={handleInputChange}
+                className="w-full p-2 border border-gray-300 rounded"
+                rows="2"
               />
             </div>
             <div className="mb-4">
