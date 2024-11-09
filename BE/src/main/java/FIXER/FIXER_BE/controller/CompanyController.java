@@ -7,6 +7,7 @@ import FIXER.FIXER_BE.repository.CompanyRepository;
 import FIXER.FIXER_BE.service.CompanyService;
 import FIXER.FIXER_BE.service.CompanyUploadService;
 import FIXER.FIXER_BE.service.NoticeService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
@@ -108,41 +109,39 @@ public class CompanyController {
     }
 
     // 파일 제공 엔드포인트
-    @GetMapping("/uploads/{filename:.+}")
+    @GetMapping("/uploads/**")
     @ResponseBody
-    public ResponseEntity<Resource> serveFile(@PathVariable String filename) {
+    public ResponseEntity<Resource> serveFile(HttpServletRequest request) {
         try {
-            // 파일 경로 지정 (저장된 경로와 일치하도록 설정)
-            Path file = Paths.get(System.getProperty("user.dir"), UPLOAD_DIR, filename);
+            // URL에서 파일 경로를 동적으로 추출
+            String requestPath = request.getRequestURI().replace("/api/company/uploads/", "");
+            Path filePath = Paths.get(System.getProperty("user.dir"), UPLOAD_DIR, requestPath);
 
-            // 실제 파일이 존재하고 읽을 수 있는지 확인
-            if (!Files.exists(file) || !Files.isReadable(file)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                        .body(null);
+            // 파일이 존재하고 읽을 수 있는지 확인
+            if (!Files.exists(filePath) || !Files.isReadable(filePath)) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
             }
 
             // 파일 리소스를 읽어옴
-            Resource resource = new UrlResource(file.toUri());
+            Resource resource = new UrlResource(filePath.toUri());
 
             // 파일 MIME 타입 지정 (파일 확장자 기반으로 MIME 타입 추론)
-            String contentType = Files.probeContentType(file);
+            String contentType = Files.probeContentType(filePath);
             if (contentType == null) {
                 contentType = "application/octet-stream";
             }
 
-            // 파일이 올바르게 읽히는지 확인
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath.getFileName().toString() + "\"")
                     .body(resource);
         } catch (MalformedURLException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         } catch (IOException e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(null);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     @GetMapping("/storeinfo/{companyId}/notices")
     public ResponseEntity<List<NoticeDTO>> getCompanyNotices(@PathVariable("companyId") Integer companyId) {
@@ -159,15 +158,31 @@ public class CompanyController {
     }
 
 
-    @GetMapping("/storeregister")
-    public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
+    @PostMapping("/storeregister")
+    public ResponseEntity<String> uploadFiles(
+            @RequestParam("excelFile") MultipartFile excelFile,
+            @RequestParam("logoFile") MultipartFile logoFile) {
+        String logoFilePath = null;
+
         try {
-            companyUploadService.saveCompanyData(file);
-            return ResponseEntity.ok("Success");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+            // 로고 파일 저장 경로 설정 및 파일 저장
+            if (logoFile != null && !logoFile.isEmpty()) {
+                String logoFileName = generateFileName(logoFile.getOriginalFilename());
+                Path logoPath = Paths.get(System.getProperty("user.dir"), UPLOAD_DIR, "logos", logoFileName);
+                Files.createDirectories(logoPath.getParent());
+                logoFile.transferTo(logoPath.toFile());
+                logoFilePath = baseUrl + "/api/company/uploads/logos/" + logoFileName; // 프론트엔드에서 접근 가능한 URL 경로
+            }
+
+            // 엑셀 파일은 메모리 내에서 읽어와 처리
+            companyUploadService.saveCompanyData(excelFile, logoFilePath);
+
+            return ResponseEntity.ok("Files processed successfully");
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("File upload failed: " + e.getMessage());
         }
     }
+
 
     @PutMapping("/storeinfo/{companyId}/update")
     public ResponseEntity<CompanyDTO> updateCompany(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDTO companyDTO) {
