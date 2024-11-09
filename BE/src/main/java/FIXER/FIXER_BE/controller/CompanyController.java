@@ -26,6 +26,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -115,6 +117,7 @@ public class CompanyController {
         try {
             // URL에서 파일 경로를 동적으로 추출
             String requestPath = request.getRequestURI().replace("/api/company/uploads/", "");
+            requestPath = URLDecoder.decode(requestPath, "UTF-8"); // 한글 경로 디코딩
             Path filePath = Paths.get(System.getProperty("user.dir"), UPLOAD_DIR, requestPath);
 
             // 파일이 존재하고 읽을 수 있는지 확인
@@ -125,15 +128,16 @@ public class CompanyController {
             // 파일 리소스를 읽어옴
             Resource resource = new UrlResource(filePath.toUri());
 
-            // 파일 MIME 타입 지정 (파일 확장자 기반으로 MIME 타입 추론)
+            // 파일 MIME 타입 지정
             String contentType = Files.probeContentType(filePath);
             if (contentType == null) {
                 contentType = "application/octet-stream";
             }
 
+            // 파일 응답
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
-                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filePath.getFileName().toString() + "\"")
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + URLEncoder.encode(filePath.getFileName().toString(), "UTF-8") + "\"")
                     .body(resource);
         } catch (MalformedURLException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
