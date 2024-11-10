@@ -63,7 +63,7 @@ export default function NavigationBar() {
       {authToken ? (
         <div className="flex flex-col">
           <Link
-            to={`/userinfo/${userNum}`}
+            to={`/userinfo`}
             className="text-gray-700 hover:text-blue-600"
           >
             마이페이지
