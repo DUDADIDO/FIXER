@@ -33,6 +33,19 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    public List<ReviewDTO> getReviewsByUserNum(Integer userNum) {
+        List<ReviewDTO> reviews = reviewRepository.findReviewsByUserNum(userNum);
+
+        // 인덱스를 추가해 `ReviewDTO` 리스트를 생성
+        return IntStream.range(0, reviews.size())
+                .mapToObj(i -> {
+                    ReviewDTO review = reviews.get(i);
+                    review.setIndex(i + 1);  // 인덱스를 추가
+                    return review;
+                })
+                .collect(Collectors.toList());
+    }
+
     public Review createReview(Integer companyId, Integer userNum, ReviewDTO reviewDTO) {
         Company company = companyRepository.findById(companyId)
                 .orElseThrow(() -> new IllegalArgumentException("Company not found with ID: " + companyId));
