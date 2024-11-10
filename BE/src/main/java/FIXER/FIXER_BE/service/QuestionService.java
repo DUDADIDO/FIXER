@@ -50,6 +50,7 @@ public class QuestionService {
                     Question question = questions.get(i);
                     return new QuestionDTO(
                             question.getQuestionId(),
+                            question.getCompany().getCompanyId(),
                             i + 1,
                             question.getUser().getUserName(),
                             question.getTitle(),
@@ -70,6 +71,7 @@ public class QuestionService {
                     Question question = questions.get(i);
                     return new QuestionDTO(
                             question.getQuestionId(),
+                            question.getCompany().getCompanyId(),
                             i + 1,
                             question.getUser().getUserName(),
                             question.getTitle(),
