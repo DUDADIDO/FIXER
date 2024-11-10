@@ -2,10 +2,12 @@ package FIXER.FIXER_BE.controller;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
 import FIXER.FIXER_BE.dto.NoticeDTO;
+import FIXER.FIXER_BE.dto.SupportedDeviceDTO;
 import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.repository.CompanyRepository;
 import FIXER.FIXER_BE.service.CompanyService;
 import FIXER.FIXER_BE.service.NoticeService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,6 +30,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -178,28 +181,50 @@ public class CompanyController {
     }
 
 
-    @PostMapping("/storeinfo/{companyId}/update")
+    @PostMapping(value = "/storeinfo/{companyId}/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CompanyDTO> updateCompany(
             @PathVariable("companyId") Integer companyId,
-            @RequestPart CompanyDTO companyDTO,
-            @RequestPart("logoFile") MultipartFile logoFile) {
-        String logoFilePath = null;
+            @RequestPart("companyDTO") CompanyDTO companyDTO,
+            @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
+            @RequestPart("supportedDeviceIds") String supportedDeviceIds // 문자열로 받음
+    ) {
+        String logoFilePath = companyDTO.getLogo();
         companyDTO.setCompanyId(companyId);
 
         try {
-            // 로고 파일 저장 경로 설정 및 파일 저장
+            // 로고 파일이 있는 경우에만 파일 저장 로직 실행
             if (logoFile != null && !logoFile.isEmpty()) {
                 String logoFileName = generateFileName(logoFile.getOriginalFilename());
-                Path logoPath = Paths.get(System.getProperty("user.dir"), UPLOAD_DIR, "logos", logoFileName);
+                Path logoPath = Paths.get(System.getProperty("user.dir"), "uploads", "logos", logoFileName);
                 Files.createDirectories(logoPath.getParent());
                 logoFile.transferTo(logoPath.toFile());
-                logoFilePath = baseUrl + "/api/company/uploads/logos/" + logoFileName; // 프론트엔드에서 접근 가능한 URL 경로
+                logoFilePath = "http://localhost:8080/api/company/uploads/logos/" + logoFileName;
             }
 
-            CompanyDTO updateCompany = companyService.updateCompany(companyDTO, logoFilePath);
-            return (updateCompany != null) ? ResponseEntity.ok(updateCompany) : ResponseEntity.notFound().build();
+            // supportedDeviceIds를 JSON 문자열에서 List<Integer>로 변환
+            List<Integer> supportedDeviceIdList = Arrays.asList(new ObjectMapper().readValue(supportedDeviceIds, Integer[].class));
+
+            // 회사 정보 업데이트
+            CompanyDTO updatedCompany = companyService.updateCompany(companyDTO, logoFilePath);
+
+            // 지원 기기 정보 업데이트
+            companyService.updateSupportedDevices(companyId, supportedDeviceIdList);
+
+            return (updatedCompany != null) ? ResponseEntity.ok(updatedCompany) : ResponseEntity.notFound().build();
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
+
+
+    @GetMapping("/{companyId}/supported-devices")
+    public ResponseEntity<List<SupportedDeviceDTO>> getSupportedDevices(@PathVariable Integer companyId) {
+        List<SupportedDeviceDTO> supportedDevices = companyService.getSupportedDevices(companyId);
+        return ResponseEntity.ok(supportedDevices);
+    }
+
+
+
 }

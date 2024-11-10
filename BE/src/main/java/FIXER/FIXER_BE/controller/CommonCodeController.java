@@ -1,7 +1,9 @@
 package FIXER.FIXER_BE.controller;
 
+import FIXER.FIXER_BE.dto.BrandDeviceTypeDTO;
 import FIXER.FIXER_BE.dto.CommonCodeDTO;
 import FIXER.FIXER_BE.service.CommonCodeService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,5 +31,10 @@ public class CommonCodeController {
     @GetMapping("/device-types-by-brand/{brandId}")
     public List<CommonCodeDTO> getDeviceTypesByBrand(@PathVariable("brandId") Long brandId) {
         return commonCodeService.getDeviceTypesByBrand(brandId);
+    }
+    @GetMapping("/brand-device-types")
+    public ResponseEntity<List<BrandDeviceTypeDTO>> getBrandDeviceTypes() {
+        List<BrandDeviceTypeDTO> brandDeviceTypes = commonCodeService.getBrandDeviceTypes();
+        return ResponseEntity.ok(brandDeviceTypes);
     }
 }

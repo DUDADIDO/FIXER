@@ -9,20 +9,21 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "brand_device_map")
-public class BrandDeviceMap {
+@Table(name = "company_supported_devices")
+public class CompanySupportedDevices {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "brand_id", nullable = false)
-    private Brand brand;
+    @JoinColumn(name = "company_id", nullable = false)
+    private Company company;
 
     @ManyToOne
-    @JoinColumn(name = "device_type_id", nullable = false)
-    private DeviceType deviceType;
+    @JoinColumn(name = "brand_device_map_id", nullable = false)
+    private BrandDeviceMap brandDeviceMap;
 
     // 필요한 필드 추가 및 생성자 정의
 }

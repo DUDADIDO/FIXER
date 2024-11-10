@@ -1,5 +1,6 @@
 package FIXER.FIXER_BE.repository;
 
+import FIXER.FIXER_BE.dto.BrandDeviceTypeDTO;
 import FIXER.FIXER_BE.entity.CommonCode;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -18,4 +19,11 @@ public interface CommonCodeRepository extends JpaRepository<CommonCode, Integer>
     @Query("SELECT c FROM CommonCode c WHERE c.codeId IN " +
             "(SELECT dbm.deviceType.codeId FROM DeviceBrandMap dbm WHERE dbm.brand.codeId = :brandId)")
     List<CommonCode> findDeviceTypesByBrandId(@Param("brandId") int brandId);
+
+    @Query("SELECT new FIXER.FIXER_BE.dto.BrandDeviceTypeDTO(bdm.id, b.id, b.name, d.id, d.name) " +
+            "FROM BrandDeviceMap bdm " +
+            "JOIN bdm.brand b " +
+            "JOIN bdm.deviceType d")
+    List<BrandDeviceTypeDTO> findBrandDeviceTypes();
+
 }

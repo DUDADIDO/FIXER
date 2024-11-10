@@ -1,9 +1,14 @@
 package FIXER.FIXER_BE.service;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
+import FIXER.FIXER_BE.dto.SupportedDeviceDTO;
+import FIXER.FIXER_BE.entity.BrandDeviceMap;
 import FIXER.FIXER_BE.entity.CompaniesInfo;
 import FIXER.FIXER_BE.entity.Company;
+import FIXER.FIXER_BE.entity.CompanySupportedDevices;
+import FIXER.FIXER_BE.repository.BrandDeviceMapRepository;
 import FIXER.FIXER_BE.repository.CompanyRepository;
+import FIXER.FIXER_BE.repository.CompanySupportedDevicesRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -25,6 +30,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CompanyService {
     private final CompanyRepository companyRepository;
+    private final CompanySupportedDevicesRepository companySupportedDevicesRepository;
+    private final BrandDeviceMapRepository brandDeviceMapRepository; // 추가
 
     public List<CompanyDTO> getCompanies(int pageSize, Integer lastId) {
         Pageable pageable = PageRequest.of(0, pageSize);
@@ -98,5 +105,27 @@ public class CompanyService {
         } catch (IOException e) {
             throw new RuntimeException("파일을 읽는 중 오류 발생", e);
         }
+    }
+    public List<SupportedDeviceDTO> getSupportedDevices(Integer companyId) {
+        return companyRepository.findSupportedDevices(companyId);
+    }
+    public void updateSupportedDevices(Integer companyId, List<Integer> supportedDevices) {
+        // 회사 엔티티 조회
+        Company company = companyRepository.findById(companyId)
+                .orElseThrow(() -> new IllegalArgumentException("Invalid company ID: " + companyId));
+
+        // 기존 지원 기기 매핑 삭제
+        companySupportedDevicesRepository.deleteByCompany_CompanyId(companyId);
+
+        // 새로운 매핑 삽입
+        supportedDevices.forEach(brandDeviceMapId -> {
+            BrandDeviceMap brandDeviceMap = brandDeviceMapRepository.findById(brandDeviceMapId)
+                    .orElseThrow(() -> new IllegalArgumentException("Invalid brand device map ID: " + brandDeviceMapId));
+
+            CompanySupportedDevices newMapping = new CompanySupportedDevices();
+            newMapping.setCompany(company); // Company 엔티티 설정
+            newMapping.setBrandDeviceMap(brandDeviceMap); // BrandDeviceMap 엔티티 설정
+            companySupportedDevicesRepository.save(newMapping);
+        });
     }
 }

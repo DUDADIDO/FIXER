@@ -1,5 +1,6 @@
 package FIXER.FIXER_BE.service;
 
+import FIXER.FIXER_BE.dto.BrandDeviceTypeDTO;
 import FIXER.FIXER_BE.dto.CommonCodeDTO;
 import FIXER.FIXER_BE.entity.CommonCode;
 import FIXER.FIXER_BE.repository.BrandDeviceMapRepository;
@@ -16,10 +17,12 @@ public class CommonCodeService {
 
     private final BrandRepository brandRepository;
     private final BrandDeviceMapRepository brandDeviceMapRepository;
+    private final CommonCodeRepository commonCodeRepository;
 
-    public CommonCodeService(BrandRepository brandRepository, BrandDeviceMapRepository brandDeviceMapRepository) {
+    public CommonCodeService(BrandRepository brandRepository, BrandDeviceMapRepository brandDeviceMapRepository, CommonCodeRepository commonCodeRepository) {
         this.brandRepository = brandRepository;
         this.brandDeviceMapRepository = brandDeviceMapRepository;
+        this.commonCodeRepository = commonCodeRepository;
     }
 
     // 모든 브랜드 목록 가져오기
@@ -36,6 +39,9 @@ public class CommonCodeService {
                 .stream()
                 .map(deviceType -> new CommonCodeDTO(deviceType.getCodeId(), deviceType.getCodeName()))
                 .collect(Collectors.toList());
+    }
+    public List<BrandDeviceTypeDTO> getBrandDeviceTypes() {
+        return commonCodeRepository.findBrandDeviceTypes();
     }
 }
 
