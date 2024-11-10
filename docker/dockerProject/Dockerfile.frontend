@@ -1,0 +1,3 @@
+# Nginx로 정적 파일 제공
+FROM nginx:alpine
+COPY src/frontend/dist /usr/share/nginx/html

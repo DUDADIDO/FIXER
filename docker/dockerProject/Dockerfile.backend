@@ -1,0 +1,6 @@
+# Java 21 환경에서 Spring Boot 실행
+FROM openjdk:21-jdk
+WORKDIR /app
+COPY src/backend/build/libs/app.jar app.jar
+EXPOSE 8080
+CMD ["java", "-jar", "app.jar"]
