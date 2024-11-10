@@ -7,6 +7,8 @@ import FIXER.FIXER_BE.dto.User.LoginRequest;
 import FIXER.FIXER_BE.dto.User.UserDTO;
 import FIXER.FIXER_BE.dto.User.UserToken;
 
+import FIXER.FIXER_BE.entity.User;
+import FIXER.FIXER_BE.repository.UserRepository;
 import FIXER.FIXER_BE.service.QuestionService;
 import FIXER.FIXER_BE.service.ReviewService;
 import FIXER.FIXER_BE.service.UserService;
@@ -32,7 +34,7 @@ public class UserController {
     private final JwtUtil jwtUtil; // JWT 유틸리티
     private final QuestionService questionService;
     private final ReviewService reviewService;
-
+    private final UserRepository userRepository;
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
         // 유저 아이디를 이용해 사용자 조회
@@ -96,4 +98,21 @@ public class UserController {
         List<ReviewDTO> reviews = reviewService.getReviewsByUserNum(userNum);
         return ResponseEntity.ok(reviews);
     }
+
+    @GetMapping("/userinfo/{userNum}")
+    public ResponseEntity<UserDTO> getUserInfos(@PathVariable("userNum") Integer userNum) {
+        // userNum으로 User 엔티티를 조회
+        User user = userRepository.findById(userNum)
+                .orElseThrow(() -> new RuntimeException("User not found with userNum: " + userNum));
+
+        // 필요한 필드만 포함된 UserDTO 생성
+        UserDTO userDTO = UserDTO.builder()
+                .userId(user.getUserId())
+                .userName(user.getUserName())
+                .userEmail(user.getUserEmail())
+                .build();
+
+        return ResponseEntity.ok(userDTO);
+    }
+
 }
