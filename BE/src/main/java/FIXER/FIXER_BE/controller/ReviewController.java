@@ -33,12 +33,6 @@ public class ReviewController {
         return ResponseEntity.ok(reviews);
     }
 
-    @GetMapping("/user/{userNum}/reviews")
-    public ResponseEntity<List<ReviewDTO>> getUserReviews(@PathVariable("userNum") Integer userNum) {
-        List<ReviewDTO> reviews = reviewService.getReviewsByUserNum(userNum);
-        return ResponseEntity.ok(reviews);
-    }
-
     @PostMapping("/storeinfo/{companyId}/writereview")
     public ResponseEntity<?> createReview(
             @PathVariable("companyId") Integer companyId,
@@ -64,7 +58,7 @@ public class ReviewController {
             }
         }
 
-        ReviewDTO reviewDTO = new ReviewDTO(null, null, null, comment, imagesUrl, null, score);
+        ReviewDTO reviewDTO = new ReviewDTO(null, null, null, null, comment, imagesUrl, null, score);
         Review newReview = reviewService.createReview(companyId, userNum, reviewDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newReview);

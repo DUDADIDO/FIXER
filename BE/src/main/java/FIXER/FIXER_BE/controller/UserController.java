@@ -1,12 +1,14 @@
 package FIXER.FIXER_BE.controller;
 
 import FIXER.FIXER_BE.dto.QuestionDTO;
+import FIXER.FIXER_BE.dto.ReviewDTO;
 import FIXER.FIXER_BE.dto.User.CheckUserIdRequest;
 import FIXER.FIXER_BE.dto.User.LoginRequest;
 import FIXER.FIXER_BE.dto.User.UserDTO;
 import FIXER.FIXER_BE.dto.User.UserToken;
 
 import FIXER.FIXER_BE.service.QuestionService;
+import FIXER.FIXER_BE.service.ReviewService;
 import FIXER.FIXER_BE.service.UserService;
 import FIXER.FIXER_BE.service.security.AuthenticationService;
 import FIXER.FIXER_BE.service.security.JwtUtil;
@@ -29,6 +31,7 @@ public class UserController {
     private final AuthenticationService authenticationService; // 인증 서비스
     private final JwtUtil jwtUtil; // JWT 유틸리티
     private final QuestionService questionService;
+    private final ReviewService reviewService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -52,8 +55,6 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.OK).body(usertoken);
     }
 
-
-
     @PostMapping("/register")
     public ResponseEntity<UserDTO> createUser(@RequestBody UserDTO userDTO) {
         System.out.println("Received UserDTO in Controller: " + userDTO);
@@ -76,6 +77,8 @@ public class UserController {
         return updatedUser != null ? ResponseEntity.ok(updatedUser) : ResponseEntity.notFound().build();
     }
 
+    @PostMapping("/{userId}")
+
     @DeleteMapping("/{userNum}")
     public ResponseEntity<Void> deleteUser(@PathVariable Integer userNum) {
         boolean isDeleted = userService.deleteUser(userNum);
@@ -86,5 +89,11 @@ public class UserController {
     public ResponseEntity<List<QuestionDTO>> getUserQuestions(@PathVariable("userNum") Integer userNum) {
         List<QuestionDTO> questions = questionService.getQuestionsByUserNum(userNum);
         return ResponseEntity.ok(questions);
+    }
+
+    @GetMapping("/userinfo/{userNum}/reviews")
+    public ResponseEntity<List<ReviewDTO>> getUserReviews(@PathVariable("userNum") Integer userNum) {
+        List<ReviewDTO> reviews = reviewService.getReviewsByUserNum(userNum);
+        return ResponseEntity.ok(reviews);
     }
 }

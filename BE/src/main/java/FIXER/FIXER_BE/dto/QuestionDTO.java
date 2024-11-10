@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 public class QuestionDTO {
     private Integer questionId;
+    private Integer companyId;
     private Integer index;
     private String author; // 작성자 이름
     private String title;

@@ -52,7 +52,7 @@ public class QuestionController {
             }
         }
 
-        QuestionDTO questionDTO = new QuestionDTO(null, null, null, title, content, fileDownloadUrl, null, false);
+        QuestionDTO questionDTO = new QuestionDTO(null,null, null, null, title, content, fileDownloadUrl, null, false);
         Question newQuestion = questionService.createQuestion(companyId, userNum, questionDTO);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(newQuestion);
