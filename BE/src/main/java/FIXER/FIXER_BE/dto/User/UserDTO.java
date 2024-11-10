@@ -29,6 +29,7 @@ public class UserDTO {
     private String userEmail;
 
     private Integer userState;
+    private Integer myStore;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -40,6 +41,7 @@ public class UserDTO {
                 .userName(user.getUserName())
                 .userEmail(user.getUserEmail())
                 .userState(user.getUserState())
+                .myStore(user.getMyStore())
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt())
                 .build();
@@ -53,6 +55,7 @@ public class UserDTO {
                 .userName(this.userName)
                 .userEmail(this.userEmail)
                 .userState(this.userState)
+                .myStore(this.myStore)
                 .createdAt(this.createdAt)
                 .updatedAt(this.updatedAt)
                 .build();

@@ -37,6 +37,10 @@
         @Column(name = "user_state")
         private Integer userState;
 
+        @Setter
+        @Column(name = "my_store")
+        private Integer myStore;
+
         @Column(name = "created_at", insertable = false)
         @CreatedDate
         private LocalDateTime createdAt;
@@ -46,13 +50,14 @@
         private LocalDateTime updatedAt;
 
         @Builder
-        public User(Integer userNum, String userId, String password, String userName, String userEmail, Integer userState, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        public User(Integer userNum, String userId, String password, String userName, String userEmail, Integer userState, Integer myStore ,LocalDateTime createdAt, LocalDateTime updatedAt) {
             this.userNum = userNum;
             this.userId = userId;
             this.password = password;
             this.userName = userName;
             this.userEmail = userEmail;
-            this.userState = (userState == null) ? 1 : userState;
+            this.userState = (userState == null) ? 0 : userState;
+            this.myStore = (myStore == null) ? 0 : myStore;
             this.createdAt = createdAt;
             this.updatedAt = updatedAt;
         }

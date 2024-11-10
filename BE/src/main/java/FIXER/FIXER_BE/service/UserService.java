@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -25,6 +26,8 @@ public class UserService {
     @Transactional
     public UserDTO createUser(UserDTO userDTO) {
         User user = userDTO.toEntity();  // UserDTO를 User 엔티티로 변환
+        user.setCreatedAt(LocalDateTime.now());
+        user.setUpdatedAt(LocalDateTime.now());
         userRepository.save(user);  // User 엔티티 저장
         return UserDTO.fromEntity(user);  // 저장된 엔티티를 다시 DTO로 변환하여 반환
     }
