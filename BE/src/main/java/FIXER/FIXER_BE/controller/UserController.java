@@ -1,10 +1,12 @@
 package FIXER.FIXER_BE.controller;
 
+import FIXER.FIXER_BE.dto.QuestionDTO;
 import FIXER.FIXER_BE.dto.User.CheckUserIdRequest;
 import FIXER.FIXER_BE.dto.User.LoginRequest;
 import FIXER.FIXER_BE.dto.User.UserDTO;
 import FIXER.FIXER_BE.dto.User.UserToken;
 
+import FIXER.FIXER_BE.service.QuestionService;
 import FIXER.FIXER_BE.service.UserService;
 import FIXER.FIXER_BE.service.security.AuthenticationService;
 import FIXER.FIXER_BE.service.security.JwtUtil;
@@ -15,6 +17,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
@@ -24,6 +28,7 @@ public class UserController {
     private final PasswordService passwordService; // 패스워드 서비스
     private final AuthenticationService authenticationService; // 인증 서비스
     private final JwtUtil jwtUtil; // JWT 유틸리티
+    private final QuestionService questionService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginRequest loginRequest) {
@@ -75,5 +80,11 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Integer userNum) {
         boolean isDeleted = userService.deleteUser(userNum);
         return isDeleted ? ResponseEntity.noContent().build() : ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/userinfo/{userNum}/questions")
+    public ResponseEntity<List<QuestionDTO>> getUserQuestions(@PathVariable("userNum") Integer userNum) {
+        List<QuestionDTO> questions = questionService.getQuestionsByUserNum(userNum);
+        return ResponseEntity.ok(questions);
     }
 }
