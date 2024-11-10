@@ -115,7 +115,7 @@ public class CompanyService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid company ID: " + companyId));
 
         // 기존 지원 기기 매핑 삭제
-        companySupportedDevicesRepository.deleteByCompany_CompanyId(companyId);
+        companySupportedDevicesRepository.deleteSupportedDevicesByCompanyId(companyId);
 
         // 새로운 매핑 삽입
         supportedDevices.forEach(brandDeviceMapId -> {

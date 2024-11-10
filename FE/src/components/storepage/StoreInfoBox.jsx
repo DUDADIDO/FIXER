@@ -183,130 +183,116 @@ function StoreInfoBox({ companyId }) {
   const [isOwner, setIsOwner] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editedStore, setEditedStore] = useState({
+    name: "",
+    location: "",
+    phone: "",
+    description: "",
+    content: "",
     supported_features: [],
   });
-  const [brands, setBrands] = useState([]);  // API로 가져온 브랜드 옵션 저장
-  const [deviceTypes, setDeviceTypes] = useState([]);  // API로 가져온 기기 유형 옵션 저장
-  const [selectedDevices, setSelectedDevices] = useState({}); // 브랜드별 선택된 기기 목록 저장
-  const [logoUrl, setLogoUrl] = useState({}); //
-  // 데이터 가져오기
+  const [deviceTypes, setDeviceTypes] = useState([]); 
+  const [selectedBrand, setSelectedBrand] = useState(null);
+  const [selectedDevices, setSelectedDevices] = useState([]);
+  const [logoFile, setLogoFile] = useState(null);
+
   useEffect(() => {
-    api.get("/api/common-codes/brands")
-    .then((response) => {
-      setBrands(response.data);  // API 응답으로 설정
-    })
-    .catch((error) => {
-      console.error("Error fetching brands:", error);
-    });
-      api
-          .get(`/api/company/storeinfo/${companyId}`) // companyId로 API 호출
-          .then((response) => {
-              setStoreInfos([response.data]);
-              setEditedStore({ 
-                ...response.data,
-                supported_features: response.data.supported_features || [],
-              }); // 기존 선택된 기기 불러오기
-              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
-              setLogoUrl([`${apiBaseUrl}${response.data.logo}`]);
-          })
-          .catch((error) => {
-              console.error("Error fetching store info:", error);
-          });
+    api.get("/api/common-codes/brand-device-types")
+      .then((response) => {
+        setDeviceTypes(response.data);
+      })
+      .catch((error) => {
+        console.error("Error fetching brand-device types:", error);
+      });
 
-        api //공지사항 API 호출
-          .get(`/api/company/storeinfo/${companyId}/notices`) // companyId로 API 호출
-          .then((response) => {
-              setNoticeInfos(response.data);
-              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
-          })
-          .catch((error) => {
-              console.error("Error fetching store info:", error);
-          });
+    api.get(`/api/company/${companyId}/supported-devices`)
+      .then((response) => {
+        const initialSelectedDevices = response.data.map(device => device.brandDeviceMapId);
+        setSelectedDevices(initialSelectedDevices);
+      })
+      .catch((error) => {
+        console.error("Error fetching supported devices:", error);
+      });
 
+    api.get(`/api/company/storeinfo/${companyId}`)
+      .then((response) => {
+        setStoreInfos([response.data]);
+        setEditedStore({
+          name: response.data.name,
+          location: response.data.location,
+          phone: response.data.phone,
+          description: response.data.description,
+          content: response.data.content,
+          supported_features: response.data.supported_features || [],
+        });
+        setIsOwner(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching store info:", error);
+      });
 
-        const handleEditClick = (storeInfo) => {
-            setEditedStore({ ...storeInfo });
-            setIsModalOpen(true);
-          };
+    api.get(`/api/company/storeinfo/${companyId}/notices`)
+      .then((response) => {
+        setNoticeInfos(response.data);
+        setIsOwner(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching notices:", error);
+      });
 
+    api.get(`/api/company/storeinfo/${companyId}/reviews`)
+      .then((response) => {
+        setReviewInfos(response.data);
+        setIsOwner(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching reviews:", error);
+      });
 
-          api //리뷰 API 호출
-          .get(`/api/company/storeinfo/${companyId}/reviews`) // companyId로 API 호출
-          .then((response) => {
-              setReviewInfos(response.data);
-              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
-          })
-          .catch((error) => {
-              console.error("Error fetching store info:", error);
-          });     
+    api.get(`/api/company/storeinfo/${companyId}/questions`)
+      .then((response) => {
+        setQuestionInfos(response.data);
+        setIsOwner(true);
+      })
+      .catch((error) => {
+        console.error("Error fetching questions:", error);
+      });
+  }, [companyId]);
 
-          api //qna API 호출
-          .get(`/api/company/storeinfo/${companyId}/questions`) // companyId로 API 호출
-          .then((response) => {
-              setQuestionInfos(response.data);
-              setIsOwner(true); // 소유자 여부는 실제 조건에 맞게 수정
-          })
-          .catch((error) => {
-              console.error("Error fetching store info:", error);
-          });     
-  }, [companyId]); // companyId 변경 시 useEffect 재실행
-
-
-
-  const handleEditClick = (storeInfo) => {
-    setEditedStore({...storeInfo});
-    setIsModalOpen(true);
-  };
-
-  const handleModalClose = () => {
-    setIsModalOpen(false);
-  };
   const handleBrandChange = (e) => {
     const brandId = e.target.value;
-    setEditedStore({ ...editedStore, brand: brandId, supported_features: [] });
-
-    // 선택된 브랜드에 맞는 기기 유형을 가져옵니다.
-    if (brandId) {
-      api.get(`/api/common-codes/device-types-by-brand/${brandId}`)
-        .then((response) => {
-          setDeviceTypes(response.data); // 해당 브랜드의 기기 유형 목록 저장
-        })
-        .catch((error) => {
-          console.error("Error fetching device types:", error);
-        });
-    } else {
-      setDeviceTypes([]); // 브랜드가 선택되지 않은 경우, 기기 목록을 초기화
-    }
-  };
-  // 기기 선택 시 상태 업데이트
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    const brandId = editedStore.brand;
-
-    // 선택된 기기 목록 관리
-    setSelectedDevices((prevSelectedDevices) => {
-      const updatedDevices = { ...prevSelectedDevices };
-      if (!updatedDevices[brandId]) {
-        updatedDevices[brandId] = [];
-      }
-
-      if (type === "checkbox") {
-        if (checked) {
-          updatedDevices[brandId] = [...updatedDevices[brandId], value];
-        } else {
-          updatedDevices[brandId] = updatedDevices[brandId].filter(
-            (item) => item !== value
-          );
-        }
-      }
-      return updatedDevices;
-    });
+    setSelectedBrand(brandId);
   };
 
-  // 저장 버튼 클릭 시
+  const handleDeviceChange = (e) => {
+    const deviceId = parseInt(e.target.value);
+    setSelectedDevices((prev) =>
+      e.target.checked
+        ? [...prev, deviceId]
+        : prev.filter((id) => id !== deviceId)
+    );
+  };
+
   const handleSaveChanges = () => {
-    api
-      .post("/api/company/storeinfo/update", editedStore)
+    const supportedDeviceIds = selectedDevices;
+  
+    const formData = new FormData();
+    formData.append("companyDTO", JSON.stringify(editedStore));
+    formData.append("supportedDeviceIds", JSON.stringify(supportedDeviceIds));
+  
+    // 파일이 선택된 경우에만 추가
+    if (logoFile) {
+      formData.append("logoFile", logoFile);
+    }
+
+    for (const x of formData.entries()) {
+      console.log(x);
+     };
+  
+    api.post(`/api/company/storeinfo/${companyId}/update`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data" 
+      },
+    })
       .then((response) => {
         setStoreInfos((prevInfos) =>
           prevInfos.map((store) =>
@@ -325,20 +311,18 @@ function StoreInfoBox({ companyId }) {
       {storeInfos.map((storeInfo) => (
         <StoreContainer key={storeInfo.company_id}>
           <StoreImageWrapper>
-            <StoreImage src={logoUrl} alt="Store Logo" />
+            <StoreImage src={`${apiBaseUrl}${storeInfo.logo}`} alt="Store Logo" />
             <StoreName>{storeInfo.name}</StoreName>
-            <StoreStats className="flex flex-col gap-2">
-              <div className="flex gap-4">
-                <div>수리 횟수: {storeInfo.repair_count}</div>
-                <div>평점: {storeInfo.score}</div>
-                <div>리뷰 수: {storeInfo.review_cnt}</div>
-              </div>
-              <div>전화번호: {storeInfo.phone}</div> {/* 전화번호는 아래 줄에 출력 */}
+            <StoreStats>
+              <div>수리 횟수: {storeInfo.repair_count}</div>
+              <div>평점: {storeInfo.score}</div>
+              <div>리뷰 수: {storeInfo.review_cnt}</div>
+              <div>전화번호: {storeInfo.phone}</div>
               <div>주소: {storeInfo.location}</div>
             </StoreStats>
             {isOwner && (
               <button
-                onClick={() => handleEditClick(storeInfo)}
+                onClick={() => setIsModalOpen(true)}
                 className="bg-yellow-500 text-white px-4 py-2 rounded cursor-pointer hover:bg-yellow-600"
               >
                 수정
@@ -353,151 +337,139 @@ function StoreInfoBox({ companyId }) {
         </StoreContainer>
       ))}
 
+      {/* 모달 */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
           <div className="w-[700px] bg-white p-8 rounded-lg shadow-lg">
-            <button 
-              onClick={handleModalClose} 
-              className="bg-red-500 text-white px-4 py-2 rounded float-right">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="bg-red-500 text-white px-4 py-2 rounded float-right"
+            >
               X
             </button>
             <h3 className="text-lg font-bold mb-4">업체 정보 수정</h3>
+            
+            {/* Name field */}
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">업체명:</label>
               <input
                 type="text"
                 name="name"
                 value={editedStore.name}
-                onChange={handleInputChange}
+                onChange={(e) => setEditedStore({ ...editedStore, name: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">검색 창 설명:</label>
-              <textarea
-                name="description"
-                value={editedStore.description}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                rows="4"
-              />
-            </div>
-            <div className="mb-4">
-              <label className="block text-gray-700 mb-2">설명:</label>
-              <textarea
-                name="content"
-                value={editedStore.content}
-                onChange={handleInputChange}
-                className="w-full p-2 border border-gray-300 rounded"
-                rows="2"
-              />
-            </div>
+
+            {/* Location field */}
             <div className="mb-4">
               <label className="block text-gray-700 mb-2">주소:</label>
               <input
                 type="text"
                 name="location"
                 value={editedStore.location}
-                onChange={handleInputChange}
+                onChange={(e) => setEditedStore({ ...editedStore, location: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
+
+            {/* Phone field */}
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">휴대폰 번호:</label>
+              <label className="block text-gray-700 mb-2">전화번호:</label>
               <input
                 type="text"
                 name="phone"
                 value={editedStore.phone}
-                onChange={handleInputChange}
+                onChange={(e) => setEditedStore({ ...editedStore, phone: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
-            <div className="mb-4">
-  {/* 브랜드 선택 */}
-  <div className="mb-4">
-        <label>브랜드 선택:</label>
-        <select
-          name="brand"
-          value={editedStore.brand || ""}
-          onChange={handleBrandChange}
-          className="w-full p-2 border border-gray-300 rounded"
-        >
-          <option value="">브랜드 선택</option>
-          {brands.map((brand) => (
-            <option key={brand.codeId} value={brand.codeId}>
-              {brand.codeName}
-            </option>
-          ))}
-        </select>
-      </div>
 
-      {/* 브랜드 선택 시 해당 기기 유형만 표시 */}
-      {editedStore.brand && (
-        <div className="mb-4">
-          <label className="block text-gray-700 mb-2">기기 선택:</label>
-          <div className="max-h-24 overflow-y-auto border border-gray-300 p-2 rounded">
-            {deviceTypes.map((device) => {
-              const deviceId = `${editedStore.brand}:${device.codeId}`;
-              return (
-                <div key={deviceId} className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    name="supported_features"
-                    value={deviceId}
-                    checked={selectedDevices[editedStore.brand]?.includes(deviceId) || false}
-                    onChange={handleInputChange}
-                    className="form-checkbox"
-                  />
-                  <label className="text-gray-700">{device.codeName}</label>
+            {/* Description field */}
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">회사 설명:</label>
+              <textarea
+                name="description"
+                value={editedStore.description}
+                onChange={(e) => setEditedStore({ ...editedStore, description: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded"
+                rows="4"
+              />
+            </div>
+
+            {/* Content field */}
+            <div className="mb-4">
+              <label className="block text-gray-700 mb-2">회사 콘텐츠:</label>
+              <textarea
+                name="content"
+                value={editedStore.content}
+                onChange={(e) => setEditedStore({ ...editedStore, content: e.target.value })}
+                className="w-full p-2 border border-gray-300 rounded"
+                rows="4"
+              />
+            </div>
+
+            {/* 브랜드 선택 */}
+            <div className="mb-4">
+              <label>브랜드 선택:</label>
+              <select onChange={handleBrandChange} value={selectedBrand || ""} className="w-full p-2 border border-gray-300 rounded">
+                <option value="">브랜드 선택</option>
+                {Array.from(new Set(deviceTypes.map((device) => device.brandId))).map((brandId) => {
+                  const brand = deviceTypes.find((device) => device.brandId === brandId);
+                  return (
+                    <option key={brandId} value={brandId}>
+                      {brand.brandName}
+                    </option>
+                  );
+                })}
+              </select>
+            </div>
+
+            {/* 기기 선택 */}
+            {selectedBrand && (
+              <div className="mb-4">
+                <label className="block text-gray-700 mb-2">지원 기기 선택:</label>
+                <div className="max-h-24 overflow-y-auto border border-gray-300 p-2 rounded">
+                  {deviceTypes
+                    .filter((device) => device.brandId === parseInt(selectedBrand))
+                    .map((device) => (
+                      <div key={device.brandDeviceMapId} className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          value={device.brandDeviceMapId}
+                          checked={selectedDevices.includes(device.brandDeviceMapId)}
+                          onChange={handleDeviceChange}
+                          className="form-checkbox"
+                        />
+                        <label className="text-gray-700">{device.deviceTypeName}</label>
+                      </div>
+                    ))}
                 </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
+              </div>
+            )}
 
-            </div>
-            
+            {/* 로고 파일 업로드 */}
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">사진 경로:</label>
+              <label className="block text-gray-700 mb-2">로고 파일:</label>
               <input
-                type="text"
-                name="logo"
-                value={editedStore.logo}
-                onChange={handleInputChange}
+                type="file"
+                name="logoFile"
+                onChange={(e) => setLogoFile(e.target.files[0])}
                 className="w-full p-2 border border-gray-300 rounded"
               />
             </div>
 
-            
-            <button
-              onClick={handleSaveChanges}
-              className="w-full bg-green-500 text-white py-2 rounded mt-4 hover:bg-green-600 transition"
-            >
+            <button onClick={handleSaveChanges} className="w-full bg-green-500 text-white py-2 rounded mt-4 hover:bg-green-600 transition">
               저장
             </button>
           </div>
         </div>
       )}
 
-      <NoticeBox
-        title="업체 공지사항"
-        data={noticeInfos}
-        storeId={storeInfos[0]?.company_id}
-        storeName={storeInfos[0]?.name}
-      />
-      <ReviewBox
-        title="리뷰"
-        data={reviewInfos}
-        storeId={storeInfos[0]?.company_id}
-        storeName={storeInfos[0]?.name}
-      />
-      <QuestionBox
-        title="Q&A"
-        data={questionInfos}
-        storeId={storeInfos[0]?.company_id}
-        storeName={storeInfos[0]?.name}
-      />
+
+      <NoticeBox title="업체 공지사항" data={noticeInfos} storeId={storeInfos[0]?.company_id} storeName={storeInfos[0]?.name} />
+      <ReviewBox title="리뷰" data={reviewInfos} storeId={storeInfos[0]?.company_id} storeName={storeInfos[0]?.name} />
+      <QuestionBox title="Q&A" data={questionInfos} storeId={storeInfos[0]?.company_id} storeName={storeInfos[0]?.name} />
     </>
   );
 }

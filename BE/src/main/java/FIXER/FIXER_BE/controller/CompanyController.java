@@ -181,13 +181,17 @@ public class CompanyController {
     }
 
 
-    @PostMapping(value = "/storeinfo/{companyId}/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        @PostMapping(value = "/storeinfo/{companyId}/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CompanyDTO> updateCompany(
             @PathVariable("companyId") Integer companyId,
             @RequestPart("companyDTO") CompanyDTO companyDTO,
             @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
             @RequestPart("supportedDeviceIds") String supportedDeviceIds // 문자열로 받음
     ) {
+            System.out.println("Received companyDTO: " + companyDTO);
+            System.out.println("Received supportedDeviceIds: " + supportedDeviceIds);
+            System.out.println("Received logoFile: " + (logoFile != null ? logoFile.getOriginalFilename() : "null"));
+            // 파싱 및 처리 로직
         String logoFilePath = companyDTO.getLogo();
         companyDTO.setCompanyId(companyId);
 
