@@ -8,6 +8,7 @@ import FIXER.FIXER_BE.service.security.PasswordService;
 import FIXER.FIXER_BE.service.security.AuthenticationService;
 import FIXER.FIXER_BE.service.security.InvalidCredentialsException;
 
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,19 +50,24 @@ public class UserService {
         }
         return null;
     }
-
     @Transactional
-    public UserDTO updateUserPassword(Integer userNum, String newPassword, String token) {
+    public void updateUserPasswordByUserNum(Integer userNum, String newPassword) {
         Optional<User> existingUser = userRepository.findById(userNum);
-        if (existingUser.isPresent()) {
+        if (existingUser.isPresent()) {  // 사용자가 존재하는 경우
             User user = existingUser.get();
-            authenticationService.validateToken(token, user.getUserId());
+
+            // 새 비밀번호를 암호화하여 설정
             user.setPassword(passwordService.encodePassword(newPassword));
-            User updatedUser = userRepository.save(user);
-            return UserDTO.fromEntity(updatedUser);
+
+            // 변경 사항을 데이터베이스에 저장
+            userRepository.save(user);
+        } else {
+            // 사용자가 존재하지 않는 경우 예외 발생
+            throw new InvalidCredentialsException("User not found");
         }
-        throw new InvalidCredentialsException("User not found or invalid credentials");
     }
+
+
 
     @Transactional
     public boolean deleteUser(Integer userNum) {

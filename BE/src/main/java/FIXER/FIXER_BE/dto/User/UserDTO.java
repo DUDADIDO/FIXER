@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor // 모든 필드를 초기화하는 생성자 추가
+
 public class UserDTO {
     private Integer userNum;
 
@@ -57,4 +58,7 @@ public class UserDTO {
                 .updatedAt(this.updatedAt)
                 .build();
     }
+
 }
+
+

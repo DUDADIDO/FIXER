@@ -4,11 +4,16 @@ import FIXER.FIXER_BE.dto.User.CheckUserIdRequest;
 import FIXER.FIXER_BE.dto.User.LoginRequest;
 import FIXER.FIXER_BE.dto.User.UserDTO;
 import FIXER.FIXER_BE.dto.User.UserToken;
+import FIXER.FIXER_BE.dto.User.ChangePasswordRequest;
+
 
 import FIXER.FIXER_BE.service.UserService;
 import FIXER.FIXER_BE.service.security.AuthenticationService;
 import FIXER.FIXER_BE.service.security.JwtUtil;
 import FIXER.FIXER_BE.service.security.PasswordService;
+import FIXER.FIXER_BE.service.security.InvalidCredentialsException;
+
+import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -64,6 +69,28 @@ public class UserController {
         boolean isAvailable = (userDTO == null);
         return ResponseEntity.ok(isAvailable);
     }
+
+    @PutMapping("/change-password")
+    public ResponseEntity<?> changePassword(
+            @RequestBody ChangePasswordRequest request) { // JSON 데이터를 통해 userNum과 새 비밀번호 수신
+
+        Integer userNum = request.getUserNum();           // JSON에서 userNum을 가져옴
+        String newPassword = request.getUser_pw();        // JSON에서 user_pw를 가져옴
+
+        try {
+            userService.updateUserPasswordByUserNum(userNum, newPassword);
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (InvalidCredentialsException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid credentials");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An error occurred");
+        }
+    }
+
+
+
+
+
 
     @PutMapping("/{userNum}")
     public ResponseEntity<UserDTO> updateUser(@PathVariable Integer userNum, @RequestBody UserDTO userDTO) {
