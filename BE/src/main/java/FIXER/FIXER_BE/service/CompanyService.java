@@ -121,6 +121,8 @@ public class CompanyService {
                     user.setUpdatedAt(LocalDateTime.now());
                     User userData = user.toEntity();
                     userRepository.save(userData);
+
+                    return savedCompany.getCompanyId();
                 } else {
                     throw new RuntimeException("회사 정보를 저장하는데 실패했습니다.");
                 }
