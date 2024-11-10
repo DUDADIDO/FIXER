@@ -42,7 +42,7 @@ export default function WriteQnA() {
   };
 
   return (
-    <div className="max-w-2xl w-full mx-auto p-6 bg-white rounded shadow-md">
+    <div className="max-w-2xl w-[80%] mx-auto p-6 bg-white rounded shadow-md">
       <h2 className="text-2xl font-bold mb-6">Q&A 작성 - 상점 이름: {storeName}</h2>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">

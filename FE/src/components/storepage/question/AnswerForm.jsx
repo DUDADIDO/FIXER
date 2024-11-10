@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "@/api";
+
 export default function AnswerForm() {
   const location = useLocation();
-  const { data, questionId } = location.state || {}; // data와 questionId를 받음
-  const [ content, setContent] = useState("");
+  const { data, questionId } = location.state || {};
+  const [content, setContent] = useState("");
 
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     const formData = new FormData();
     formData.append("content", content);
-    formData.append("user_num", localStorage.getItem("userNum")); // 사용자 ID를 localStorage에서 가져오기
-
+    formData.append("user_num", localStorage.getItem("userNum"));
 
     try {
       const response = await api.post(`/api/company/question/${questionId}/writeanswer`, formData, {
@@ -33,18 +33,18 @@ export default function AnswerForm() {
   };
 
   return (
-    <div className="flex flex-col justify-start items-start mt-10 w-full">
+    <div className="flex flex-col justify-start items-start mt-10 w-[80%] p-6 bg-white rounded-lg shadow-md">
       {/* 질문 섹션 */}
       <section className="w-full mb-8">
-        <h2 className="text-2xl font-bold mb-4">답변 작성</h2>
-        <div className="border-b pb-4 mb-4">
-          <h3 className="text-lg font-semibold">{data?.title}</h3>
-          <div className="flex space-x-2 text-gray-600 mb-2">
+        <h2 className="text-3xl font-bold text-gray-800 mb-4">답변 작성</h2>
+        <div className="border-b pb-6 mb-6">
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">{data?.title}</h3>
+          <div className="flex space-x-4 text-gray-500 mb-4">
             <span>작성자: {data?.author}</span>
             <span>|</span>
             <span>작성일시: {data?.createdAt}</span>
           </div>
-          <p className="mt-2">{data?.content}</p>
+          <p className="text-lg text-gray-700 mb-4">{data?.content}</p>
           {data?.file && (
             <div className="mt-2">
               <a href={data.file.url} target="_blank" rel="noopener noreferrer" className="text-blue-500 underline">
@@ -58,19 +58,20 @@ export default function AnswerForm() {
       {/* 답변 작성 섹션 */}
       <section className="w-full">
         <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 font-bold mb-2">답변 내용</label>
+          <div className="mb-6">
+            <label className="block text-lg font-semibold text-gray-700 mb-3">답변 내용</label>
             <textarea
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full p-2 border rounded h-32"
+              className="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 text-gray-700"
               placeholder="답변을 작성하세요"
+              rows="6"
               required
             />
           </div>
           <button
             type="submit"
-            className="w-40 bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
+            className="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
           >
             답변 제출
           </button>
