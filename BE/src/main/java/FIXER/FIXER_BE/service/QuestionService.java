@@ -61,4 +61,24 @@ public class QuestionService {
                 })
                 .collect(Collectors.toList());
     }
+
+    public List<QuestionDTO> getQuestionsByUserNum(Integer userNum) {
+        List<Question> questions = questionRepository.findByUserUserNumOrderByQuestionIdAsc(userNum);
+
+        return IntStream.range(0, questions.size())
+                .mapToObj(i -> {
+                    Question question = questions.get(i);
+                    return new QuestionDTO(
+                            question.getQuestionId(),
+                            i + 1,
+                            question.getUser().getUserName(),
+                            question.getTitle(),
+                            question.getContent(),
+                            question.getFilePath(),
+                            question.getCreatedAt(),
+                            question.getAnswerCheck()
+                    );
+                })
+                .collect(Collectors.toList());
+    }
 }
