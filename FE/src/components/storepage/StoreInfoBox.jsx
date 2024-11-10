@@ -196,6 +196,10 @@ function StoreInfoBox({ companyId }) {
   const [logoFile, setLogoFile] = useState(null);
 
   useEffect(() => {
+    const myStore = localStorage.getItem("myStore");
+    const userType = localStorage.getItem("userType");
+    setIsOwner(myStore === companyId.toString() || userType === '1');
+
     api.get("/api/common-codes/brand-device-types")
       .then((response) => {
         setDeviceTypes(response.data);
@@ -224,7 +228,6 @@ function StoreInfoBox({ companyId }) {
           content: response.data.content,
           supported_features: response.data.supported_features || [],
         });
-        setIsOwner(true);
       })
       .catch((error) => {
         console.error("Error fetching store info:", error);
@@ -233,7 +236,6 @@ function StoreInfoBox({ companyId }) {
     api.get(`/api/company/storeinfo/${companyId}/notices`)
       .then((response) => {
         setNoticeInfos(response.data);
-        setIsOwner(true);
       })
       .catch((error) => {
         console.error("Error fetching notices:", error);
@@ -242,7 +244,6 @@ function StoreInfoBox({ companyId }) {
     api.get(`/api/company/storeinfo/${companyId}/reviews`)
       .then((response) => {
         setReviewInfos(response.data);
-        setIsOwner(true);
       })
       .catch((error) => {
         console.error("Error fetching reviews:", error);
@@ -251,7 +252,6 @@ function StoreInfoBox({ companyId }) {
     api.get(`/api/company/storeinfo/${companyId}/questions`)
       .then((response) => {
         setQuestionInfos(response.data);
-        setIsOwner(true);
       })
       .catch((error) => {
         console.error("Error fetching questions:", error);

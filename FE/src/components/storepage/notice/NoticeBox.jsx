@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 import api from "@/api";
@@ -118,12 +118,21 @@ const SaveButton = styled.button`
 `;
 function NoticeBox({ title, data, storeId, storeName }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [isOwner, setIsOwner] = useState(false);
   const itemsPerPage = 8;
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const currentItems = data.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
+
+  useEffect(() => {
+    const myStore = localStorage.getItem("myStore");
+    const userType = localStorage.getItem("userType")
+    if(storeId){
+      setIsOwner(myStore === storeId.toString() || userType === '1'); 
+    }
+  }, [storeId]);
 
   const handlePageChange = (pageNumber) => {
     if (pageNumber >= 1 && pageNumber <= totalPages) {
@@ -135,19 +144,21 @@ function NoticeBox({ title, data, storeId, storeName }) {
     <CommunitySection>
       <CommunityTitle>{title}</CommunityTitle>
       <ButtonContainer>
-      <WriteButton
-        to={{
-          pathname:
-            title === "리뷰"
-              ? `/storeinfo/${storeId}/writereview`
-              : title === "업체 공지사항"
-              ? `/storeinfo/${storeId}/writenotice`
-              : `/storeinfo/${storeId}/writeqna`,
-        }}
-        state={{ storeId, storeName }}
-      >
-        글쓰기
-      </WriteButton>
+        {(isOwner || title === "리뷰") && (
+          <WriteButton
+          to={{
+            pathname:
+              title === "리뷰"
+                ? `/storeinfo/${storeId}/writereview`
+                : title === "업체 공지사항"
+                ? `/storeinfo/${storeId}/writenotice`
+                : `/storeinfo/${storeId}/writeqna`,
+          }}
+          state={{ storeId, storeName }}
+          >
+            글쓰기
+          </WriteButton>
+        )}
       </ButtonContainer>
       <CommunityList>
         {currentItems.map((item) => (
