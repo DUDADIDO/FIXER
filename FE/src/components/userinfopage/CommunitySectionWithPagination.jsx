@@ -35,8 +35,8 @@ const Pagination = styled.div`
 const PageButton = styled.button`
   padding: 5px 10px;
   border: 1px solid #ddd;
-  background-color: ${(props) => (props.active ? "#03c75a" : "#f9f9f9")};
-  color: ${(props) => (props.active ? "#fff" : "#333")};
+  background-color: ${(props) => (props.$active ? "#03c75a" : "#f9f9f9")};
+  color: ${(props) => (props.$active ? "#fff" : "#333")};
   cursor: pointer;
 
   &:disabled {
@@ -80,7 +80,7 @@ function CommunitySectionWithPagination({ title, data }) {
           <PageButton
             key={index}
             onClick={() => handlePageChange(index + 1)}
-            active={currentPage === index + 1}
+            $active={currentPage === index + 1}
           >
             {index + 1}
           </PageButton>
