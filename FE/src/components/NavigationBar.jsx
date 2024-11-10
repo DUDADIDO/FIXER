@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export default function NavigationBar() {
   const [authToken, setAuthToken] = useState("");
+  const [userNum, setUserNum] = useState();
   let navigate = useNavigate();
   const location = useLocation();
 
@@ -10,6 +11,11 @@ export default function NavigationBar() {
     const token = window.localStorage.getItem("authToken");
     if (token) {
       setAuthToken(token);
+    }
+
+    const userId = window.localStorage.getItem("userNum");
+    if (userId) {
+      setUserNum(userId);
     }
   }, []);
 
@@ -32,7 +38,7 @@ export default function NavigationBar() {
     <div className="border-b-2 h-[8vh] min-h-[75px] flex justify-between items-center px-5">
       <Link to="/">로고</Link>
       <div className="flex justify-evenly items-center gap-20">
-      <Link to="/storesearch" className={linkStyles("/storesearch")}>
+        <Link to="/storesearch" className={linkStyles("/storesearch")}>
           업체 검색
         </Link>
         <Link to="/crawer" className={linkStyles("/crawer")}>
@@ -47,14 +53,19 @@ export default function NavigationBar() {
         <Link to="/manageregister" className={linkStyles("/manageregister")}>
           업체 신청 목록
         </Link>
-        <Link to="/manageregister/register" className={linkStyles("/manageregister/register")}>
+        <Link
+          to="/manageregister/register"
+          className={linkStyles("/manageregister/register")}
+        >
           업체 등록
         </Link>
-        
       </div>
       {authToken ? (
         <div className="flex flex-col">
-          <Link to="/mypage" className="text-gray-700 hover:text-blue-600">
+          <Link
+            to={`/userinfo/${userNum}`}
+            className="text-gray-700 hover:text-blue-600"
+          >
             마이페이지
           </Link>
           <button
@@ -69,7 +80,6 @@ export default function NavigationBar() {
           로그인
         </Link>
       )}
-
     </div>
   );
 }
