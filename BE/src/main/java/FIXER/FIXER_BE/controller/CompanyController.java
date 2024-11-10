@@ -1,11 +1,13 @@
 package FIXER.FIXER_BE.controller;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
+import FIXER.FIXER_BE.dto.CompanyDeviceUpdateDTO;
 import FIXER.FIXER_BE.dto.NoticeDTO;
 import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.repository.CompanyRepository;
 import FIXER.FIXER_BE.service.CompanyService;
 import FIXER.FIXER_BE.service.CompanyUploadService;
+import FIXER.FIXER_BE.service.CompanyDeviceService;
 import FIXER.FIXER_BE.service.NoticeService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,16 +16,12 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
 import org.springframework.http.MediaType;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URLDecoder;
@@ -36,10 +34,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 
 @RestController
 @RequestMapping("/api/company")
@@ -50,10 +46,12 @@ public class CompanyController {
     private final CompanyUploadService companyUploadService;
     private final NoticeService noticeService;
     private final CompanyRepository companyRepository;
+    private final CompanyDeviceService companyDeviceService;
     private static final String UPLOAD_DIR = "uploads/";
 
     @Value("${base.url}")
     private String baseUrl;  // application.properties에서 base.url 값 주입
+
     @GetMapping("/storesearch")
     public ResponseEntity<Map<String, Object>> getCompanies(
             @RequestParam(name = "pageSize", defaultValue = "0") int pageSize,
@@ -146,21 +144,24 @@ public class CompanyController {
         }
     }
 
-
     @GetMapping("/storeinfo/{companyId}/notices")
     public ResponseEntity<List<NoticeDTO>> getCompanyNotices(@PathVariable("companyId") Integer companyId) {
         List<NoticeDTO> notices = noticeService.getNoticesByCompanyId(companyId);
         return ResponseEntity.ok(notices);
     }
 
-
+    // 새로운 브랜드와 기기 정보 저장하는 API
+    @PostMapping("/storeinfo/{companyId}/devices")
+    public ResponseEntity<Void> updateCompanyDevices(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDeviceUpdateDTO companyDeviceUpdateDTO) {
+        companyDeviceService.updateCompanyDevices(companyId, companyDeviceUpdateDTO);
+        return ResponseEntity.ok().build();
+    }
 
     // 파일 이름을 고유하게 생성하는 유틸리티 메서드
     private String generateFileName(String originalFileName) {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         return timestamp + "_" + originalFileName;
     }
-
 
     @PostMapping("/storeregister")
     public ResponseEntity<String> uploadFiles(
@@ -187,7 +188,6 @@ public class CompanyController {
         }
     }
 
-
     @PutMapping("/storeinfo/{companyId}/update")
     public ResponseEntity<CompanyDTO> updateCompany(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDTO companyDTO) {
         companyDTO.setCompanyId(companyId);
@@ -199,5 +199,12 @@ public class CompanyController {
         else {
             return ResponseEntity.notFound().build();
         }
+    }
+
+    // 브랜드 및 기기 정보 저장을 위한 새로운 엔드포인트
+    @PostMapping("/storeinfo/{companyId}/save-brand-device")
+    public ResponseEntity<Void> saveBrandDevice(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDeviceUpdateDTO companyDeviceUpdateDTO) {
+        companyDeviceService.updateCompanyDevices(companyId, companyDeviceUpdateDTO);
+        return ResponseEntity.ok().build();
     }
 }

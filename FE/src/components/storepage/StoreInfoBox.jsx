@@ -306,7 +306,7 @@ function StoreInfoBox({ companyId }) {
   // 저장 버튼 클릭 시
   const handleSaveChanges = () => {
     api
-      .post("/api/company/storeinfo/update", editedStore)
+      .put(`/api/company/storeinfo/${editedStore.company_id}/update`, editedStore) // POST -> PUT으로 수정
       .then((response) => {
         setStoreInfos((prevInfos) =>
           prevInfos.map((store) =>
@@ -318,7 +318,7 @@ function StoreInfoBox({ companyId }) {
       .catch((error) => {
         console.error("Error updating store info:", error);
       });
-  };
+};
 
   return (
     <>
