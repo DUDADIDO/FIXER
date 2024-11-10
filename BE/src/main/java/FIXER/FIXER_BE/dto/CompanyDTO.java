@@ -2,16 +2,14 @@ package FIXER.FIXER_BE.dto;
 
 import FIXER.FIXER_BE.entity.Company;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
 @Builder
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyDTO {
@@ -47,6 +45,8 @@ public class CompanyDTO {
     private LocalDateTime updatedAt;
 
     // 추가된 CompaniesInfo 관련 필드
+    @Setter
+    @Getter
     @JsonProperty("logo")
     private String logo;
 
@@ -74,4 +74,5 @@ public class CompanyDTO {
                 .content(company.getCompaniesInfo().getContent())
                 .build();
     }
+
 }

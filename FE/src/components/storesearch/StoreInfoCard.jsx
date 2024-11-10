@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 
+const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"; // 서버 기본 URL 설정
+
 export default function StoreInfoCard({ data }) {
   const {
     company_id,
@@ -12,10 +14,13 @@ export default function StoreInfoCard({ data }) {
     review_cnt,
   } = data || {};
 
+  // 로고 URL을 서버 기본 URL과 합쳐서 설정
+  const logoUrl = `${apiBaseUrl}${logo}`;
+  console.log(logoUrl);
   return (
     <Link to={`/storeinfo/${company_id}`} className="block">
       <div className="bg-green-100 border border-gray-300 rounded-lg p-4 shadow-lg flex items-center space-x-4 cursor-pointer">
-        <img src={logo} alt={`${name} logo`} className="object-cover rounded-md" />
+        <img src={logoUrl} alt={`${name} logo`} className="object-cover rounded-md" />
         <div>
           <p className="text-xl font-bold text-gray-800">{`<${name}>`}</p>
           <p className="text-gray-600 mt-1 text-sm">{description}</p>
