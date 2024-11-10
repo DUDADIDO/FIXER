@@ -80,7 +80,7 @@ public class CompanyService {
             return null;
         }
     }
-
+    @Transactional
     public int saveCompanyData(MultipartFile excelFile, String logoFilePath) {
         try (Workbook workbook = new XSSFWorkbook(excelFile.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
@@ -121,6 +121,8 @@ public class CompanyService {
                     user.setUpdatedAt(LocalDateTime.now());
                     User userData = user.toEntity();
                     userRepository.save(userData);
+
+                    return savedCompany.getCompanyId();
                 } else {
                     throw new RuntimeException("회사 정보를 저장하는데 실패했습니다.");
                 }
@@ -134,7 +136,7 @@ public class CompanyService {
     public List<SupportedDeviceDTO> getSupportedDevices(Integer companyId) {
         return companyRepository.findSupportedDevices(companyId);
     }
-
+    @Transactional
     public void updateSupportedDevices(Integer companyId, List<Integer> supportedDevices) {
         // 회사 엔티티 조회
         Company company = companyRepository.findById(companyId)
