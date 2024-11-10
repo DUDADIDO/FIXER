@@ -181,19 +181,15 @@ public class CompanyController {
     }
 
 
-        @PostMapping(value = "/storeinfo/{companyId}/update", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/storeinfo/{companyId}/update")
     public ResponseEntity<CompanyDTO> updateCompany(
             @PathVariable("companyId") Integer companyId,
             @RequestPart("companyDTO") CompanyDTO companyDTO,
             @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
-            @RequestPart("supportedDeviceIds") String supportedDeviceIds // 문자열로 받음
+            @RequestPart("supportedDeviceIds") String supportedDeviceIds
     ) {
-            System.out.println("Received companyDTO: " + companyDTO);
-            System.out.println("Received supportedDeviceIds: " + supportedDeviceIds);
-            System.out.println("Received logoFile: " + (logoFile != null ? logoFile.getOriginalFilename() : "null"));
-            // 파싱 및 처리 로직
-        String logoFilePath = companyDTO.getLogo();
-        companyDTO.setCompanyId(companyId);
+        // 파싱 및 처리 로직
+        String logoFilePath = companyDTO.getLogo(); // 기존 로고 경로를 유지
 
         try {
             // 로고 파일이 있는 경우에만 파일 저장 로직 실행
@@ -202,8 +198,12 @@ public class CompanyController {
                 Path logoPath = Paths.get(System.getProperty("user.dir"), "uploads", "logos", logoFileName);
                 Files.createDirectories(logoPath.getParent());
                 logoFile.transferTo(logoPath.toFile());
-                logoFilePath = "http://localhost:8080/api/company/uploads/logos/" + logoFileName;
+                logoFilePath = "/api/company/uploads/logos/" + logoFileName;
             }
+
+            // companyDTO에 로고 파일 경로 설정 (기존 혹은 새로운 로고)
+            companyDTO.setLogo(logoFilePath);
+            companyDTO.setCompanyId(companyId);
 
             // supportedDeviceIds를 JSON 문자열에서 List<Integer>로 변환
             List<Integer> supportedDeviceIdList = Arrays.asList(new ObjectMapper().readValue(supportedDeviceIds, Integer[].class));

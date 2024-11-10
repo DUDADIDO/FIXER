@@ -276,10 +276,19 @@ function StoreInfoBox({ companyId }) {
     const supportedDeviceIds = selectedDevices;
   
     const formData = new FormData();
-    formData.append("companyDTO", JSON.stringify(editedStore));
-    formData.append("supportedDeviceIds", JSON.stringify(supportedDeviceIds));
-  
-    // 파일이 선택된 경우에만 추가
+    // `companyDTO`를 JSON으로 보내면서 Content-Type을 지정
+    const companyDTOBlob = new Blob([JSON.stringify(editedStore)], {
+      type: "application/json",
+    });
+    formData.append("companyDTO", companyDTOBlob);
+
+    // `supportedDeviceIds`를 JSON으로 보내면서 Content-Type을 지정
+    const supportedDeviceIdsBlob = new Blob([JSON.stringify(supportedDeviceIds)], {
+      type: "application/json",
+    });
+    formData.append("supportedDeviceIds", supportedDeviceIdsBlob);
+
+    // 파일이 선택된 경우 추가
     if (logoFile) {
       formData.append("logoFile", logoFile);
     }
@@ -340,7 +349,7 @@ function StoreInfoBox({ companyId }) {
       {/* 모달 */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-          <div className="w-[700px] bg-white p-8 rounded-lg shadow-lg">
+          <div className="w-[700px] bg-white p-8 rounded-lg shadow-lg overflow-y-auto max-h-[90vh]">
             <button
               onClick={() => setIsModalOpen(false)}
               className="bg-red-500 text-white px-4 py-2 rounded float-right"
