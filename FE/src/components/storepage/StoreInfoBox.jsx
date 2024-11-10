@@ -4,7 +4,7 @@ import styled from "styled-components";
 import api from "../../api";
 import NoticeBox from "./notice/NoticeBox";
 import ReviewBox from "./reviews/ReviewBox";
-import QuestionBox from "./question/QuestionBOx";
+import QuestionBox from "./question/QuestionBox";
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"; 
 
 const StoreContainer = styled.div`
