@@ -171,8 +171,14 @@ public class CompanyController {
                 logoFilePath = baseUrl + "/api/company/uploads/logos/" + logoFileName; // 프론트엔드에서 접근 가능한 URL 경로
             }
 
-            // 엑셀 파일은 메모리 내에서 읽어와 처리
-            companyService.saveCompanyData(excelFile, logoFilePath);
+            // 엑셀 파일은 메모리 내에서 읽어와 처리하고 회사 정보를 저장
+            Integer companyId = companyService.saveCompanyData(excelFile, logoFilePath);
+
+            // 회사 정보가 성공적으로 저장된 후 기본 수리 품목을 삽입
+            if (companyId != null) {
+                // 기본 수리 품목 예: 삼성 TV (brand_device_map_id: 1)
+                companyService.addDefaultSupportedDevice(companyId, 1); // 여기서 1은 brand_device_map_id를 의미
+            }
 
             return ResponseEntity.ok("Files processed successfully");
         } catch (IOException e) {

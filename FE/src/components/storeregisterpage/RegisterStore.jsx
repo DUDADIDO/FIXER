@@ -1,6 +1,5 @@
 import { useState } from "react";
-import axios from "axios";
-import api from "@/api"
+import api from "@/api";
 
 export default function RegisterStore() {
   const [applicationForm, setApplicationForm] = useState(null);
@@ -21,19 +20,17 @@ export default function RegisterStore() {
       return;
     }
 
-    // user_num을 localStorage에서 가져옴
     const userNum = localStorage.getItem("userNum");
 
-    // FormData 객체 생성
     const formData = new FormData();
-    formData.append("user_num", userNum); // user_num 추가
-    formData.append("applicationForm", applicationForm); // 신청서 파일 추가
-    formData.append("zipFiles", zipFile); // zip 파일 추가
+    formData.append("user_num", userNum);
+    formData.append("applicationForm", applicationForm);
+    formData.append("zipFiles", zipFile);
 
     try {
       const response = await api.post("/api/application/storeregister", formData, {
         headers: {
-          "Content-Type": "multipart/form-data", // 파일 업로드를 위해 필요
+          "Content-Type": "multipart/form-data",
         },
       });
       if (response.status === 200) {
@@ -46,13 +43,12 @@ export default function RegisterStore() {
   };
 
   return (
-    <div className="flex flex-col items-center min-w-full min-h-[80vh] p-8 space-y-12 bg-slate-300">
-      <h1 className="text-2xl font-bold">업체 등록 신청</h1>
+    <div className="flex flex-col items-center min-w-full min-h-[80vh] p-8 bg-slate-100 rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">업체 등록 신청</h1>
 
-      <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-6 w-full max-w-md">
-        {/* 신청서 파일 첨부 */}
-        <div className="flex flex-col w-full hover:cursor-pointer">
-          <label htmlFor="applicationForm" className="mb-2 font-semibold">
+      <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-6 w-full max-w-lg">
+        <div className="flex flex-col w-full">
+          <label htmlFor="applicationForm" className="text-lg font-semibold text-gray-700 mb-2">
             신청서 파일 첨부
           </label>
           <input
@@ -60,14 +56,13 @@ export default function RegisterStore() {
             id="applicationForm"
             accept=".pdf, .doc, .docx"
             onChange={handleApplicationFormChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
           />
-          {applicationForm && <p className="mt-2 text-gray-700">첨부된 신청서: {applicationForm.name}</p>}
+          {applicationForm && <p className="mt-2 text-gray-600">첨부된 신청서: {applicationForm.name}</p>}
         </div>
 
-        {/* zip 파일 첨부 */}
-        <div className="flex flex-col w-full hover:cursor-pointer">
-          <label htmlFor="zipFile" className="mb-2 font-semibold">
+        <div className="flex flex-col w-full">
+          <label htmlFor="zipFile" className="text-lg font-semibold text-gray-700 mb-2">
             자료 zip 파일 첨부
           </label>
           <input
@@ -75,17 +70,17 @@ export default function RegisterStore() {
             id="zipFile"
             accept=".zip,.rar,.7z"
             onChange={handleZipFileChange}
-            className="w-full p-2 border border-gray-300 rounded-md"
+            className="w-full p-3 border border-gray-300 rounded-lg bg-white text-gray-800"
           />
-          {zipFile && <p className="mt-2 text-gray-700">첨부된 zip 파일: {zipFile.name}</p>}
+          {zipFile && <p className="mt-2 text-gray-600">첨부된 zip 파일: {zipFile.name}</p>}
         </div>
 
-        {/* 제출 버튼 */}
-        <div className="w-full mt-8 flex justify-center">
-          <button type="submit" className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-            신청서 제출
-          </button>
-        </div>
+        <button
+          type="submit"
+          className="w-full py-3 mt-8 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition duration-300"
+        >
+          신청서 제출
+        </button>
       </form>
     </div>
   );

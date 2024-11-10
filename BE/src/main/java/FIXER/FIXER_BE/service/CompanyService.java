@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,14 +33,14 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final CompanySupportedDevicesRepository companySupportedDevicesRepository;
     private final BrandDeviceMapRepository brandDeviceMapRepository; // 추가
+    private final JdbcTemplate jdbcTemplate;
 
     public List<CompanyDTO> getCompanies(int pageSize, Integer lastId) {
         Pageable pageable = PageRequest.of(0, pageSize);
         List<Company> companies;
-        if(lastId == null){
+        if (lastId == null) {
             companies = companyRepository.findAll(pageable).getContent();
-        }
-        else{
+        } else {
             companies = companyRepository.findByCompanyIdGreaterThanOrderByCompanyIdAsc(lastId, pageable);
         }
         return companies.stream().map(CompanyDTO::fromEntity).collect(Collectors.toList());
@@ -70,13 +71,12 @@ public class CompanyService {
 
             Company updatedCompany = companyRepository.save(company);
             return CompanyDTO.fromEntity(updatedCompany);
-        }
-        else {
+        } else {
             return null;
         }
     }
 
-    public void saveCompanyData(MultipartFile excelFile, String logoFilePath) {
+    public int saveCompanyData(MultipartFile excelFile, String logoFilePath) {
         try (Workbook workbook = new XSSFWorkbook(excelFile.getInputStream())) {
             Sheet sheet = workbook.getSheetAt(0);
             for (Row row : sheet) {
@@ -101,14 +101,18 @@ public class CompanyService {
 
                 // 회사 정보 저장
                 companyRepository.save(companyData);
+                return companyData.getCompanyId();
             }
         } catch (IOException e) {
             throw new RuntimeException("파일을 읽는 중 오류 발생", e);
         }
+        return -1; // 회사 데이터가 저장되지 않은 경우, 기본 반환 값 (필요시 수정)
     }
+
     public List<SupportedDeviceDTO> getSupportedDevices(Integer companyId) {
         return companyRepository.findSupportedDevices(companyId);
     }
+
     public void updateSupportedDevices(Integer companyId, List<Integer> supportedDevices) {
         // 회사 엔티티 조회
         Company company = companyRepository.findById(companyId)
@@ -127,5 +131,13 @@ public class CompanyService {
             newMapping.setBrandDeviceMap(brandDeviceMap); // BrandDeviceMap 엔티티 설정
             companySupportedDevicesRepository.save(newMapping);
         });
+    }
+
+    public void addDefaultSupportedDevice(Integer companyId, Integer brandDeviceMapId) {
+        // 기본 수리 품목을 데이터베이스에 삽입
+        String insertSql = "INSERT INTO company_supported_devices (company_id, brand_device_map_id) VALUES (?, ?)";
+
+        // JdbcTemplate 또는 JPA를 이용하여 삽입 작업을 수행
+        jdbcTemplate.update(insertSql, companyId, brandDeviceMapId);
     }
 }
