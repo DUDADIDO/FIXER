@@ -188,20 +188,26 @@ public class CompanyController {
             @RequestPart(value = "logoFile", required = false) MultipartFile logoFile,
             @RequestPart("supportedDeviceIds") String supportedDeviceIds
     ) {
-        // 파싱 및 처리 로직
-        String logoFilePath = companyDTO.getLogo(); // 기존 로고 경로를 유지
-
         try {
-            // 로고 파일이 있는 경우에만 파일 저장 로직 실행
+            // 기존 회사 정보 조회
+            CompanyDTO existingCompany = companyService.getCompanyInfo(companyId);
+
+            // 기존 로고 경로 유지 (기존 회사 정보에서 로고 경로를 가져옴)
+            String logoFilePath = (existingCompany != null && existingCompany.getLogo() != null)
+                    ? existingCompany.getLogo()
+                    : "";
+
+            // 로고 파일이 null이거나 비어 있는 경우 기존 로고 파일 경로를 유지
             if (logoFile != null && !logoFile.isEmpty()) {
+                // 로고 파일이 있는 경우에만 파일 저장 로직 실행
                 String logoFileName = generateFileName(logoFile.getOriginalFilename());
                 Path logoPath = Paths.get(System.getProperty("user.dir"), "uploads", "logos", logoFileName);
                 Files.createDirectories(logoPath.getParent());
                 logoFile.transferTo(logoPath.toFile());
-                logoFilePath = "/api/company/uploads/logos/" + logoFileName;
+                logoFilePath = "/api/company/uploads/logos/" + logoFileName; // 새 경로 설정
             }
 
-            // companyDTO에 로고 파일 경로 설정 (기존 혹은 새로운 로고)
+            // companyDTO에 로고 파일 경로를 설정 (기존 로고 경로 혹은 새로운 경로)
             companyDTO.setLogo(logoFilePath);
             companyDTO.setCompanyId(companyId);
 
@@ -219,6 +225,9 @@ public class CompanyController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+
+
 
 
 
