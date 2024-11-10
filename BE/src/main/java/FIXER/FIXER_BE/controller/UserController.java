@@ -53,6 +53,8 @@ public class UserController {
         UserToken usertoken = new UserToken();
         usertoken.setUser_num(loginUser.getUserNum());
         usertoken.setUser_name(loginUser.getUserName());
+        usertoken.setUser_type(loginUser.getUserState());
+        usertoken.setMy_store(loginUser.getMyStore());
         usertoken.setToken(token);
         return ResponseEntity.status(HttpStatus.OK).body(usertoken);
     }

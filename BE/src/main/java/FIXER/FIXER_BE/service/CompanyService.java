@@ -2,13 +2,16 @@ package FIXER.FIXER_BE.service;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
 import FIXER.FIXER_BE.dto.SupportedDeviceDTO;
+import FIXER.FIXER_BE.dto.User.UserDTO;
 import FIXER.FIXER_BE.entity.BrandDeviceMap;
 import FIXER.FIXER_BE.entity.CompaniesInfo;
 import FIXER.FIXER_BE.entity.Company;
 import FIXER.FIXER_BE.entity.CompanySupportedDevices;
+import FIXER.FIXER_BE.entity.User;
 import FIXER.FIXER_BE.repository.BrandDeviceMapRepository;
 import FIXER.FIXER_BE.repository.CompanyRepository;
 import FIXER.FIXER_BE.repository.CompanySupportedDevicesRepository;
+import FIXER.FIXER_BE.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -33,6 +36,8 @@ public class CompanyService {
     private final CompanyRepository companyRepository;
     private final CompanySupportedDevicesRepository companySupportedDevicesRepository;
     private final BrandDeviceMapRepository brandDeviceMapRepository; // 추가
+    private final UserService userService;
+    private final UserRepository userRepository;
     private final JdbcTemplate jdbcTemplate;
 
     public List<CompanyDTO> getCompanies(int pageSize, Integer lastId) {
@@ -82,14 +87,22 @@ public class CompanyService {
             for (Row row : sheet) {
                 if (row.getRowNum() == 0) continue;
 
+                String userId = row.getCell(0).getStringCellValue();
+
+                // 유저 정보 확인 - 유저가 없으면 예외 발생
+                UserDTO user = userService.checkUserById(userId);
+                if (user == null) {
+                    throw new RuntimeException("해당 유저 정보를 찾을 수 없습니다. 유저 ID: " + userId);
+                }
+
                 Company companyData = new Company();
                 CompaniesInfo companiesInfo = new CompaniesInfo();
 
                 // 회사 정보 설정
-                companyData.setName(row.getCell(0).getStringCellValue());
-                companyData.setLocation(row.getCell(1).getStringCellValue());
-                companyData.setPhone(row.getCell(2).getStringCellValue());
-                companyData.setEmail(row.getCell(3).getStringCellValue());
+                companyData.setName(row.getCell(1).getStringCellValue());
+                companyData.setLocation(row.getCell(2).getStringCellValue());
+                companyData.setPhone(row.getCell(3).getStringCellValue());
+                companyData.setEmail(row.getCell(4).getStringCellValue());
 
                 // 로고 파일 경로 설정
                 companiesInfo.setLogo(logoFilePath); // 로고 URL을 설정
@@ -100,8 +113,17 @@ public class CompanyService {
                 companyData.setCompaniesInfo(companiesInfo);
 
                 // 회사 정보 저장
-                companyRepository.save(companyData);
-                return companyData.getCompanyId();
+                Company savedCompany = companyRepository.save(companyData);
+
+                if (savedCompany != null) {
+                    // 유저의 myStore 정보 업데이트
+                    user.setMyStore(savedCompany.getCompanyId());
+                    user.setUpdatedAt(LocalDateTime.now());
+                    User userData = user.toEntity();
+                    userRepository.save(userData);
+                } else {
+                    throw new RuntimeException("회사 정보를 저장하는데 실패했습니다.");
+                }
             }
         } catch (IOException e) {
             throw new RuntimeException("파일을 읽는 중 오류 발생", e);
