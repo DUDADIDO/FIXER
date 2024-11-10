@@ -8,8 +8,6 @@ export default function LoginBox() {
   const navigate = useNavigate(); // 페이지 이동을 위한 useNavigate 훅
 
   const handleLogin = async () => {
-    console.log("ID:", id, "Password:", password);
-
     try {
       const response = await api.post("/api/users/login", {
         user_id: id,
@@ -19,7 +17,7 @@ export default function LoginBox() {
       if (response.status === 200) {
         // 요청이 성공한 경우 처리
         const { token, user_num, user_name, user_type, my_store } = response.data;
-        console.log("Login successful:", token, user_num, user_name);
+        // console.log("Login successful:", token, user_num, user_name);
         
         // 토큰을 로컬 스토리지에 저장
         if (token) {
@@ -31,9 +29,8 @@ export default function LoginBox() {
         }
 
         // 다른 사용자 정보를 필요에 따라 로컬 스토리지에 저장하거나 상태로 관리 가능
-        console.log("User Number:", localStorage.getItem("userNum"));
-        console.log("User Name:", localStorage.getItem("userName"));
-
+        
+        alert(`${localStorage.getItem("userName")}님 환영합니다.`);
         // 루트 페이지로 리다이렉트
         navigate("/");
       }

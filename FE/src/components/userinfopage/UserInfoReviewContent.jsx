@@ -24,7 +24,7 @@ export default function UserInfoReviewContent() {
       if (userNum) {
         try {
           const res = await api.get(`/api/users/userinfo/${userNum}/reviews`);
-          console.log(res.data);
+          //console.log(res.data);
           setMyReview(res.data);
         } catch (err) {
           console.log(err);

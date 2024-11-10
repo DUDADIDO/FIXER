@@ -198,6 +198,7 @@ function StoreInfoBox({ companyId }) {
   useEffect(() => {
     const myStore = localStorage.getItem("myStore");
     const userType = localStorage.getItem("userType");
+
     setIsOwner(myStore === companyId.toString() || userType === '1');
 
     api.get("/api/common-codes/brand-device-types")
@@ -257,6 +258,27 @@ function StoreInfoBox({ companyId }) {
         console.error("Error fetching questions:", error);
       });
   }, [companyId]);
+
+  const renderSupportedDevices = () => {
+    // 기기 목록 필터링 및 브랜드별 그룹화
+    const supportedDevices = deviceTypes.filter((device) => selectedDevices.includes(device.brandDeviceMapId));
+    const brandGroups = supportedDevices.reduce((acc, device) => {
+      if (!acc[device.brandName]) acc[device.brandName] = [];
+      acc[device.brandName].push(device.deviceTypeName);
+      return acc;
+    }, {});
+
+    return (
+      <div>
+        <h4>지원 기기:</h4>
+        {Object.entries(brandGroups).map(([brand, devices]) => (
+          <div key={brand}>
+            <strong>{brand}</strong>: {devices.join(", ")}
+          </div>
+        ))}
+      </div>
+    );
+  };
 
   const handleBrandChange = (e) => {
     const brandId = e.target.value;
@@ -339,7 +361,7 @@ function StoreInfoBox({ companyId }) {
           </StoreImageWrapper>
           <StoreInfo>
             <div>{storeInfo.content}</div>
-            <div>지원 기기: {storeInfo.supported_features?.join(", ")}</div>
+            {renderSupportedDevices()}
           </StoreInfo>
           <MapPlaceholder>지도 위치</MapPlaceholder>
         </StoreContainer>

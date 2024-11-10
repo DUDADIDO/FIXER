@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
 import api from "@/api"; // "@/api.jsx"에서 default export로 되어 있어야 함.
-
+import { useNavigate } from "react-router-dom";
 export default function WriteQnA() {
+  const navigate = useNavigate(); // ��이지 이���을 위한 useNavigate ���
   const location = useLocation();
   const storeId = location.state?.storeId || ""; // 전달된 상점 ID를 가져옴
   const storeName = location.state?.storeName || ""; // 전달된 상점 이름을 가져옴
@@ -32,6 +33,7 @@ export default function WriteQnA() {
 
       if (response.status === 201) {
         alert("Q&A 작성이 완료되었습니다.");
+        navigate(`/storeinfo/${storeId}/`)
       } else {
         alert("Q&A 작성에 실패했습니다.");
       }

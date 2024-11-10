@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "@/api"; // "@/api.jsx"에서 default export로 되어 있어야 함.
 
 export default function WriteReview() {
+  const navigate = useNavigate(); // ��이지 이���을 위한 useNavigate ���
   const location = useLocation();
   const storeId = location.state?.storeId || "";
   const storeName = location.state?.storeName || "";
@@ -33,6 +35,7 @@ export default function WriteReview() {
 
       if (response.status === 201) {
         alert("리뷰 작성이 완료되었습니다.");
+        navigate(`/storeinfo/${storeId}/`)
       } else {
         alert("리뷰 작성에 실패했습니다.");
       }

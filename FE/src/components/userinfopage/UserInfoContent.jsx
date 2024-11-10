@@ -37,9 +37,9 @@ function UserInfoContent() {
           <p className="text-sm font-semibold text-gray-700">이메일</p>
           <p className="text-gray-600">{data.userEmail}</p>
         </div>
-        <button className="px-4 py-2 bg-gray-100 rounded-lg text-gray-600 font-medium">
+        {/* <button className="px-4 py-2 bg-gray-100 rounded-lg text-gray-600 font-medium">
           변경
-        </button>
+        </button> */}
       </div>
       <hr className="my-2" />
       <div className="flex items-center justify-between mb-4">
@@ -47,9 +47,9 @@ function UserInfoContent() {
           <p className="text-sm font-semibold text-gray-700">아이디</p>
           <p className="text-gray-600">{data.userId}</p>
         </div>
-        <button className="px-4 py-2 bg-gray-100 rounded-lg text-gray-600 font-medium">
+        {/* <button className="px-4 py-2 bg-gray-100 rounded-lg text-gray-600 font-medium">
           변경
-        </button>
+        </button> */}
       </div>
       <hr className="my-2" />
       <div className="flex items-center justify-between mb-4">
@@ -57,9 +57,9 @@ function UserInfoContent() {
           <p className="text-sm font-semibold text-gray-700">이름</p>
           <p className="text-gray-600">{data.userName}</p>
         </div>
-        <button className="px-4 py-2 bg-gray-100 rounded-lg text-gray-600 font-medium">
+        {/* <button className="px-4 py-2 bg-gray-100 rounded-lg text-gray-600 font-medium">
           변경
-        </button>
+        </button> */}
       </div>
       <hr className="my-2" />
       <div className="flex items-center justify-between mb-4">

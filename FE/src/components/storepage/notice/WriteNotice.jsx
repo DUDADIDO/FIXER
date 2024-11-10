@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import api from "@/api.jsx"; // api 인스턴스 가져오기
 
 export default function WriteNotice() {
+  const navigate = useNavigate(); // ��이지 이���을 위한 useNavigate ���
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [file, setFile] = useState(null);
@@ -31,6 +32,7 @@ export default function WriteNotice() {
 
       if (response.status === 201) {
         alert("공지사항이 성공적으로 등록되었습니다.");
+        navigate(`/storeinfo/${companyId}`)
       } else {
         alert("공지사항 등록에 실패했습니다.");
       }

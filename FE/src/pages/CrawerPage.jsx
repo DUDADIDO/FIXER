@@ -14,7 +14,7 @@ const CrawerPage = () => {
       try {
         const response = await axios.get("/api/sales/realtime-deals?limit=500");
         setDeals(response.data);
-        console.log(response.data);
+        //console.log(response.data);
       } catch (error) {
         console.error("Error fetching deals:", error);
       }

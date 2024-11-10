@@ -23,7 +23,7 @@ function UserInfoQnAContent() {
       if (userNum) {
         try {
           const res = await api.get(`/api/users/userinfo/${userNum}/questions`);
-          console.log(res.data);
+          //console.log(res.data);
           setMyQuestion(res.data);
         } catch (err) {
           console.log(err);

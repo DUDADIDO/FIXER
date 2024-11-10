@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import api from "@/api";
 
 export default function AnswerForm() {
+  const navigate = useNavigate();
   const location = useLocation();
   const { data, questionId } = location.state || {};
   const [content, setContent] = useState("");
@@ -23,6 +25,7 @@ export default function AnswerForm() {
 
       if (response.status === 201) {
         alert("답변 작성이 완료되었습니다.");
+        navigate(`/storeinfo/${data.companyId}`);
       } else {
         alert("답변 작성에 실패했습니다.");
       }

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import api from "@/api";
-
+import { useNavigate } from "react-router-dom"; // useNavigate 임포트 추가
 export default function RegisterStore() {
+  const navigate = useNavigate(); // useNavigate를 통해 navigate 정의
   const [applicationForm, setApplicationForm] = useState(null);
   const [zipFile, setZipFile] = useState(null);
 
@@ -33,8 +34,9 @@ export default function RegisterStore() {
           "Content-Type": "multipart/form-data",
         },
       });
-      if (response.status === 200) {
+      if (response.status === 201) {
         alert("업체 등록 신청이 완료되었습니다.");
+        navigate("/");
       }
     } catch (error) {
       console.error("업체 등록 신청 중 오류 발생:", error);

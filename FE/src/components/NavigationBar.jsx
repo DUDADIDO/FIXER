@@ -47,9 +47,9 @@ export default function NavigationBar() {
         <Link to="/storeregister" className={linkStyles("/storeregister")}>
           업체 신청
         </Link>
-        <Link to="/servicecenter" className={linkStyles("/servicecenter")}>
+        {/* <Link to="/servicecenter" className={linkStyles("/servicecenter")}>
           고객센터
-        </Link>
+        </Link> */}
         <Link to="/manageregister" className={linkStyles("/manageregister")}>
           업체 신청 목록
         </Link>
