@@ -148,6 +148,7 @@ public class CompanyController {
 
 
 
+
     // 파일 이름을 고유하게 생성하는 유틸리티 메서드
     private String generateFileName(String originalFileName) {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));

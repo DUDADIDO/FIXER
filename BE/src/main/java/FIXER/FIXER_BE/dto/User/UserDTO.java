@@ -16,16 +16,16 @@ import java.time.LocalDateTime;
 public class UserDTO {
     private Integer userNum;
 
-    @JsonProperty("user_id")
+    @JsonProperty("userId")
     private String userId;
 
-    @JsonProperty("user_pw")
+    @JsonProperty("userPw")
     private String password;
 
-    @JsonProperty("user_name")
+    @JsonProperty("userName")
     private String userName;
 
-    @JsonProperty("user_email")
+    @JsonProperty("userEmail")
     private String userEmail;
 
     private Integer userState;
