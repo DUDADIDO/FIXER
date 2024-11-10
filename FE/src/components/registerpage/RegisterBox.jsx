@@ -89,33 +89,33 @@ const BackButton = styled.button`
 `;
 
 export default function RegisterBox() {
-  const [user_id, setId] = useState("");
-  const [user_pw, setPassword] = useState("");
-  const [user_pw_check, setPasswordCheck] = useState("");
-  const [user_name, setName] = useState("");
-  const [user_email, setEmail] = useState("");
+  const [userId, setId] = useState("");
+  const [userPw, setPassword] = useState("");
+  const [userPw_check, setPasswordCheck] = useState("");
+  const [userName, setName] = useState("");
+  const [userEmail, setEmail] = useState("");
   const [isIdAvailable, setIsIdAvailable] = useState(null);
   const [isIdChecked, setIsIdChecked] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "user_id") setId(value);
-    else if (name === "user_pw") setPassword(value);
-    else if (name === "user_pw_check") setPasswordCheck(value);
-    else if (name === "user_name") setName(value);
-    else if (name === "user_email") setEmail(value);
+    if (name === "userId") setId(value);
+    else if (name === "userPw") setPassword(value);
+    else if (name === "userPw_check") setPasswordCheck(value);
+    else if (name === "userName") setName(value);
+    else if (name === "userEmail") setEmail(value);
   };
 
   const handleIdCheck = async () => {
     const idRegex = /^[a-zA-Z0-9]{8,}$/;
-    if (!idRegex.test(user_id)) {
+    if (!idRegex.test(userId)) {
       alert("아이디는 최소 8자리의 영어와 숫자로 이루어져야 합니다.");
       return;
     }
   
     try {
-      const response = await api.post("/api/users/register/checkid", { user_id });
+      const response = await api.post("/api/users/register/checkid", { userId });
       const isValid = response.data === true; // 서버 응답이 true 인지 확인
       if (isValid) {
         alert("사용 가능한 아이디입니다.");
@@ -138,19 +138,19 @@ export default function RegisterBox() {
       alert("아이디 중복 확인을 해주세요.");
       return false;
     }
-    if (!idRegex.test(user_id)) {
+    if (!idRegex.test(userId)) {
       alert("아이디는 최소 8자리로 이루어져야 합니다.");
       return false;
     }
-    if (!emailRegex.test(user_email)) {
+    if (!emailRegex.test(userEmail)) {
       alert("유효한 이메일 주소를 입력해 주세요.");
       return false;
     }
-    if (user_pw.length < 8) {
+    if (userPw.length < 8) {
       alert("비밀번호는 8자리 이상이어야 합니다.");
       return false;
     }
-    if (user_pw !== user_pw_check) {
+    if (userPw !== userPw_check) {
       alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
       return false;
     }
@@ -162,10 +162,10 @@ export default function RegisterBox() {
       return;
     }
     const textbox = {
-      user_id,
-      user_pw,
-      user_email,
-      user_name,
+      userId,
+      userPw,
+      userEmail,
+      userName,
     };
     try {
       const response = await api.post("/api/users/register", textbox);
@@ -192,9 +192,9 @@ export default function RegisterBox() {
         <FormWrapper>
           <InputWrapper>
             <Input
-              id="user_id"
-              name="user_id"
-              value={user_id}
+              id="userId"
+              name="userId"
+              value={userId}
               onChange={handleChange}
               placeholder="아이디를 입력해주세요"
               disabled={isIdChecked} // 중복 확인 후 비활성화
@@ -205,38 +205,38 @@ export default function RegisterBox() {
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="user_name"
-              name="user_name"
-              value={user_name}
+              id="userName"
+              name="userName"
+              value={userName}
               onChange={handleChange}
               placeholder="이름을 입력하세요"
             />
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="user_email"
-              name="user_email"
-              value={user_email}
+              id="userEmail"
+              name="userEmail"
+              value={userEmail}
               onChange={handleChange}
               placeholder="이메일을 입력해주세요"
             />
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="user_pw"
-              name="user_pw"
+              id="userPw"
+              name="userPw"
               type="password"
-              value={user_pw}
+              value={userPw}
               onChange={handleChange}
               placeholder="비밀번호를 입력해주세요"
             />
           </InputWrapper>
           <InputWrapper>
             <Input
-              id="user_pw_check"
-              name="user_pw_check"
+              id="userPw_check"
+              name="userPw_check"
               type="password"
-              value={user_pw_check}
+              value={userPw_check}
               onChange={handleChange}
               placeholder="비밀번호를 한번 더 입력해주세요"
             />
