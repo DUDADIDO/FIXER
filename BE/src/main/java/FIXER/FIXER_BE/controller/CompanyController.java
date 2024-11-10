@@ -1,7 +1,6 @@
 package FIXER.FIXER_BE.controller;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
-import FIXER.FIXER_BE.dto.CompanyDeviceUpdateDTO;
 import FIXER.FIXER_BE.dto.NoticeDTO;
 import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.repository.CompanyRepository;
@@ -16,11 +15,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -34,8 +31,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/company")
@@ -152,7 +147,7 @@ public class CompanyController {
 
     // 새로운 브랜드와 기기 정보 저장하는 API
     @PostMapping("/storeinfo/{companyId}/devices")
-    public ResponseEntity<Void> updateCompanyDevices(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDeviceUpdateDTO companyDeviceUpdateDTO) {
+    public ResponseEntity<Void> updateCompanyDevices(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDTO.CompanyDeviceUpdateDTO companyDeviceUpdateDTO) {
         companyDeviceService.updateCompanyDevices(companyId, companyDeviceUpdateDTO);
         return ResponseEntity.ok().build();
     }
@@ -203,7 +198,7 @@ public class CompanyController {
 
     // 브랜드 및 기기 정보 저장을 위한 새로운 엔드포인트
     @PostMapping("/storeinfo/{companyId}/save-brand-device")
-    public ResponseEntity<Void> saveBrandDevice(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDeviceUpdateDTO companyDeviceUpdateDTO) {
+    public ResponseEntity<Void> saveBrandDevice(@PathVariable("companyId") Integer companyId, @RequestBody CompanyDTO.CompanyDeviceUpdateDTO companyDeviceUpdateDTO) {
         companyDeviceService.updateCompanyDevices(companyId, companyDeviceUpdateDTO);
         return ResponseEntity.ok().build();
     }
