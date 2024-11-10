@@ -27,7 +27,7 @@ function UserInfoBox() {
 
   return (
     <div className="p-6">
-      <div className="flex gap-4 mb-6 mr-96">
+      <div className="flex gap-4">
         <button
           onClick={() => setSelectedTab("유저 정보")}
           className={`px-4 py-2 rounded ${

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import CommunityItem from "@/components/userinfopage/UserInfoContent/CommunityItem.jsx";
+import ReviewItem from "@/components/userinfopage/UserInfoContent/ReviewItem.jsx";
 
 const CommunitySection = styled.div`
   display: flex;
@@ -45,7 +46,7 @@ const PageButton = styled.button`
   }
 `;
 
-function CommunitySectionWithPagination({ title, data }) {
+function CommunitySectionWithPagination({ title, data = [] }) {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
@@ -65,9 +66,13 @@ function CommunitySectionWithPagination({ title, data }) {
     <CommunitySection>
       <CommunityTitle>{title}</CommunityTitle>
       <CommunityList>
-        {currentItems.map((item) => (
-          <CommunityItem key={item.id} data={item} />
-        ))}
+        {title === "내가 쓴 QnA"
+          ? currentItems.map((item) => (
+              <CommunityItem key={item.index} data={item} />
+            ))
+          : currentItems.map((item) => (
+              <ReviewItem key={item.index} data={item} />
+            ))}
       </CommunityList>
       <Pagination>
         <PageButton
