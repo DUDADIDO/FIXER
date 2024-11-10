@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 
-export default function CommunityItem({ data }) {
+export default function ReviewItem({ data }) {
   const [isHover, setIsHover] = useState(false);
 
   return (
     <Link
-      to={`/storeinfo/${data.companyId}/qnadetail/${data.questionId}`}
+      to={`/storeinfo/${data.companyId}/reviewdetail/${data.reviewId}`}
       state={{ data }}
       className="flex justify-between items-center font-bold"
       onMouseEnter={() => setIsHover(true)}
@@ -17,7 +17,7 @@ export default function CommunityItem({ data }) {
         <p
           className={`truncate ${isHover ? "text-blue-500" : ""} duration-150`}
         >
-          {data.title}
+          {data.comment}
         </p>
         <p>&nbsp;&nbsp;&nbsp;</p>
       </div>
