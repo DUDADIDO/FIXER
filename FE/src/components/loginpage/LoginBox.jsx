@@ -18,7 +18,7 @@ export default function LoginBox() {
 
       if (response.status === 200) {
         // 요청이 성공한 경우 처리
-        const { token, user_num, user_name } = response.data;
+        const { token, user_num, user_name, user_type, my_store } = response.data;
         console.log("Login successful:", token, user_num, user_name);
         
         // 토큰을 로컬 스토리지에 저장
@@ -26,6 +26,8 @@ export default function LoginBox() {
           localStorage.setItem("authToken", token);
           localStorage.setItem("userNum", user_num);
           localStorage.setItem("userName", user_name);
+          localStorage.setItem("userType", user_type);
+          localStorage.setItem("myStore", my_store);
         }
 
         // 다른 사용자 정보를 필요에 따라 로컬 스토리지에 저장하거나 상태로 관리 가능
