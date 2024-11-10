@@ -281,27 +281,25 @@ function StoreInfoBox({ companyId }) {
       type: "application/json",
     });
     formData.append("companyDTO", companyDTOBlob);
-
+  
     // `supportedDeviceIds`를 JSON으로 보내면서 Content-Type을 지정
     const supportedDeviceIdsBlob = new Blob([JSON.stringify(supportedDeviceIds)], {
       type: "application/json",
     });
     formData.append("supportedDeviceIds", supportedDeviceIdsBlob);
-
+  
     // 파일이 선택된 경우 추가
     if (logoFile) {
       formData.append("logoFile", logoFile);
     }
-
+  
+    // 디버그용 출력
     for (const x of formData.entries()) {
       console.log(x);
-     };
+    };
   
-    api.post(`/api/company/storeinfo/${companyId}/update`, formData, {
-      headers: {
-        "Content-Type": "multipart/form-data" 
-      },
-    })
+    // 헤더를 생략해서 axios가 Content-Type을 자동으로 설정하게 함
+    api.post(`/api/company/storeinfo/${companyId}/update`, formData)
       .then((response) => {
         setStoreInfos((prevInfos) =>
           prevInfos.map((store) =>
@@ -314,6 +312,7 @@ function StoreInfoBox({ companyId }) {
         console.error("Error updating store info:", error);
       });
   };
+  
 
   return (
     <>
