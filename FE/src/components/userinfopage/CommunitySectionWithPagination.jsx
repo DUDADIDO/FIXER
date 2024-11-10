@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import CommunityItem from "@/components/userinfopage/UserInfoContent/CommunityItem.jsx";
-import ReviewItem from "@/components/userinfopage/UserInfoContent/ReviewItem.jsx";
+import CommunityItem from "./userinfoContent/CommunityItem";
+import ReviewItem from "./userinfoContent/ReviewItem";
 
 const CommunitySection = styled.div`
   display: flex;

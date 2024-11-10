@@ -4,7 +4,7 @@ import styled from "styled-components";
 import api from "../../api";
 import NoticeBox from "./notice/NoticeBox";
 import ReviewBox from "./reviews/ReviewBox";
-import QuestionBox from "./question/QuestionBOx";
+import QuestionBox from "./question/QuestionBox";
 const apiBaseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080"; 
 
 const StoreContainer = styled.div`
@@ -196,6 +196,10 @@ function StoreInfoBox({ companyId }) {
   const [logoFile, setLogoFile] = useState(null);
 
   useEffect(() => {
+    const myStore = localStorage.getItem("myStore");
+    const userType = localStorage.getItem("userType");
+    setIsOwner(myStore === companyId.toString() || userType === '1');
+
     api.get("/api/common-codes/brand-device-types")
       .then((response) => {
         setDeviceTypes(response.data);
@@ -224,7 +228,6 @@ function StoreInfoBox({ companyId }) {
           content: response.data.content,
           supported_features: response.data.supported_features || [],
         });
-        setIsOwner(true);
       })
       .catch((error) => {
         console.error("Error fetching store info:", error);
@@ -233,7 +236,6 @@ function StoreInfoBox({ companyId }) {
     api.get(`/api/company/storeinfo/${companyId}/notices`)
       .then((response) => {
         setNoticeInfos(response.data);
-        setIsOwner(true);
       })
       .catch((error) => {
         console.error("Error fetching notices:", error);
@@ -242,7 +244,6 @@ function StoreInfoBox({ companyId }) {
     api.get(`/api/company/storeinfo/${companyId}/reviews`)
       .then((response) => {
         setReviewInfos(response.data);
-        setIsOwner(true);
       })
       .catch((error) => {
         console.error("Error fetching reviews:", error);
@@ -251,7 +252,6 @@ function StoreInfoBox({ companyId }) {
     api.get(`/api/company/storeinfo/${companyId}/questions`)
       .then((response) => {
         setQuestionInfos(response.data);
-        setIsOwner(true);
       })
       .catch((error) => {
         console.error("Error fetching questions:", error);
