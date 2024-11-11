@@ -23,9 +23,12 @@ public class SaleService {
     public List<DealDTO> getLimitedDeals() {
         List<DealDTO> productList = new ArrayList<>();
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--headless"); // 브라우저 UI를 표시하지 않는 headless 모드 사용
-        options.addArguments("--no-sandbox");
+        options.addArguments("--headless"); // Headless 모드 활성화
+        options.addArguments("--no-sandbox"); // 추가한 옵션
         options.addArguments("--disable-dev-shm-usage");
+        options.addArguments("--disable-gpu"); // 추가한 옵션
+        options.addArguments("--ignore-ssl-errors=yes");
+        options.addArguments("--ignore-certificate-errors");
         WebDriver driver = new ChromeDriver(options);
 
         try {

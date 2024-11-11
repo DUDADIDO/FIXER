@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../../api.jsx" // axios 인스턴스 가져오기
+import api from "../../api.jsx"; // axios 인스턴스 가져오기
 
 export default function LoginBox() {
   const [id, setId] = useState("");
@@ -15,11 +15,8 @@ export default function LoginBox() {
       });
 
       if (response.status === 200) {
-        // 요청이 성공한 경우 처리
         const { token, user_num, user_name, user_type, my_store } = response.data;
-        // console.log("Login successful:", token, user_num, user_name);
-        
-        // 토큰을 로컬 스토리지에 저장
+
         if (token) {
           localStorage.setItem("authToken", token);
           localStorage.setItem("userNum", user_num);
@@ -28,22 +25,23 @@ export default function LoginBox() {
           localStorage.setItem("myStore", my_store);
         }
 
-        // 다른 사용자 정보를 필요에 따라 로컬 스토리지에 저장하거나 상태로 관리 가능
-        
         alert(`${localStorage.getItem("userName")}님 환영합니다.`);
-        // 루트 페이지로 리다이렉트
         navigate("/");
       }
     } catch (error) {
       if (error.response) {
-        // 서버가 2xx 외의 상태 코드를 반환한 경우
         console.error("Login failed:", error.response.status);
         alert("로그인에 실패했습니다. 아이디와 비밀번호를 확인해주세요.");
       } else {
-        // 서버가 응답하지 않거나 요청이 전달되지 않은 경우
         console.error("An error occurred during login:", error.message);
         alert("로그인 도중 문제가 발생했습니다. 다시 시도해주세요.");
       }
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      handleLogin();
     }
   };
 
@@ -64,6 +62,7 @@ export default function LoginBox() {
                   type="text"
                   value={id}
                   onChange={(e) => setId(e.target.value)}
+                  onKeyDown={handleKeyPress}
                   className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-appBlue1"
                   placeholder="아이디"
                 />
@@ -77,6 +76,7 @@ export default function LoginBox() {
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  onKeyDown={handleKeyPress}
                   className="border-2 border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-appBlue1"
                   placeholder="비밀번호"
                 />

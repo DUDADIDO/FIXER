@@ -12,7 +12,7 @@ public class WebMvcConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.addAllowedOrigin("http://localhost:5173"); // 허용할 도메인 (React 앱의 주소)
+        config.addAllowedOrigin("http://116.124.191.174:15018"); // 허용할 도메인 (React 앱의 주소)
         config.addAllowedMethod("*"); // 모든 HTTP 메서드 허용
         config.addAllowedHeader("*"); // 모든 헤더 허용
         config.setAllowCredentials(true); // 인증 정보 포함 허용 (예: 쿠키)
