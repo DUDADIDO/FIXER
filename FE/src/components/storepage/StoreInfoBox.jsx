@@ -63,112 +63,17 @@ const MapPlaceholder = styled.div`
   font-size: 14px;
   margin-left: 20px;
 `;
-
-const CommunitySection = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  margin-top: 20px;
-  margin-bottom: 40px;
-  padding: 10px;
-  border: 2px solid #ccc;
-  box-sizing: border-box;
-  overflow: hidden;
-`;
-
-const CommunityTitle = styled.h3`
-  font-size: 18px;
-  font-weight: bold;
-  margin-bottom: 10px;
-`;
-
-const CommunityList = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-`;
-
-const Pagination = styled.div`
-  display: flex;
-  justify-content: center;
-  gap: 5px;
+const PaymentLink = styled(Link)`
   margin-top: 10px;
-`;
-
-const PageButton = styled.button`
-  padding: 5px 10px;
-  border: 1px solid #ddd;
-  background-color: ${(props) => (props.active ? "#03c75a" : "#f9f9f9")};
-  color: ${(props) => (props.active ? "#fff" : "#333")};
-  cursor: pointer;
-
-  &:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-  }
-`;
-
-const ButtonContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-`;
-
-const WriteButton = styled(Link)`
   padding: 8px 16px;
   background-color: #03c75a;
   color: white;
-  text-decoration: none;
-  font-weight: bold;
+  border: none;
   border-radius: 4px;
+  cursor: pointer;
+  text-decoration: none;
   text-align: center;
   transition: background-color 0.3s;
-
-  &:hover {
-    background-color: #028a3d;
-  }
-`;
-
-const ModalOverlay = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
-
-const ModalContent = styled.div`
-  width: 700px;
-  background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-`;
-
-const ModalCloseButton = styled.button`
-  background: #ff5c5c;
-  color: white;
-  border: none;
-  padding: 8px;
-  cursor: pointer;
-  float: right;
-  border-radius: 4px;
-`;
-
-const SaveButton = styled.button`
-  padding: 8px 16px;
-  background-color: #03c75a;
-  color: white;
-  border: none;
-  font-weight: bold;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  margin-top: 20px;
 
   &:hover {
     background-color: #028a3d;
@@ -343,13 +248,18 @@ function StoreInfoBox({ companyId }) {
           <StoreImageWrapper>
             <StoreImage src={`${apiBaseUrl}${storeInfo.logo}`} alt="Store Logo" />
             <StoreName>{storeInfo.name}</StoreName>
-            <StoreStats>
+            <StoreStats className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
               <div>수리 횟수: {storeInfo.repair_count}</div>
               <div>평점: {storeInfo.score}</div>
               <div>리뷰 수: {storeInfo.review_cnt}</div>
-              <div>전화번호: {storeInfo.phone}</div>
-              <div>주소: {storeInfo.location}</div>
             </StoreStats>
+            <div className="mt-2 text-sm text-gray-700">
+              전화번호: {storeInfo.phone}
+            </div>
+            <div className="mt-1 text-sm text-gray-600">
+              주소: {storeInfo.location}
+            </div>
+
             {isOwner && (
               <button
                 onClick={() => setIsModalOpen(true)}
@@ -363,9 +273,23 @@ function StoreInfoBox({ companyId }) {
             <div>{storeInfo.content}</div>
             {renderSupportedDevices()}
           </StoreInfo>
-          <MapPlaceholder>지도 위치</MapPlaceholder>
+          <div>
+            <MapPlaceholder>지도 위치</MapPlaceholder>
+            <PaymentLink
+              to={{
+                pathname: `/storeinfo/${companyId}/payment`,
+              }}
+              state={{
+                storeId: companyId,
+                storeName: storeInfo.name,
+              }}
+              style={{ display: "block", marginTop: "10px", textAlign: "center" }} // 스타일 추가
+            >
+              결제하기
+            </PaymentLink>
+          </div>
         </StoreContainer>
-      ))}
+      ))} 
 
       {/* 모달 */}
       {isModalOpen && (

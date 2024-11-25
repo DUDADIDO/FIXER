@@ -19,6 +19,7 @@ import CrawerPage from "./pages/CrawerPage";
 import ManageRegisterStore from "./components/storeregisterpage/manageRegister/ManageRegisterStore";
 import RegisterDetail from "./components/storeregisterpage/manageRegister/RegisterDetail";
 import StoreRegister from "./components/storeregisterpage/manageRegister/StoreRegister";
+import PaymentPage from "./components/storepage/PaymentPage";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -31,6 +32,7 @@ const router = createBrowserRouter([
       { path: "/storeinfo/:companyId/writereview", element: <WriteReview /> },
       { path: "/storeinfo/:companyId/writenotice", element: <WriteNotice /> },
       { path: "/storeinfo/:companyId/writeqna", element: <WriteQnA /> },
+      { path: "/storeinfo/:companyId/payment", element: <PaymentPage /> },
       { path: "/storeregister", element: <StoreRegisterPage /> },
       {
         path: "/storeinfo/:companyId/qnadetail/:questionId",

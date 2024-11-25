@@ -1,6 +1,8 @@
 import { Outlet } from "react-router-dom";
 // 네비게이션
 import NavigationBar from "../components/NavigationBar";
+// 챗봇 컴포넌트
+import Chatbot from "../components/Chatbot";
 
 export default function MainLayout() {
   return (
@@ -18,6 +20,10 @@ export default function MainLayout() {
           &copy; 2024 FIXER. All rights reserved.
         </div>
       </footer>
+
+      {/* 챗봇 추가 */}
+      <Chatbot />
     </div>
   );
 }
+  
