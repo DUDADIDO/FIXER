@@ -15,21 +15,25 @@ export default function PaymentPage() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    const formData = new FormData();
-    formData.append("storeId", storeId);
-    formData.append("user_num", localStorage.getItem("userNum")); // 사용자 ID를 localStorage에서 가져오기
-    formData.append("amount", amount);
-    formData.append("modelName", modelName);
-    formData.append("damageType", damageType);
+    const payload = {
+      deviceName: modelName,
+      damagedPart: damageType,
+      repairCosts: amount,
+      companyId: storeId,
+    };
 
     try {
-      const response = await api.post(`/api/company/storeinfo/${storeId}/payment`, formData, {
+      console.log(payload);
+      const response = await api.post(`/api/company/storeinfo/${storeId}/payment`, {
+        deviceName: modelName,
+        damagedPart: damageType,
+        repairCosts: amount,
         headers: {
-          "Content-Type": "multipart/form-data",
+          "Content-Type": "application/json",
         },
       });
 
-      if (response.status === 201) {
+      if (response.status === 200) {
         alert("결제가 완료되었습니다.");
         navigate(`/storeinfo/${storeId}/`);
       } else {

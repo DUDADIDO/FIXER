@@ -11,7 +11,7 @@ export default function StoreInfoCard({ data, supportedDevices = [] }) {
     supported_features = [],
     repair_count,
     score,
-    review_cnt,
+    review_count,
   } = data || {};
 
   // 로고 URL을 서버 기본 URL과 합쳐서 설정
@@ -55,7 +55,7 @@ export default function StoreInfoCard({ data, supportedDevices = [] }) {
             </div>
             <div className="text-center">
               <p className="text-sm font-medium">리뷰 개수</p>
-              <p className="text-base font-semibold">{review_cnt}</p>
+              <p className="text-base font-semibold">{review_count}</p>
             </div>
           </div>
         </div>

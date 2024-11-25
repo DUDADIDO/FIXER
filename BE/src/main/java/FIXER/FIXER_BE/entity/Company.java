@@ -42,7 +42,7 @@ public class Company {
     private Integer repairCount;
 
     @Column(name = "review_count", nullable = false)
-    private Integer reviewCount;
+    private Integer reviewCount = 0;
 
     @Column(name = "score", precision = 3, scale = 2)
     private BigDecimal score;

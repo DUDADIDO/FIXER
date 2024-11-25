@@ -251,7 +251,7 @@ function StoreInfoBox({ companyId }) {
             <StoreStats className="flex flex-wrap items-center gap-4 text-sm text-gray-700">
               <div>수리 횟수: {storeInfo.repair_count}</div>
               <div>평점: {storeInfo.score}</div>
-              <div>리뷰 수: {storeInfo.review_cnt}</div>
+              <div>리뷰 수: {storeInfo.review_count}</div>
             </StoreStats>
             <div className="mt-2 text-sm text-gray-700">
               전화번호: {storeInfo.phone}
