@@ -2,11 +2,13 @@ package FIXER.FIXER_BE.controller;
 
 import FIXER.FIXER_BE.dto.CompanyDTO;
 import FIXER.FIXER_BE.dto.NoticeDTO;
+import FIXER.FIXER_BE.dto.ReceiptDTO;
 import FIXER.FIXER_BE.dto.SupportedDeviceDTO;
 import FIXER.FIXER_BE.entity.Notice;
 import FIXER.FIXER_BE.repository.CompanyRepository;
 import FIXER.FIXER_BE.service.CompanyService;
 import FIXER.FIXER_BE.service.NoticeService;
+import FIXER.FIXER_BE.service.ReceiptService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +46,7 @@ public class CompanyController {
     private final NoticeService noticeService;
     private final CompanyRepository companyRepository;
     private static final String UPLOAD_DIR = "uploads/";
+    private final ReceiptService receiptService;
 
     @Value("${base.url}")
     private String baseUrl;  // application.properties에서 base.url 값 주입
@@ -146,9 +149,6 @@ public class CompanyController {
         return ResponseEntity.ok(notices);
     }
 
-
-
-
     // 파일 이름을 고유하게 생성하는 유틸리티 메서드
     private String generateFileName(String originalFileName) {
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
@@ -233,18 +233,19 @@ public class CompanyController {
         }
     }
 
-
-
-
-
-
-
     @GetMapping("/{companyId}/supported-devices")
     public ResponseEntity<List<SupportedDeviceDTO>> getSupportedDevices(@PathVariable Integer companyId) {
         List<SupportedDeviceDTO> supportedDevices = companyService.getSupportedDevices(companyId);
         return ResponseEntity.ok(supportedDevices);
     }
 
-
-
+    @PostMapping("/storeinfo/{companyId}/payment")
+    public ResponseEntity<ReceiptDTO> storePayment(@PathVariable Integer companyId, @RequestBody ReceiptDTO receiptDTO) {
+        // 요청받은 companyId를 ReceiptDTO에 설정
+        receiptDTO.setCompanyId(companyId);
+        // Receipt 저장
+        ReceiptDTO savedReceipt = receiptService.saveReceipt(receiptDTO);
+        // 저장된 ReceiptDTO를 반환
+        return ResponseEntity.ok(savedReceipt);
+    }
 }

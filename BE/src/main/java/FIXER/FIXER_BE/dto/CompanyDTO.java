@@ -35,6 +35,9 @@ public class CompanyDTO {
     @JsonProperty("repair_count")
     private Integer repairCount;
 
+    @JsonProperty("review_count")
+    private Integer reviewCount;
+
     @JsonProperty("score")
     private BigDecimal score;
 
@@ -65,6 +68,7 @@ public class CompanyDTO {
                 .phone(company.getPhone())
                 .email(company.getEmail())
                 .repairCount(company.getRepairCount())
+                .reviewCount(company.getReviewCount())
                 .score(company.getScore())
                 .createdAt(company.getCreatedAt())
                 .updatedAt(company.getUpdatedAt())

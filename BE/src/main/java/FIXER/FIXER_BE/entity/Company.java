@@ -41,6 +41,9 @@ public class Company {
     @Column(name = "repair_count", nullable = false)
     private Integer repairCount;
 
+    @Column(name = "review_count", nullable = false)
+    private Integer reviewCount;
+
     @Column(name = "score", precision = 3, scale = 2)
     private BigDecimal score;
 
