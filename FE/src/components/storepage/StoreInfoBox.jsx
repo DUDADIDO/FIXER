@@ -260,7 +260,6 @@ function StoreInfoBox({ companyId }) {
   }, [companyId]);
 
   const renderSupportedDevices = () => {
-    // 기기 목록 필터링 및 브랜드별 그룹화
     const supportedDevices = deviceTypes.filter((device) => selectedDevices.includes(device.brandDeviceMapId));
     const brandGroups = supportedDevices.reduce((acc, device) => {
       if (!acc[device.brandName]) acc[device.brandName] = [];
@@ -270,7 +269,7 @@ function StoreInfoBox({ companyId }) {
 
     return (
       <div>
-        <h4>지원 기기:</h4>
+        <h4>전문 분야:</h4>
         {Object.entries(brandGroups).map(([brand, devices]) => (
           <div key={brand}>
             <strong>{brand}</strong>: {devices.join(", ")}
@@ -344,7 +343,7 @@ function StoreInfoBox({ companyId }) {
             <StoreImage src={`${apiBaseUrl}${storeInfo.logo}`} alt="Store Logo" />
             <StoreName>{storeInfo.name}</StoreName>
             <StoreStats>
-              <div>수리 횟수: {storeInfo.repair_count}</div>
+              <div>답변 횟수: {storeInfo.repair_count}</div>
               <div>평점: {storeInfo.score}</div>
               <div>리뷰 수: {storeInfo.review_cnt}</div>
               <div>전화번호: {storeInfo.phone}</div>
@@ -377,11 +376,11 @@ function StoreInfoBox({ companyId }) {
             >
               X
             </button>
-            <h3 className="text-lg font-bold mb-4">업체 정보 수정</h3>
+            <h3 className="text-lg font-bold mb-4">전문가 정보 수정</h3>
             
             {/* Name field */}
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">업체명:</label>
+              <label className="block text-gray-700 mb-2">이름:</label>
               <input
                 type="text"
                 name="name"
@@ -417,7 +416,7 @@ function StoreInfoBox({ companyId }) {
 
             {/* Description field */}
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">회사 설명:</label>
+              <label className="block text-gray-700 mb-2">설명:</label>
               <textarea
                 name="description"
                 value={editedStore.description}
@@ -429,7 +428,7 @@ function StoreInfoBox({ companyId }) {
 
             {/* Content field */}
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">회사 콘텐츠:</label>
+              <label className="block text-gray-700 mb-2">한줄 소개:</label>
               <textarea
                 name="content"
                 value={editedStore.content}
@@ -480,7 +479,7 @@ function StoreInfoBox({ companyId }) {
 
             {/* 로고 파일 업로드 */}
             <div className="mb-4">
-              <label className="block text-gray-700 mb-2">로고 파일:</label>
+              <label className="block text-gray-700 mb-2">개인 사진:</label>
               <input
                 type="file"
                 name="logoFile"
@@ -497,7 +496,7 @@ function StoreInfoBox({ companyId }) {
       )}
 
 
-      <NoticeBox title="업체 공지사항" data={noticeInfos} storeId={storeInfos[0]?.company_id} storeName={storeInfos[0]?.name} />
+      <NoticeBox title="공지사항" data={noticeInfos} storeId={storeInfos[0]?.company_id} storeName={storeInfos[0]?.name} />
       <ReviewBox title="리뷰" data={reviewInfos} storeId={storeInfos[0]?.company_id} storeName={storeInfos[0]?.name} />
       <QuestionBox title="Q&A" data={questionInfos} storeId={storeInfos[0]?.company_id} storeName={storeInfos[0]?.name} />
     </>

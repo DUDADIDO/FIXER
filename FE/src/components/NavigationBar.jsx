@@ -39,25 +39,25 @@ export default function NavigationBar() {
       <Link to="/">로고</Link>
       <div className="flex justify-evenly items-center gap-20">
         <Link to="/storesearch" className={linkStyles("/storesearch")}>
-          업체 검색
+          전문가 검색
         </Link>
         <Link to="/crawer" className={linkStyles("/crawer")}>
           특가
         </Link>
         <Link to="/storeregister" className={linkStyles("/storeregister")}>
-          업체 신청
+          전문가 신청
         </Link>
         {/* <Link to="/servicecenter" className={linkStyles("/servicecenter")}>
           고객센터
         </Link> */}
         <Link to="/manageregister" className={linkStyles("/manageregister")}>
-          업체 신청 목록
+          전문가 신청 목록
         </Link>
         <Link
           to="/manageregister/register"
           className={linkStyles("/manageregister/register")}
         >
-          업체 등록
+          전문가 등록
         </Link>
       </div>
       {authToken ? (

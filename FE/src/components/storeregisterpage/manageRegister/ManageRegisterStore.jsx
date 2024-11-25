@@ -20,7 +20,7 @@ function ManageRegisterStore() {
 
   return (
     <div className="p-8 w-full max-w-screen-xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6">업체 등록 관리 페이지</h1>
+      <h1 className="text-2xl font-bold mb-6">전문가 등록 관리 페이지</h1>
       <RegisterBox title="등록된 신청서" data={applications} />
     </div>
   );

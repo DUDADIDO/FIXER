@@ -34,23 +34,23 @@ export default function StoreRegister() {
         },
       });
       if (response.status === 200) {
-        alert("업체 등록이 완료되었습니다.");
+        alert("전문가 등록이 완료되었습니다.");
       }
     } catch (error) {
-      console.error("업체 등록 신청 중 오류 발생:", error);
-      alert("업체 등록에 실패했습니다.");
+      console.error("전문가 등록 신청 중 오류 발생:", error);
+      alert("전문가 등록에 실패했습니다.");
     }
   };
 
   return (
     <div className="flex flex-col items-center min-w-full min-h-[80vh] p-8 bg-slate-100 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold text-gray-800 mb-8">관리자 업체 등록 페이지</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-8">관리자 전문가 등록 페이지</h1>
 
       <form onSubmit={handleSubmit} className="flex flex-col items-center space-y-6 w-full max-w-lg">
         {/* 엑셀 파일 첨부 */}
         <div className="flex flex-col w-full">
           <label htmlFor="excelFile" className="text-lg font-semibold text-gray-700 mb-2">
-            스토어 엑셀 파일
+            전문가 엑셀 파일
           </label>
           <input
             type="file"
@@ -65,7 +65,7 @@ export default function StoreRegister() {
         {/* 로고 파일 첨부 */}
         <div className="flex flex-col w-full">
           <label htmlFor="logoFile" className="text-lg font-semibold text-gray-700 mb-2">
-            스토어 로고 파일
+            전문가 로고 파일
           </label>
           <input
             type="file"

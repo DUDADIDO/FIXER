@@ -15,7 +15,7 @@ export default function MainLayout() {
 
       <footer className="w-full bg-white border-t border-gray-300 mt-auto">
         <div className="flex justify-center items-center p-4">
-          &copy; 2024 FIXER. All rights reserved.
+          &copy; 2024 AskAnything. All rights reserved.
         </div>
       </footer>
     </div>

@@ -129,7 +129,7 @@ export default function StoreList() {
 
   return (
     <div className="flex flex-col w-full p-6 bg-white rounded-lg shadow-lg space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800 mb-6">상점 목록</h1>
+      <h1 className="text-3xl font-bold text-gray-800 mb-6">전문가 목록</h1>
       <div className="flex items-center gap-4 mb-6">
         <div className="w-1/6">
           <select
@@ -137,15 +137,15 @@ export default function StoreList() {
             onChange={(e) => setSearchType(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-lg"
           >
-            <option value="name">가게 이름</option>
-            <option value="feature">수리 품목</option>
+            <option value="name">전문가 이름</option>
+            <option value="feature">전문 분야</option>
           </select>
         </div>
 
         <div className="flex-grow">
           <input
             type="text"
-            placeholder={searchType === "name" ? "가게 이름을 입력하세요..." : "수리 품목을 입력하세요..."}
+            placeholder={searchType === "name" ? "전문가 이름을 입력하세요..." : "분야를 입력하세요..."}
             value={searchKeyword}
             onChange={(e) => setSearchKeyword(e.target.value)}
             className="w-full p-2 border border-gray-300 rounded-lg"
@@ -159,7 +159,7 @@ export default function StoreList() {
             className="w-full p-2 border border-gray-300 rounded-lg"
           >
             <option value="score">평점순</option>
-            <option value="repair_count">수리 횟수순</option>
+            <option value="repair_count">답변 횟수 순</option>
             <option value="review_cnt">리뷰 개수순</option>
           </select>
         </div>
