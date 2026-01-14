@@ -16,37 +16,8 @@
 
 ---
 
-### 🏗 Architecture
-graph TD
-    subgraph "External Access"
-        User((User))
-    end
+## 🏗 System Architecture
 
-    subgraph "Docker Container Environment (app-network)"
-        direction TB
-        NGINX[Nginx Container<br/>Port 15018]
-        
-        subgraph "Frontend"
-            FE[React Frontend<br/>Static Files]
-        end
+이 프로젝트는 **Nginx**를 리버스 프록시로 사용하여 프론트엔드와 백엔드를 단일 포트(`15018`)로 통합 관리하는 구조입니다.
 
-        subgraph "Backend"
-            BE[Spring Boot<br/>Java 21]
-        end
-
-        subgraph "Database"
-            DB[(MySQL 8.0)]
-        end
-
-        %% Connections
-        User -->|Request| NGINX
-        NGINX -->|/| FE
-        NGINX -->|/api/| BE
-        BE -->|JPA/JDBC| DB
-    end
-
-    style NGINX fill:#009639,stroke:#fff,color:#fff
-    style FE fill:#61DAFB,stroke:#333,color:#000
-    style BE fill:#6DB33F,stroke:#fff,color:#fff
-    style DB fill:#4479A1,stroke:#fff,color:#fff
-    style NGINX stroke-width:2px
+<img width="5896" height="1515" alt="Image" src="https://github.com/user-attachments/assets/3a88a8c6-12e0-4803-a52a-a8d5228498d1" />
